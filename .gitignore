@@ -1,0 +1,22 @@
+# デフォルト: 全てignore
+*
+
+# git管理自体
+!.gitignore
+
+# ユーザー設定ファイル
+!CLAUDE.md
+!settings.json
+
+# ルール
+!rules/
+!rules/**/*.md
+
+# コマンド
+!commands/
+!commands/**/*.md
+
+# スキル（SKILL.mdのみ、ランタイムデータは除外）
+!skills/
+!skills/*/
+!skills/**/SKILL.md
