@@ -20,3 +20,6 @@
 !skills/
 !skills/*/
 !skills/**/SKILL.md
+
+# セットアップスクリプト
+!install.sh
