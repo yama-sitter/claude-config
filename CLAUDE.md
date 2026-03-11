@@ -15,3 +15,9 @@
   - `## Additional Request (1)` - Follow-up request and updated plan
   - `## Additional Request (2)` - Further additions
 - Each new section must clarify how it relates to or differs from the original requirements
+- Before calling ExitPlanMode, save the plan content using the `/agent-memory` skill
+  - Scope: the current repository name
+  - Directory name: `<YYYY-MM-DD>_<task-description>-plan`
+  - File name: `plan.md`
+  - Include in the memory: task goal, implementation approach, key files, and verification steps
+  - If a related plan memory already exists, update it instead of creating a new one
