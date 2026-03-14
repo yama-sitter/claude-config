@@ -149,6 +149,11 @@ EOF
 3. **Keep summaries decisive**: Reading the summary should tell you if you need the details
 4. **Stay current**: Update or delete outdated information
 5. **Be practical**: Save what's actually useful, not everything
+6. **One topic per file**: Split memories by concept (e.g., separate "design decisions" and
+   "pitfalls" rather than combining into one large file). This makes summaries more precise
+   and searchable.
+7. **Use `related` for discoverability**: Always include directory/file paths in the `related`
+   field. This enables reverse lookup by path: `rg "^related:.*keyword" memories/`
 
 ## Content Reference
 
