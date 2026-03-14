@@ -30,8 +30,6 @@
     ],
     "deny": [
       "Bash(sudo *)",
-      "Bash(git reset *)",
-      "Bash(git rebase *)",
       "Bash(git push *--force*)",
       "Bash(git push -f)",
       "Bash(git push -f *)",
@@ -74,7 +72,9 @@
       "Bash(gwq *)",
       "Bash(git checkout .)",
       "Bash(git checkout -- *)",
-      "Bash(git checkout * -- *)"
+      "Bash(git checkout * -- *)",
+      "Bash(git reset *)",
+      "Bash(git rebase *)"
     ],
     "defaultMode": "plan"
   },
