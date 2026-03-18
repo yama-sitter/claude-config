@@ -1,6 +1,13 @@
 ---
 name: agent-memory
-description: "Use this skill when the user asks to save, remember, recall, or organize memories. Triggers on: 'remember this', 'save this', 'note this', 'what did we discuss about...', 'check your notes', 'clean up memories'. Also use proactively when discovering valuable findings worth preserving."
+description: |
+  Use this skill when the user asks to save, remember, recall, or organize memories.
+  Triggers on: 'remember this', 'save this', 'note this', 'what did we discuss about...', 'check your notes', 'clean up memories'.
+  Also use proactively when discovering valuable findings worth preserving.
+  Subcommands:
+    - `save [description]`: Run Save Workflow to persist a memory
+    - `search [query]`: Run Search Workflow to find existing memories
+    - (no args): Infer intent from conversation context
 ---
 
 # Agent Memory
@@ -9,26 +16,64 @@ A persistent memory space for storing knowledge that survives across conversatio
 
 **Location:** `~/.claude/skills/agent-memory/memories/`
 
-## Proactive Usage
+## Argument Routing
 
-Save memories when you discover something worth preserving:
-- Research findings that took effort to uncover
-- Non-obvious patterns or gotchas in the codebase
-- Solutions to tricky problems
-- Architectural decisions and their rationale
-- In-progress work that may be resumed later
+| Args | Action |
+|------|--------|
+| `save` or `save <description>` | Go to **Save Workflow** — use `<description>` as the topic hint |
+| `search <query>` | Go to **Search Workflow** — use `<query>` as the search keyword |
+| `search` (no query) | Go to **Search Workflow** — interactively narrow down by scope → topic |
+| (empty / no args) | Infer whether to save or search from conversation context (existing behavior) |
 
-Check memories when starting related work:
-- Before investigating a problem area
-- When working on a feature you've touched before
-- When resuming work after a conversation break
+## Save Workflow
 
-Organize memories when needed:
-- Consolidate scattered memories on the same topic
-- Remove outdated or superseded information
-- Update status field when work completes, gets blocked, or is abandoned
+1. **Determine content**: Identify what to save from the conversation context or `<description>` argument
+2. **Choose scope and path**: Select scope (repository name or `general`) and build the path:
+   `<scope>/<YYYY-MM-DD>_<descriptive-name>/<filename>.md`
+   - Use `date +%Y-%m-%d` for the current date
+3. **Duplicate check**: Search existing memories to avoid redundancy
+   ```bash
+   rg "^summary:.*<keyword>" ~/.claude/skills/agent-memory/memories/ --no-ignore --hidden -i
+   ```
+   - If a closely related memory exists, update it instead of creating a new file
+4. **Write file**: Create the directory and file with required frontmatter
+   ```bash
+   mkdir -p ~/.claude/skills/agent-memory/memories/<scope>/<date>_<topic>/
+   # Check if file exists before writing to avoid accidental overwrites
+   ```
+5. **Confirm**: After saving, display the saved path and summary to the user
 
-## Folder Structure
+## Search Workflow
+
+### With query: `search <query>`
+
+1. **Scope narrowing** (optional): If the relevant scope is known, narrow search path
+2. **Staged search** — stop when useful results are found:
+   - Stage 1: `rg "^summary:.*<keyword>" memories/ --no-ignore --hidden -i`
+   - Stage 2: `rg "^tags:.*<keyword>" memories/ --no-ignore --hidden -i`
+   - Stage 3: `rg "<keyword>" memories/ --no-ignore --hidden -i`
+3. **Present results**: サマリー付き番号リストで表示
+4. **Show detail**: ユーザーが選択したメモリの全文を表示
+
+### Without query: `search`
+
+1. **List scopes**: `ls memories/` でスコープ一覧を取得
+   - スコープが1つの場合はスキップして自動選択
+   - 複数ある場合は AskUserQuestion でユーザーに選択させる
+2. **List topics**: 選択されたスコープ内のディレクトリ一覧（日付＋トピック名）を表示
+   - AskUserQuestion でユーザーにトピックを選択させる
+3. **Show detail**: 選択されたトピック内のファイルを読み込んで全文表示
+   - 複数ファイルがある場合はファイル一覧を表示し選択させる
+
+### Post-search
+
+Show detail 完了後、選択されたファイルのフルパスを `pbcopy` でクリップボードにコピーし、パスをそのまま表示する。
+
+**Note:** Memory files are gitignored — always use `--no-ignore --hidden` flags with ripgrep.
+
+## Reference
+
+### Folder Structure
 
 Organize memories using the following directory convention:
 
@@ -56,7 +101,7 @@ memories/
         └── finding.md
 ```
 
-## Frontmatter
+### Frontmatter
 
 All memories must include frontmatter with a `summary` field. The summary should be concise enough to determine whether to read the full content.
 
@@ -82,53 +127,19 @@ related: [src/core/file/fileProcessor.ts]
 ---
 ```
 
-## Search Workflow
+### Proactive Usage
 
-Use summary-first approach to efficiently find relevant memories:
+Save memories when you discover something worth preserving:
+- Research findings that took effort to uncover
+- Non-obvious patterns or gotchas in the codebase
+- Solutions to tricky problems
+- Architectural decisions and their rationale
+- In-progress work that may be resumed later
 
-```bash
-# 1. List categories
-ls ~/.claude/skills/agent-memory/memories/
-
-# 2. View all summaries
-rg "^summary:" ~/.claude/skills/agent-memory/memories/ --no-ignore --hidden
-
-# 3. Search summaries for keyword
-rg "^summary:.*keyword" ~/.claude/skills/agent-memory/memories/ --no-ignore --hidden -i
-
-# 4. Search by tag
-rg "^tags:.*keyword" ~/.claude/skills/agent-memory/memories/ --no-ignore --hidden -i
-
-# 5. Full-text search (when summary search isn't enough)
-rg "keyword" ~/.claude/skills/agent-memory/memories/ --no-ignore --hidden -i
-
-# 6. Read specific memory file if relevant
-```
-
-**Note:** Memory files are gitignored, so use `--no-ignore` and `--hidden` flags with ripgrep.
-
-## Operations
-
-### Save
-
-1. Determine appropriate category for the content
-2. Check if existing category fits, or create new one
-3. Write file with required frontmatter (use `date +%Y-%m-%d` for current date)
-
-```bash
-mkdir -p ~/.claude/skills/agent-memory/memories/repo-name/2025-01-15_topic-name/
-# Note: Check if file exists before writing to avoid accidental overwrites
-cat > ~/.claude/skills/agent-memory/memories/repo-name/2025-01-15_topic-name/finding.md << 'EOF'
----
-summary: "Brief description of this memory"
-created: 2025-01-15
----
-
-# Title
-
-Content here...
-EOF
-```
+Check memories when starting related work:
+- Before investigating a problem area
+- When working on a feature you've touched before
+- When resuming work after a conversation break
 
 ### Maintain
 
@@ -142,7 +153,12 @@ EOF
 - **Consolidate**: Merge related memories when they grow
 - **Reorganize**: Move memories to better-fitting categories as the knowledge base evolves
 
-## Guidelines
+Organize memories when needed:
+- Consolidate scattered memories on the same topic
+- Remove outdated or superseded information
+- Update status field when work completes, gets blocked, or is abandoned
+
+### Guidelines
 
 1. **Write for resumption**: Memories exist to resume work later. Capture all key points needed to continue without losing context - decisions made, reasons why, current state, and next steps.
 2. **Write self-contained notes**: Include full context so the reader needs no prior knowledge to understand and act on the content
@@ -155,7 +171,7 @@ EOF
 7. **Use `related` for discoverability**: Always include directory/file paths in the `related`
    field. This enables reverse lookup by path: `rg "^related:.*keyword" memories/`
 
-## Content Reference
+### Content Reference
 
 When writing detailed memories, consider including:
 - **Context**: Goal, background, constraints
