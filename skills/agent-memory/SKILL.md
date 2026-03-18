@@ -121,7 +121,6 @@ created: 2025-01-15  # YYYY-MM-DD format
 summary: "Worker thread memory leak during large file processing - cause and solution"
 created: 2025-01-15
 updated: 2025-01-20
-status: in-progress  # in-progress | resolved | blocked | abandoned
 tags: [performance, worker, memory-leak]
 related: [src/core/file/fileProcessor.ts]
 ---
@@ -156,7 +155,6 @@ Check memories when starting related work:
 Organize memories when needed:
 - Consolidate scattered memories on the same topic
 - Remove outdated or superseded information
-- Update status field when work completes, gets blocked, or is abandoned
 
 ### Guidelines
 
