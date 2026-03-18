@@ -3,9 +3,9 @@ name: worktree
 description: |
   Create and switch Git worktrees using gwq.
   Use for "create worktree", "switch to branch", "review this PR", etc.
-  — non-development tasks that require branch switching.
-  Do not use for development work involving code changes (implementation, fixes, etc.) — the tdd skill handles that.
-  Do not use for investigations or answering questions.
+  Use this skill whenever the user mentions "worktree" in their request,
+  even if they also mention development work — this skill handles the worktree setup part.
+  Do not use for investigations or answering questions that don't involve worktree operations.
 user-invocable: true
 ---
 
