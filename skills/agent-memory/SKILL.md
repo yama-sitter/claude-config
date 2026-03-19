@@ -28,20 +28,23 @@ A persistent memory space for storing knowledge that survives across conversatio
 ## Save Workflow
 
 1. **Determine content**: Identify what to save from the conversation context or `<description>` argument
-2. **Choose scope and path**: Select scope (repository name or `general`) and build the path:
+2. **Expand context from sources**: If the content being saved builds upon, extends, or references an existing memory (e.g., a recalled memo from earlier in the conversation), do both:
+   - **Embed context**: Incorporate the necessary background from the source memory so the new memo is fully understandable on its own. A reader with no prior knowledge must be able to follow the content without reading the source memo. Do not merely summarize — include the specific facts, decisions, and context that the new content depends on
+   - **Link source**: Add all source memory paths to the `related` field in frontmatter (e.g., `related: [..., memories/scope/date_topic/file.md]`)
+3. **Choose scope and path**: Select scope (repository name or `general`) and build the path:
    `<scope>/<YYYY-MM-DD>_<descriptive-name>/<filename>.md`
    - Use `date +%Y-%m-%d` for the current date
-3. **Duplicate check**: Search existing memories to avoid redundancy
+4. **Duplicate check**: Search existing memories to avoid redundancy
    ```bash
    rg "^summary:.*<keyword>" ~/.claude/skills/agent-memory/memories/ --no-ignore --hidden -i
    ```
    - If a closely related memory exists, update it instead of creating a new file
-4. **Write file**: Create the directory and file with required frontmatter
+5. **Write file**: Create the directory and file with required frontmatter
    ```bash
    mkdir -p ~/.claude/skills/agent-memory/memories/<scope>/<date>_<topic>/
    # Check if file exists before writing to avoid accidental overwrites
    ```
-5. **Confirm**: After saving, display the saved path and summary to the user
+6. **Confirm**: After saving, display the saved path and summary to the user
 
 ## Search Workflow
 
@@ -122,7 +125,7 @@ summary: "Worker thread memory leak during large file processing - cause and sol
 created: 2025-01-15
 updated: 2025-01-20
 tags: [performance, worker, memory-leak]
-related: [src/core/file/fileProcessor.ts]
+related: [src/core/file/fileProcessor.ts, memories/general/2026-01-10_worker-architecture/design.md]
 ---
 ```
 
