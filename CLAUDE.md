@@ -9,6 +9,7 @@
 
 ## Plan Mode Rules
 
+- After writing the plan, perform a self-review following the Plan Review Guidelines before finalizing
 - Before calling ExitPlanMode, save the plan content using the `/agent-memory` skill
   - Scope: the current repository name
   - Directory name: `<YYYY-MM-DD>_<task-description>-plan`
