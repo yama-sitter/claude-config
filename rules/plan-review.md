@@ -6,22 +6,41 @@ After finishing the plan file in Plan Mode, before calling ExitPlanMode.
 
 ## Process
 
-Perform 3 review cycles. Each cycle:
+Perform 3 review cycles. Each cycle, output the following in the conversation:
 
-1. **Review** — Critically evaluate the plan from these aspects:
-   - Feasibility: Are the proposed steps actually executable? Are prerequisites met?
-   - Completeness: Are file changes, dependencies, and edge cases covered?
-   - Consistency: Any contradictions between steps? Aligned with codebase conventions?
-   - Risk: Any overlooked risks or side effects?
-   - Verifiability: Is it clear how to confirm success?
+```
+=== Plan Review [n]/3 ===
+**Feasibility**: [findings or "OK"]
+**Completeness**: [findings or "OK"]
+**Consistency**: [findings or "OK"]
+**Risk**: [findings or "OK"]
+**Verifiability**: [findings or "OK"]
 
-2. **Improve** — Fix substantive issues in the plan (skip trivial wording changes)
+**Changes applied**: [list of changes made to the plan file]
+```
 
-3. **Record** — After all 3 cycles, append a `## Self-Review` section to the plan file:
-   - Issues found per cycle (or "None")
-   - Revisions applied per cycle (or "None")
+After evaluating, apply fixes directly to the plan file.
+
+## Review Aspects
+
+- Feasibility: Are the proposed steps actually executable?
+- Completeness: Are any file changes, dependencies, or edge cases missing?
+- Consistency: Any contradictions between steps or with codebase conventions?
+- Risk: Any overlooked side effects or failure scenarios?
+- Verifiability: Is it clear how to confirm success?
 
 ## Rules
 
-- Exactly 3 review cycles. If no issues remain after an earlier cycle, note "No further issues" and continue
+- Exactly 3 review cycles
+- Cycles 1-2 must identify at least one issue each — re-read the plan more carefully if nothing is found
+- Cycle 3 may report "OK" for all aspects if genuinely no issues remain
+- When finding issues, quote the specific problematic text from the plan
 - Focus on substantive issues, not minor wording improvements
+- After all 3 cycles, append to the plan file:
+
+```markdown
+## Self-Review
+- Cycle 1: [1-line summary of key issue found and fixed]
+- Cycle 2: [1-line summary of key issue found and fixed]
+- Cycle 3: [1-line summary or "No further issues"]
+```
