@@ -6,6 +6,8 @@ description: |
   Use this skill whenever the user mentions "worktree" in their request,
   even if they also mention development work — this skill handles the worktree setup part.
   Do not use for investigations or answering questions that don't involve worktree operations.
+  Do not use when the user has explicitly requested superpowers workflow (e.g., "/superpowers:brainstorming")
+  or when executing a plan from docs/superpowers/plans/.
 user-invocable: true
 ---
 
