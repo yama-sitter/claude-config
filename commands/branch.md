@@ -7,7 +7,7 @@ description: "Create a new branch based on the changes."
 
 Create a new branch based on the changes.
 
-> **Note**: If you want to create a worktree with `gwq`, use the worktree skill (automatically or by explicit request).
+> **Note**: If you want to create a worktree, use the worktree skill (automatically or by explicit request).
 > This command creates a branch within the current repository using `git checkout -b`.
 
 ## Usage
