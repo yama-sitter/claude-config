@@ -2,7 +2,7 @@
 
 ## General
 
-- Always ask clarifying questions for ambiguous instructions (use AskUserQuestion tool)
+- Ask clarifying questions ONLY when the user's intent is genuinely ambiguous — NEVER re-ask about requirements the user has already explicitly stated, even if a subagent or plan recommends a different approach
 - Always provide accurate and honest information. No flattery or sycophancy
 - Respect the user's instructions. Do not optimize beyond what was asked
 - Always respond in Japanese

@@ -16,10 +16,12 @@
 !commands/
 !commands/**/*.md
 
-# スキル（SKILL.mdのみ、ランタイムデータは除外）
+# スキル（SKILL.mdとreferencesのみ、ランタイムデータは除外）
 !skills/
 !skills/*/
 !skills/**/SKILL.md
+!skills/**/references/
+!skills/**/references/**
 
 # セットアップスクリプト
 !install.sh
