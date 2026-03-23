@@ -70,7 +70,9 @@ Before creating any worktree, verify `.worktrees/` is ignored:
 git check-ignore -q .worktrees 2>/dev/null
 ```
 
-If NOT ignored:
+> **Important**: You MUST use `git check-ignore`, not Grep on `.gitignore`. `git check-ignore` checks all ignore sources including global gitignore (`~/.gitignore_global`). Grepping the local `.gitignore` alone will miss global rules and lead to unnecessary changes.
+
+If NOT ignored (exit code is non-zero):
 1. Add `.worktrees/` to `.gitignore`
 2. Commit the change
 3. Proceed with worktree creation
@@ -113,9 +115,10 @@ Derive the worktree directory name from the branch name by removing the `<type>/
 - `fix/login_bug` → `login_bug`
 - `test/worktree_check` → `worktree_check`
 
-Use `--no-checkout` with manual sparse-checkout to exclude `.claude/` from the working tree.
-This prevents sandbox permission errors when `.claude/` is tracked in the repository.
-Do **not** use `git sparse-checkout init` — it writes to `.git/config` which the sandbox also blocks.
+Use `--no-checkout` with pathspec negation to exclude dotfiles from the working tree.
+The sandbox blocks creation of dotfiles/dotdirectories (`.claude/`, `.env*`, `.vscode/`, `.mcp.json`, etc.).
+
+> **Why not sparse-checkout?** The sandbox blocks both `.git/config` writes and `.git/worktrees/` writes. Pathspec negation is the only approach that avoids all `.git/` writes.
 
 **Step 5a: Create worktree without checkout**
 
@@ -127,34 +130,13 @@ git worktree add --no-checkout .worktrees/<worktree-name> -b <branch-name>
 git worktree add --no-checkout .worktrees/<worktree-name> <branch-name>
 ```
 
-**Step 5b: Create sparse-checkout pattern file**
-
-Write the pattern file directly using a **heredoc** (do not use `echo` or `printf` — zsh escapes `!` to `\!`):
+**Step 5b: Checkout excluding all dotfiles**
 
 ```bash
-GITDIR=$(cat .worktrees/<worktree-name>/.git | sed 's/gitdir: //') && mkdir -p "$GITDIR/info" && cat > "$GITDIR/info/sparse-checkout" <<'SPARSE'
-/*
-!/.claude
-SPARSE
+cd .worktrees/<worktree-name> && git checkout HEAD -- . ':(exclude).*'
 ```
 
-> The `/*` and `!/.claude` lines **must start at column 0** (no indentation), otherwise the patterns will include leading spaces.
-
-**Step 5c: Complete the checkout**
-
-```bash
-cd .worktrees/<worktree-name> && git -c core.sparseCheckout=true checkout
-```
-
-> The `-c` flag sets `core.sparseCheckout` in memory only — it does not write to `.git/config`.
-
-**Fallback**: If Step 5b fails (e.g., sandbox blocks writing to the gitdir), use pathspec negation instead:
-
-```bash
-cd .worktrees/<worktree-name> && git checkout HEAD -- . ':(exclude).claude'
-```
-
-> Note: This fallback causes `.claude/` to appear as `deleted` in `git status`.
+> **Known limitation**: Dotfiles (`.claude/`, `.env*`, `.vscode/`, etc.) appear as `deleted` in `git status` within the worktree. This is cosmetic — avoid committing these deletions.
 
 If the command fails:
 - Branch already exists unexpectedly → switch to Worktree Only mode and retry from 5a
