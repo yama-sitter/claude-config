@@ -25,6 +25,7 @@
       "Bash(git fetch *)",
       "Bash(gh pr *)",
       "Bash(gh search *)",
+      "Bash(gh api *)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:npmjs.org)",
       "mcp__serena__*",
@@ -71,9 +72,28 @@
       "Bash(git checkout -- *)",
       "Bash(git checkout * -- *)",
       "Bash(git reset *)",
-      "Bash(git rebase *)"
+      "Bash(git rebase *)",
+      "Bash(gh api *-X DELETE*)",
+      "Bash(gh api *-X PUT*)",
+      "Bash(gh api *-X PATCH*)",
+      "Bash(gh api *-X POST*)",
+      "Bash(gh api *-XDELETE*)",
+      "Bash(gh api *-XPUT*)",
+      "Bash(gh api *-XPATCH*)",
+      "Bash(gh api *-XPOST*)",
+      "Bash(gh api *--method DELETE*)",
+      "Bash(gh api *--method PUT*)",
+      "Bash(gh api *--method PATCH*)",
+      "Bash(gh api *--method POST*)",
+      "Bash(gh api *--method=DELETE*)",
+      "Bash(gh api *--method=PUT*)",
+      "Bash(gh api *--method=PATCH*)",
+      "Bash(gh api *--method=POST*)"
     ],
-    "defaultMode": "plan"
+    "defaultMode": "plan",
+    "additionalDirectories": [
+      "~/.claude/skills/agent-memory/memories"
+    ]
   },
   "hooks": {
     "Notification": [
