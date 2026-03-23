@@ -52,22 +52,22 @@ A persistent memory space for storing knowledge that survives across conversatio
    - Stage 1: `rg "^summary:.*<keyword>" memories/ --no-ignore --hidden -i`
    - Stage 2: `rg "^tags:.*<keyword>" memories/ --no-ignore --hidden -i`
    - Stage 3: `rg "<keyword>" memories/ --no-ignore --hidden -i`
-3. **Present results**: サマリー付き番号リストで表示
-4. **Show detail**: ユーザーが選択したメモリの全文を表示
+3. **Present results**: Display as a numbered list with summaries
+4. **Show detail**: Display the full content of the user's selected memory
 
 ### Without query: `search`
 
-1. **List scopes**: `ls memories/` でスコープ一覧を取得
-   - スコープが1つの場合はスキップして自動選択
-   - 複数ある場合は AskUserQuestion でユーザーに選択させる
-2. **List topics**: 選択されたスコープ内のディレクトリ一覧（日付＋トピック名）を表示
-   - AskUserQuestion でユーザーにトピックを選択させる
-3. **Show detail**: 選択されたトピック内のファイルを読み込んで全文表示
-   - 複数ファイルがある場合はファイル一覧を表示し選択させる
+1. **List scopes**: Run `ls memories/` to retrieve the list of scopes
+   - If there is only one scope, skip and auto-select it
+   - If there are multiple scopes, use AskUserQuestion to let the user choose
+2. **List topics**: Display the directory listing (date + topic name) within the selected scope
+   - Use AskUserQuestion to let the user choose a topic
+3. **Show detail**: Read and display the full content of the files in the selected topic
+   - If there are multiple files, show the file list and let the user choose
 
 ### Post-search
 
-Show detail 完了後、選択されたファイルのフルパスを表示する。`pbcopy` が実行可能な環境であればクリップボードにもコピーする。コピーできない場合はパス表示のみで完了とする。
+After the **Show detail** step, display the full path of the selected file. If `pbcopy` is available, also copy the path to the clipboard. If copying is not possible, display the path only.
 
 **Note:** Memory files are gitignored — always use `--no-ignore --hidden` flags with ripgrep.
 
