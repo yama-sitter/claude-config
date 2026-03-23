@@ -59,6 +59,7 @@ Based on the task description, propose a branch name following Git Guidelines:
 - Types: feature, fix, docs, style, refactor, test, chore
 
 **Present the proposed branch name to the user and get approval before proceeding.**
+Do NOT skip this step even if a branch name was discussed earlier in the conversation. Always confirm with AskUserQuestion.
 
 ---
 
@@ -67,10 +68,12 @@ Based on the task description, propose a branch name following Git Guidelines:
 Before creating any worktree, verify `.worktrees/` is ignored:
 
 ```bash
-git check-ignore -q .worktrees 2>/dev/null
+git check-ignore -q .worktrees
 ```
 
-> **Important**: You MUST use `git check-ignore`, not Grep on `.gitignore`. `git check-ignore` checks all ignore sources including global gitignore (`~/.gitignore_global`). Grepping the local `.gitignore` alone will miss global rules and lead to unnecessary changes.
+> **Important**:
+> - You MUST use `git check-ignore`, not Grep on `.gitignore`. `git check-ignore` checks all ignore sources including global gitignore (`~/.gitignore_global`).
+> - Run the command **exactly as written**. Do not append `; echo ...`, `2>/dev/null`, or any other suffix — it will cause a permission error.
 
 If NOT ignored (exit code is non-zero):
 1. Add `.worktrees/` to `.gitignore`
@@ -110,10 +113,10 @@ Handle each case:
 
 ### 5. Create the Worktree
 
-Derive the worktree directory name from the branch name by removing the `<type>/` prefix:
-- `feature/add_mcp_auth` → `add_mcp_auth`
-- `fix/login_bug` → `login_bug`
-- `test/worktree_check` → `worktree_check`
+Derive the worktree directory name from the branch name by replacing `/` with `_`:
+- `feature/add_mcp_auth` → `feature_add_mcp_auth`
+- `fix/login_bug` → `fix_login_bug`
+- `test/worktree_check` → `test_worktree_check`
 
 Use `--no-checkout` with pathspec negation to exclude dotfiles from the working tree.
 The sandbox blocks creation of dotfiles/dotdirectories (`.claude/`, `.env*`, `.vscode/`, `.mcp.json`, etc.).
@@ -122,8 +125,9 @@ The sandbox blocks creation of dotfiles/dotdirectories (`.claude/`, `.env*`, `.v
 
 **Step 5a: Create worktree without checkout**
 
+Run from the **project root** directory (not from inside a worktree or subdirectory):
+
 ```bash
-# Branch + Worktree (new branch)
 git worktree add --no-checkout .worktrees/<worktree-name> -b <branch-name>
 
 # Worktree Only (existing branch)
@@ -136,11 +140,13 @@ git worktree add --no-checkout .worktrees/<worktree-name> <branch-name>
 cd .worktrees/<worktree-name> && git checkout HEAD -- . ':(exclude).*'
 ```
 
-> **Known limitation**: Dotfiles (`.claude/`, `.env*`, `.vscode/`, etc.) appear as `deleted` in `git status` within the worktree. This is cosmetic — avoid committing these deletions.
+> **Known limitations**:
+> - Dotfiles (`.claude/`, `.env*`, `.vscode/`, etc.) appear as `deleted` in `git status` within the worktree. This is cosmetic — avoid committing these deletions.
+> - Branch deletion (`git branch -d` or `git worktree remove`) may show `could not write config file .git/config: Operation not permitted`. The branch IS deleted — this warning is harmless and can be ignored.
 
 If the command fails:
-- Branch already exists unexpectedly → switch to Worktree Only mode and retry from 5a
-- Worktree path conflicts → run `git worktree prune` and retry from 5a
+- Branch already exists unexpectedly → drop the `-b` flag and retry from 5a (the failed `git worktree add -b` creates the branch even though the worktree creation failed)
+- Worktree path conflicts → (1) `git worktree remove --force .worktrees/<worktree-name>`, then retry from 5a. (2) If fails with "not a working tree" (orphaned directory), ask the user to run `! rm -rf .worktrees/<worktree-name>`, then run `git worktree prune`. **NEVER delete `.git/worktrees/` entries directly — this corrupts git and breaks all commands.**
 - Otherwise → report the error to the user
 
 ---

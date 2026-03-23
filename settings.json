@@ -84,7 +84,6 @@
       "Bash(gwq *)",
       "Bash(git checkout .)",
       "Bash(git checkout -- *)",
-      "Bash(git checkout * -- *)",
       "Bash(git reset *)",
       "Bash(git rebase *)",
       "Bash(gh api *-X DELETE*)",
