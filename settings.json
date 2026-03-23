@@ -93,30 +93,11 @@
     "defaultMode": "plan",
     "additionalDirectories": [
       "~/.claude/skills",
-      "~/.claude/plugins"
+      "~/.claude/plugins",
+      "~/.agent-memory"
     ]
   },
   "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "jq -r '.tool_input.file_path // empty' | grep -q 'agent-memory/memories' && echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"allow\",\"permissionDecisionReason\":\"agent-memory skill write\"}}' || true"
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "jq -r '.tool_input.command // empty' | grep -q 'mkdir.*agent-memory/memories' && echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"allow\",\"permissionDecisionReason\":\"agent-memory skill mkdir\"}}' || true"
-          }
-        ]
-      }
-    ],
     "Notification": [
       {
         "hooks": [

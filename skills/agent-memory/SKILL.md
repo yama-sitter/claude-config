@@ -14,7 +14,7 @@ description: |
 
 A persistent memory space for storing knowledge that survives across conversations.
 
-**Location:** `~/.claude/skills/agent-memory/memories/`
+**Location:** `~/.agent-memory/`
 
 ## Argument Routing
 
@@ -36,14 +36,11 @@ A persistent memory space for storing knowledge that survives across conversatio
    - Use `date +%Y-%m-%d` for the current date
 4. **Duplicate check**: Search existing memories to avoid redundancy
    ```bash
-   rg "^summary:.*<keyword>" ~/.claude/skills/agent-memory/memories/ --no-ignore --hidden -i
+   rg "^summary:.*<keyword>" ~/.agent-memory/ --no-ignore --hidden -i
    ```
    - If a closely related memory exists, update it instead of creating a new file
-5. **Write file**: Create the directory and file with required frontmatter
-   ```bash
-   mkdir -p ~/.claude/skills/agent-memory/memories/<scope>/<date>_<topic>/
-   # Check if file exists before writing to avoid accidental overwrites
-   ```
+5. **Write file**: Write the file with required frontmatter (Write tool creates parent directories automatically, so mkdir is not needed)
+   - Check if file exists before writing to avoid accidental overwrites
 6. **Confirm**: After saving, display the saved path and summary to the user
 
 ## Search Workflow
@@ -148,9 +145,9 @@ Check memories when starting related work:
 - **Update**: When information changes, update the content and add `updated` field to frontmatter
 - **Delete**: Remove memories that are no longer relevant
   ```bash
-  trash ~/.claude/skills/agent-memory/memories/category-name/filename.md
+  trash ~/.agent-memory/category-name/filename.md
   # Remove empty category folders
-  rmdir ~/.claude/skills/agent-memory/memories/category-name/ 2>/dev/null || true
+  rmdir ~/.agent-memory/category-name/ 2>/dev/null || true
   ```
 - **Consolidate**: Merge related memories when they grow
 - **Reorganize**: Move memories to better-fitting categories as the knowledge base evolves
