@@ -113,8 +113,9 @@ Derive the worktree directory name from the branch name by removing the `<type>/
 - `fix/login_bug` → `login_bug`
 - `test/worktree_check` → `worktree_check`
 
-Use `--no-checkout` with sparse-checkout to exclude `.claude/` from the working tree.
+Use `--no-checkout` with manual sparse-checkout to exclude `.claude/` from the working tree.
 This prevents sandbox permission errors when `.claude/` is tracked in the repository.
+Do **not** use `git sparse-checkout init` — it writes to `.git/config` which the sandbox also blocks.
 
 **Step 5a: Create worktree without checkout**
 
@@ -126,15 +127,34 @@ git worktree add --no-checkout .worktrees/<worktree-name> -b <branch-name>
 git worktree add --no-checkout .worktrees/<worktree-name> <branch-name>
 ```
 
-**Step 5b: Configure sparse-checkout and complete checkout**
+**Step 5b: Create sparse-checkout pattern file**
 
-Run as a single chained command (shell state is not preserved between Bash calls):
+Write the pattern file directly using a **heredoc** (do not use `echo` or `printf` — zsh escapes `!` to `\!`):
 
 ```bash
-cd .worktrees/<worktree-name> && git sparse-checkout init && git sparse-checkout set --no-cone '/*' '!.claude' && git checkout
+GITDIR=$(cat .worktrees/<worktree-name>/.git | sed 's/gitdir: //') && mkdir -p "$GITDIR/info" && cat > "$GITDIR/info/sparse-checkout" <<'SPARSE'
+/*
+!/.claude
+SPARSE
 ```
 
-> `git checkout` is required — `sparse-checkout set` alone does not populate files when the worktree was created with `--no-checkout`.
+> The `/*` and `!/.claude` lines **must start at column 0** (no indentation), otherwise the patterns will include leading spaces.
+
+**Step 5c: Complete the checkout**
+
+```bash
+cd .worktrees/<worktree-name> && git -c core.sparseCheckout=true checkout
+```
+
+> The `-c` flag sets `core.sparseCheckout` in memory only — it does not write to `.git/config`.
+
+**Fallback**: If Step 5b fails (e.g., sandbox blocks writing to the gitdir), use pathspec negation instead:
+
+```bash
+cd .worktrees/<worktree-name> && git checkout HEAD -- . ':(exclude).claude'
+```
+
+> Note: This fallback causes `.claude/` to appear as `deleted` in `git status`.
 
 If the command fails:
 - Branch already exists unexpectedly → switch to Worktree Only mode and retry from 5a
