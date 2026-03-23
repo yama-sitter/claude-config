@@ -18,12 +18,12 @@ A persistent memory space for storing knowledge that survives across conversatio
 
 ## Argument Routing
 
-| Args | Action |
-|------|--------|
-| `save` or `save <description>` | Go to **Save Workflow** — use `<description>` as the topic hint |
-| `search <query>` | Go to **Search Workflow** — use `<query>` as the search keyword |
-| `search` (no query) | Go to **Search Workflow** — interactively narrow down by scope → topic |
-| (empty / no args) | Infer whether to save or search from conversation context (existing behavior) |
+| Args                           | Action                                                                        |
+| ------------------------------ | ----------------------------------------------------------------------------- |
+| `save` or `save <description>` | Go to **Save Workflow** — use `<description>` as the topic hint               |
+| `search <query>`               | Go to **Search Workflow** — use `<query>` as the search keyword               |
+| `search` (no query)            | Go to **Search Workflow** — interactively narrow down by scope → topic        |
+| (empty / no args)              | Infer whether to save or search from conversation context (existing behavior) |
 
 ## Save Workflow
 
@@ -67,7 +67,7 @@ A persistent memory space for storing knowledge that survives across conversatio
 
 ### Post-search
 
-Show detail 完了後、選択されたファイルのフルパスを `pbcopy` でクリップボードにコピーし、パスをそのまま表示する。
+Show detail 完了後、選択されたファイルのフルパスを表示する。`pbcopy` が実行可能な環境であればクリップボードにもコピーする。コピーできない場合はパス表示のみで完了とする。
 
 **Note:** Memory files are gitignored — always use `--no-ignore --hidden` flags with ripgrep.
 
@@ -85,10 +85,12 @@ Organize memories using the following directory convention:
 - **filename**: A name describing the content of the file (e.g. `finding.md`, `progress.md`, `design.md`)
 
 Guidelines:
+
 - Use kebab-case for all folder and file names
 - Consolidate or reorganize as the knowledge base evolves
 
 Example:
+
 ```text
 memories/
 ├── taimee-rails-api/
@@ -108,27 +110,34 @@ All memories must include frontmatter with a `summary` field. The summary should
 **Summary is the decision point**: Agents scan summaries via `rg "^summary:"` to decide which memories to read in full. Write summaries that contain enough context to make this decision - what the memory is about, the key problem or topic, and why it matters.
 
 **Required:**
+
 ```yaml
 ---
 summary: "1-2 line description of what this memory contains"
-created: 2025-01-15  # YYYY-MM-DD format
+created: 2025-01-15 # YYYY-MM-DD format
 ---
 ```
 
 **Optional:**
+
 ```yaml
 ---
 summary: "Worker thread memory leak during large file processing - cause and solution"
 created: 2025-01-15
 updated: 2025-01-20
 tags: [performance, worker, memory-leak]
-related: [src/core/file/fileProcessor.ts, memories/general/2026-01-10_worker-architecture/design.md]
+related:
+  [
+    src/core/file/fileProcessor.ts,
+    memories/general/2026-01-10_worker-architecture/design.md,
+  ]
 ---
 ```
 
 ### Proactive Usage
 
 Save memories when you discover something worth preserving:
+
 - Research findings that took effort to uncover
 - Non-obvious patterns or gotchas in the codebase
 - Solutions to tricky problems
@@ -136,6 +145,7 @@ Save memories when you discover something worth preserving:
 - In-progress work that may be resumed later
 
 Check memories when starting related work:
+
 - Before investigating a problem area
 - When working on a feature you've touched before
 - When resuming work after a conversation break
@@ -153,6 +163,7 @@ Check memories when starting related work:
 - **Reorganize**: Move memories to better-fitting categories as the knowledge base evolves
 
 Organize memories when needed:
+
 - Consolidate scattered memories on the same topic
 - Remove outdated or superseded information
 
@@ -172,6 +183,7 @@ Organize memories when needed:
 ### Content Reference
 
 When writing detailed memories, consider including:
+
 - **Context**: Goal, background, constraints
 - **State**: What's done, in progress, or blocked
 - **Details**: Key files, commands, code snippets

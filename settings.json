@@ -10,6 +10,7 @@
       "Bash(mv *)",
       "Bash(cp *)",
       "Bash(npm *)",
+      "Bash(pbcopy*)",
       "Read(**)",
       "Write(**)",
       "Edit(**)",
