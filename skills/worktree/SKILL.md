@@ -113,19 +113,32 @@ Derive the worktree directory name from the branch name by removing the `<type>/
 - `fix/login_bug` → `login_bug`
 - `test/worktree_check` → `worktree_check`
 
-Execute:
+Use `--no-checkout` with sparse-checkout to exclude `.claude/` from the working tree.
+This prevents sandbox permission errors when `.claude/` is tracked in the repository.
+
+**Step 5a: Create worktree without checkout**
 
 ```bash
 # Branch + Worktree (new branch)
-git worktree add .worktrees/<worktree-name> -b <branch-name>
+git worktree add --no-checkout .worktrees/<worktree-name> -b <branch-name>
 
 # Worktree Only (existing branch)
-git worktree add .worktrees/<worktree-name> <branch-name>
+git worktree add --no-checkout .worktrees/<worktree-name> <branch-name>
 ```
 
+**Step 5b: Configure sparse-checkout and complete checkout**
+
+Run as a single chained command (shell state is not preserved between Bash calls):
+
+```bash
+cd .worktrees/<worktree-name> && git sparse-checkout init && git sparse-checkout set --no-cone '/*' '!.claude' && git checkout
+```
+
+> `git checkout` is required — `sparse-checkout set` alone does not populate files when the worktree was created with `--no-checkout`.
+
 If the command fails:
-- Branch already exists unexpectedly → switch to Worktree Only mode and retry
-- Worktree path conflicts → run `git worktree prune` and retry
+- Branch already exists unexpectedly → switch to Worktree Only mode and retry from 5a
+- Worktree path conflicts → run `git worktree prune` and retry from 5a
 - Otherwise → report the error to the user
 
 ---
