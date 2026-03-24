@@ -9,6 +9,7 @@
 
 ## Plan Mode Rules
 
+- Follow the plan structure defined in plan-template.md when writing plans (unless superpowers flow is active)
 - After writing the plan, perform a self-review following the Plan Review Guidelines before finalizing
 - After the user approves the plan (ExitPlanMode approved), save the plan content using the `/agent-memory` skill
   - Scope: the current repository name
@@ -28,6 +29,7 @@ The superpowers flow is considered active when any of the following is true:
 
 When active:
 - Worktree → Use `superpowers:using-git-worktrees` (do not use custom `worktree` skill)
+- Plan template → Use `superpowers:writing-plans` (do not use `plan-template.md`)
 - Plan review → Use superpowers subagent review
 - Plan storage → Save to `docs/superpowers/plans/` and also copy to `agent-memory`
 
@@ -36,7 +38,8 @@ When active:
 This includes: direct code change requests, Plan Mode, or any task where the user has not explicitly requested superpowers.
 
 - Worktree → Use custom `worktree` skill (gwq)
-- Plan review → Use `plan-review.md` (3-cycle self-review)
+- Plan template → Use `plan-template.md`
+- Plan review → Use `plan-review.md` (2-cycle self-review)
 - Plan storage → `agent-memory` only
 
 ### Always applied (regardless of flow)
