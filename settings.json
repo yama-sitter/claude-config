@@ -112,6 +112,17 @@
     ]
   },
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if echo \"$CLAUDE_TOOL_INPUT\" | jq -r '.command // empty' | grep -qE '\\bgit\\s+rebase\\b'; then echo 'BLOCKED: git rebase はサンドボックスでドットファイル作成がブロックされ、rebase state が壊れます。git rebase / rebase --continue / rebase --abort はすべて「! git rebase <args>」でユーザーに実行を依頼してください。'; exit 2; fi; exit 0"
+          }
+        ]
+      }
+    ],
     "Notification": [
       {
         "hooks": [

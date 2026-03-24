@@ -32,3 +32,9 @@ Examples: `feature/user_profile_edit`, `fix/login_bug`
 `<type>: <short description>`
 
 - Follow the project's `.github/PULL_REQUEST_TEMPLATE.md` if one exists
+
+## Sandbox Restrictions
+
+- NEVER execute `git rebase`, `git rebase --continue`, `git rebase --abort` via the Bash tool
+  - Sandbox blocks dotfile creation, corrupting rebase state irrecoverably
+  - ALWAYS ask the user to run with `!` prefix: `! git rebase <args>`
