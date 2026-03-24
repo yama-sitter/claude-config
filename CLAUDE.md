@@ -11,12 +11,7 @@
 
 - Follow the plan structure defined in plan-template.md when writing plans (unless superpowers flow is active)
 - After writing the plan, perform a self-review following the Plan Review Guidelines before finalizing
-- After the user approves the plan (ExitPlanMode approved), save the plan content using the `/agent-memory` skill
-  - Scope: the current repository name
-  - Directory name: `<YYYY-MM-DD>_<task-description>-plan`
-  - File name: `plan.md`
-  - Include in the memory: task goal, implementation approach, key files, and verification steps
-  - If a related plan memory already exists, update it instead of creating a new one
+- After the user approves the plan (ExitPlanMode approved), save the plan following Memory Guidelines
 
 ## Skill Conflict Resolution (superpowers vs custom skills)
 
@@ -44,5 +39,5 @@ This includes: direct code change requests, Plan Mode, or any task where the use
 
 ### Always applied (regardless of flow)
 
-- Git Guidelines (branch naming, Japanese commit messages, no co-author footers) always apply
+- All rules/ guidelines apply regardless of which flow is active
 - Even if `superpowers:brainstorming` would auto-trigger, prefer custom skills unless the user explicitly requested superpowers
