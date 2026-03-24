@@ -7,7 +7,7 @@
 
 set -euo pipefail
 
-log() { echo "[worktree-remove] $*" > /dev/tty 2>/dev/null || true; }
+log() { echo "[worktree-remove] $*" >&2; }
 
 # --- stdin読み取り ---
 INPUT=$(cat)

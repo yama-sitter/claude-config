@@ -4,11 +4,11 @@
 #
 # stdin: JSON {"name": "<slug>", "session_id": "...", "cwd": "...", "hook_event_name": "WorktreeCreate"}
 # stdout: worktreeの絶対パスのみ（これ以外のstdout出力は禁止）
-# 進捗: /dev/tty に出力
+# 進捗: stderr に出力（/dev/ttyはhook実行環境で使えない場合がある）
 
 set -euo pipefail
 
-log() { echo "[worktree-create] $*" > /dev/tty 2>/dev/null || true; }
+log() { echo "[worktree-create] $*" >&2; }
 
 # --- stdin読み取り（一度しか読めない） ---
 INPUT=$(cat)
@@ -92,11 +92,11 @@ activate_node_version() {
     # fnm（推奨）
     if command -v fnm > /dev/null 2>&1; then
       eval "$(fnm env)" 2>/dev/null || true
-      fnm use "$version" --install-if-missing > /dev/tty 2>&1 || true
+      fnm use "$version" --install-if-missing >&2 || true
     # nvm
     elif [ -s "$HOME/.nvm/nvm.sh" ]; then
       source "$HOME/.nvm/nvm.sh" 2>/dev/null || true
-      nvm use "$version" > /dev/tty 2>&1 || nvm install "$version" > /dev/tty 2>&1 || true
+      nvm use "$version" > /dev/tty 2>&1 || nvm install "$version" >&2 || true
     fi
   fi
 }
@@ -109,16 +109,16 @@ activate_node_version "$WORKTREE_PATH"
 # --- 依存インストール ---
 if [ -f pnpm-lock.yaml ]; then
   log "pnpm install --frozen-lockfile ..."
-  pnpm install --frozen-lockfile > /dev/tty 2>&1 || log "pnpm install 失敗（手動で実行してください）"
+  pnpm install --frozen-lockfile >&2 || log "pnpm install 失敗（手動で実行してください）"
 elif [ -f package-lock.json ]; then
   log "npm ci ..."
-  npm ci > /dev/tty 2>&1 || log "npm ci 失敗（手動で実行してください）"
+  npm ci >&2 || log "npm ci 失敗（手動で実行してください）"
 elif [ -f yarn.lock ]; then
   log "yarn install --frozen-lockfile ..."
-  yarn install --frozen-lockfile > /dev/tty 2>&1 || log "yarn install 失敗（手動で実行してください）"
+  yarn install --frozen-lockfile >&2 || log "yarn install 失敗（手動で実行してください）"
 elif [ -f go.sum ]; then
   log "go mod download ..."
-  go mod download > /dev/tty 2>&1 || log "go mod download 失敗"
+  go mod download >&2 || log "go mod download 失敗"
 else
   log "ロックファイルなし、依存インストールをスキップ"
 fi
