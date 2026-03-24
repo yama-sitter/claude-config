@@ -118,7 +118,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "if echo \"$CLAUDE_TOOL_INPUT\" | jq -r '.command // empty' | grep -qE '\\bgit\\s+rebase\\b'; then echo 'BLOCKED: git rebase はサンドボックスでドットファイル作成がブロックされ、rebase state が壊れます。git rebase / rebase --continue / rebase --abort はすべて「! git rebase <args>」でユーザーに実行を依頼してください。'; exit 2; fi; exit 0"
+            "command": "if echo \"$CLAUDE_TOOL_INPUT\" | jq -r '.command // empty' | grep -qE '\\bgit\\s+rebase\\b'; then echo 'BLOCKED: git rebase はサンドボックスでドットファイル作成がブロックされ、rebase state が壊れます。git rebase / rebase --continue / rebase --abort はすべて「! git rebase <args>」でユーザーに実行を依頼してください。'; exit 2; fi; if echo \"$CLAUDE_TOOL_INPUT\" | jq -r '.command // empty' | grep -qE '\\bgh\\s+pr\\s+create\\b'; then ROOT=$(git rev-parse --show-toplevel 2>/dev/null); if [ -n \"$ROOT\" ]; then for TPL in \"$ROOT/.github/pull_request_template.md\" \"$ROOT/.github/PULL_REQUEST_TEMPLATE.md\" \"$ROOT/pull_request_template.md\" \"$ROOT/PULL_REQUEST_TEMPLATE.md\"; do if [ -f \"$TPL\" ]; then echo \"WARNING: PR テンプレートが見つかりました ($TPL)。以下に従って PR body を作成してください:\"; echo '---'; cat \"$TPL\"; echo '---'; exit 1; fi; done; fi; fi; exit 0"
           }
         ]
       }
