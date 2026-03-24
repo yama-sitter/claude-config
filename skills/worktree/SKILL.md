@@ -137,11 +137,11 @@ git worktree add --no-checkout .worktrees/<worktree-name> <branch-name>
 **Step 5b: Checkout excluding all dotfiles**
 
 ```bash
-cd .worktrees/<worktree-name> && git checkout HEAD -- . ':(exclude).*'
+cd .worktrees/<worktree-name> && git checkout HEAD -- . ':(exclude).*' && git reset HEAD -- .
 ```
 
 > **Known limitations**:
-> - Dotfiles (`.claude/`, `.env*`, `.vscode/`, etc.) appear as `deleted` in `git status` within the worktree. This is cosmetic — avoid committing these deletions.
+> - Dotfiles (`.claude/`, `.env*`, `.vscode/`, etc.) are excluded from checkout and unstaged by `git reset HEAD -- .`. They may still appear in `git status` as missing from the working tree, but they will NOT be staged — so they cannot be accidentally committed.
 > - Branch deletion (`git branch -d` or `git worktree remove`) may show `could not write config file .git/config: Operation not permitted`. The branch IS deleted — this warning is harmless and can be ignored.
 
 If the command fails:
