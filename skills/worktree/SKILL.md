@@ -23,7 +23,7 @@ Handles new branch creation + worktree setup in a single step, or worktree creat
 - Create a new branch simultaneously when one doesn't exist yet
 - Follow the project's Git branch naming conventions
 
-This skill **only prepares the worktree**.
+This skill **prepares a work-ready worktree** (creation + dependency installation).
 The actual review, investigation, or implementation is done afterward.
 
 ---
@@ -118,8 +118,8 @@ Derive the worktree directory name from the branch name by replacing `/` with `_
 - `fix/login_bug` → `fix_login_bug`
 - `test/worktree_check` → `test_worktree_check`
 
-Use `--no-checkout` with pathspec negation to exclude dotfiles from the working tree.
-The sandbox blocks creation of dotfiles/dotdirectories (`.claude/`, `.env*`, `.vscode/`, `.mcp.json`, etc.).
+Use `--no-checkout` with pathspec negation to exclude `.claude/` from the working tree.
+The sandbox blocks creation of the `.claude/` directory. Other dotfiles (`.gitignore`, `.env*`, `.prettierrc`, etc.) are **not** blocked and will be checked out normally.
 
 > **Why not sparse-checkout?** The sandbox blocks both `.git/config` writes and `.git/worktrees/` writes. Pathspec negation is the only approach that avoids all `.git/` writes.
 
@@ -134,14 +134,15 @@ git worktree add --no-checkout .worktrees/<worktree-name> -b <branch-name>
 git worktree add --no-checkout .worktrees/<worktree-name> <branch-name>
 ```
 
-**Step 5b: Checkout excluding all dotfiles**
+**Step 5b: Checkout excluding `.claude/`**
 
 ```bash
-cd .worktrees/<worktree-name> && git checkout HEAD -- . ':(exclude).*' && git reset HEAD -- .
+cd .worktrees/<worktree-name> && git checkout HEAD -- . ':(exclude).claude' && git reset HEAD -- .
 ```
 
 > **Known limitations**:
-> - Dotfiles (`.claude/`, `.env*`, `.vscode/`, etc.) are excluded from checkout and unstaged by `git reset HEAD -- .`. They may still appear in `git status` as missing from the working tree, but they will NOT be staged — so they cannot be accidentally committed.
+> - `.claude/` is excluded from checkout. It may appear in `git status` as missing from the working tree, but it will NOT be staged — so it cannot be accidentally committed.
+> - All other dotfiles (`.gitignore`, `.env*`, `.prettierrc`, `.vscode/`, etc.) are checked out normally.
 > - Branch deletion (`git branch -d` or `git worktree remove`) may show `could not write config file .git/config: Operation not permitted`. The branch IS deleted — this warning is harmless and can be ignored.
 
 If the command fails:
@@ -151,17 +152,58 @@ If the command fails:
 
 ---
 
-### 6. Completion
+### 6. Setup & Completion
 
-After the worktree is created:
+After the worktree is created, set up the development environment before reporting.
 
-- Report the branch name
-- Report the worktree path (absolute)
-- Stop execution
+**Step 6a: Install dependencies**
 
-Do **not** do any of the following:
+Detect the package manager from lock files in the worktree root and install:
 
+```bash
+# Detect and install (run from worktree root)
+if [ -f pnpm-lock.yaml ]; then pnpm install --frozen-lockfile
+elif [ -f package-lock.json ]; then npm ci
+elif [ -f yarn.lock ]; then yarn install --frozen-lockfile
+elif [ -f go.sum ]; then go mod download
+elif [ -f Gemfile.lock ]; then bundle install
+fi
+```
+
+- If no lock file is found at the root, search one level deep: `find . -maxdepth 2 -name 'pnpm-lock.yaml' -o -name 'package-lock.json' -o -name 'yarn.lock'` (monorepo support)
+- If no lock file is found at all, skip this step
+- If installation fails, **report the error to the user and stop** — do not skip silently
+
+**Step 6b: Check for untracked .env files in the source repo**
+
+Some `.env` files (e.g., `.env`, `.env.local`) are gitignored and therefore not checked out with the worktree. Check if the source repo has any:
+
+```bash
+find <repo-root> -maxdepth 1 -name '.env*' -type f | while read f; do
+  basename "$f"
+done
+```
+
+Compare against the worktree. If any `.env*` files exist in the source repo but not in the worktree, generate a copy command and present it to the user:
+
+```
+以下の .env ファイルは git 管理外のため worktree にコピーされていません:
+  .env, .env.local
+
+コピーするには以下を実行してください:
+  ! cp <repo-root>/.env <repo-root>/.env.local <worktree-path>/
+```
+
+> Note: `.env*` files are in the deny list (Read/Write/Edit) for security. Claude cannot read or copy them directly. The user must run the copy command themselves via `!`.
+
+**Step 6c: Report**
+
+- Branch name
+- Worktree path (absolute)
+- Dependency installation result (success / skipped / failed)
+- Missing `.env` files and copy command (if applicable)
+
+After reporting, **stop execution**. Do not:
 - Modify files
 - Run tests
-- Install dependencies
 - Automatically start implementation
