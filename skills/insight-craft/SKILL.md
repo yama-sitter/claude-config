@@ -1,178 +1,178 @@
 ---
 name: insight-craft
 description: |
-  素材（インタビューログ、議事録、フィードバック等）から「人を動かす隠れたホンネ」を抽出する。
-  出世魚モデル（違和感→常識→問い→仮説→検証の5ステップ）でインサイトを段階的に育てる。
-  Use when: 顧客データや定性素材からインサイトを導出したいとき。
+  Extract "hidden true motives that drive people to act" from raw materials (interview logs, meeting notes, feedback, etc.).
+  Uses the Shusseuo Model (Dissonance → Conventional Wisdom → Question → Hypothesis → Validation) to progressively nurture insights through 5 stages.
+  Use when: deriving insights from qualitative materials or customer data.
   Subcommands:
-    - (default): 人間協働モード。各ステップで確認ゲートを挟む
-    - `solo`: LLM単体モード。確認ゲートを自己判断で代替し、インサイト候補を一括出力
+    - (default): Collaborative mode. Includes a checkpoint at each step for user confirmation
+    - `solo`: LLM-only mode. Replaces checkpoints with self-assessment and outputs insight candidates in batch
 user-invocable: true
 ---
 
-# Insight Craft — 出世魚モデル
+# Insight Craft — Shusseuo Model
 
-素材の中の違和感を、対話と段階的な思考プロセスでインサイトへ育てる。
+Named after *shusseuo* — fish that change names as they grow — this model nurtures raw dissonance into mature insight through 5 progressive stages of dialogue and structured thinking.
 
 ## Prerequisites
 
-- 分析対象の素材（インタビューログ、議事録、フィードバック、行動データ等）が提供されていること
-- インサイト = 人を動かす隠れたホンネ。本人が言葉にして自覚できていない欲望・動機
-- ファインディングス = 面白いが行動につながらない発見。インサイトとは別物
+- Raw materials for analysis (interview logs, meeting notes, feedback, behavioral data, etc.) must be provided
+- Insight = a hidden true motive that drives people to act — a desire or motivation that the person themselves cannot consciously articulate
+- Findings = interesting discoveries that do not lead to action. Distinct from insights
 
 ## Mode
 
-- **引数なし**: 人間協働モード（デフォルト）。各ステップの確認ゲート（→）でユーザーに判断を委ねる
-- **`solo`**: LLM単体モード。確認ゲートを以下で代替する:
-  1. 選択の根拠を明示する
-  2. 最も確信度が低い選択を明記する
-  3. 捨てた選択肢に逆の結論を支持するものがないか点検する
-  - 出力は「インサイト候補」として扱い、「インサイト」とは呼ばない
+- **No arguments**: Collaborative mode (default). At each checkpoint (→), defer judgment to the user
+- **`solo`**: LLM-only mode. Replace checkpoints with the following:
+  1. State the rationale for each choice explicitly
+  2. Flag the choice with the lowest confidence
+  3. Check whether any discarded options support the opposite conclusion
+  - Label outputs as "insight candidates" — never call them "insights"
 
 ## Workflow
 
-### 1. 違和感に気づく（感性力）
+### 1. Notice Dissonance (Sensitivity)
 
-素材を読み込み、「予測誤差」のある事象を抽出する。
+Read through the materials and extract phenomena that contain "prediction errors."
 
-抽出の観点:
-- 一般的な予想と異なる行動・発言
-- 矛盾する2つの事実
-- 感情が強く表れている箇所（不満、喜び、諦め）
-- ワークアラウンド（本来の使い方ではない工夫）
-- 「わざわざ」やっていること
-
-Output as a table:
-
-| # | 引っかかり | 原文/根拠 | なぜ引っかかるか（予測誤差） |
-|---|---|---|---|
-
-**→ この中で「気になる」「モヤッとする」ものはどれですか？リストにない違和感があれば追加してください。**
-
-### 2. どの「当たり前」に対する違和感か特定する（常識把握力）
-
-選ばれた違和感の背景にある常識・定説・前提を明確にする。
-
-- 業界の常識（「〇〇は△△するものだ」）
-- 社会通念（「普通は〇〇だろう」）
-- データから導かれる定説
-- 組織内の暗黙の前提
-- 各常識が **誰にとっての常識か** を主語で明示する
+Extraction lenses:
+- Behaviors or statements that contradict general expectations
+- Two facts that contradict each other
+- Points where emotions surface strongly (frustration, joy, resignation)
+- Workarounds (creative misuses of something beyond its intended purpose)
+- Things people go out of their way to do
 
 Output as a table:
 
-| # | 違和感 | 背景にある常識/定説 | 誰にとっての常識か |
+| # | Hook | Source / Evidence | Why it hooks you (Prediction Error) |
 |---|---|---|---|
 
-**→ これらの「常識」の認識は合っていますか？言語化されていない暗黙の前提が他にあれば教えてください。**
+**→ Which of these feel intriguing or unsettling to you? If you sense a dissonance not on the list, please add it.**
 
-### 3. 常識に問いを立てる（問題提起力）
+### 2. Identify which "Given" the Dissonance Challenges (Awareness of Conventional Wisdom)
 
-特定された常識に対して3種類の問いを生成する:
+Clarify the conventional wisdom, established beliefs, or assumptions behind the selected dissonance.
 
-- **リフレーミング**: 別の角度から見るとどうか？（「〇〇は△△ではなく、実は□□なのでは？」）
-- **フカボリ**: なぜそれが常識になったのか？（「そもそもなぜ〇〇は△△とされてきたのか？」）
-- **ユサブリ**: 逆が真だとしたら？（「もし〇〇が△△でなかったら、何が起こるか？」）
+- Industry conventions ("X is supposed to do Y")
+- Social norms ("Normally, people would do X")
+- Data-derived orthodoxies
+- Unspoken organizational assumptions
+- For each, **explicitly state whose conventional wisdom it is**
 
 Output as a table:
 
-| # | 常識 | 問いの種類 | 問い |
+| # | Dissonance | Underlying Conventional Wisdom | Whose conventional wisdom? |
 |---|---|---|---|
 
-**→ これらの問いの中で、「おっ」と思うもの、深掘りしたいものはどれですか？自分で思いついた問いがあれば追加してください。**
+**→ Do these "givens" ring true? Are there any unspoken assumptions I'm missing? Please share them.**
 
-### 4. 仮説を言葉にする（言語化力）
+### 3. Question the Conventional Wisdom (Provocation)
 
-選ばれた問いに対する仮説を言語化する。
+Generate three types of questions against each identified conventional wisdom:
 
-言語化の技法:
-- **主語を明確に**: 「みんなは〜」ではなく「〇〇な状況にいる人は〜」
-- **感情の温度感**: 強さ・切実さを表現する
-- **対比表現**: 「〇〇だと思われているが、実は△△」
-- **ホンネの言葉**: 建前やきれいな言葉ではなく、当事者が実際に使いそうな表現
+- **Reframe**: What if we look at it from a different angle? ("What if X is not Y, but actually Z?")
+- **Dig Deeper**: Why did this become conventional wisdom? ("Why has X always been assumed to be Y?")
+- **Shake Up**: What if the opposite were true? ("If X were not Y, what would happen?")
 
-複数の仮説を統合して上位仮説を作る場合は、個別仮説→上位仮説の論理接続を明示する。接続が不自然なら個別のまま進める。
+Output as a table:
 
-各仮説の自己点検: それは「人を動かす」か？「隠れている」か？「ホンネ」か？
+| # | Conventional Wisdom | Question Type | Question |
+|---|---|---|---|
+
+**→ Which of these questions spark something for you? Which do you want to explore further? Feel free to add your own.**
+
+### 4. Articulate the Hypothesis (Verbalization)
+
+Verbalize hypotheses in response to the selected questions.
+
+Verbalization techniques:
+- **Make the subject specific**: Not "everyone," but "people in X situation"
+- **Capture emotional intensity**: Express the strength and urgency of the feeling
+- **Use contrast**: "It's assumed to be X, but actually it's Y"
+- **Use true-motive language**: Not polished or diplomatic phrasing, but the words the person would actually use
+
+When synthesizing multiple hypotheses into a higher-level one, explicitly show the logical connection from individual hypotheses to the synthesized one. If the connection feels forced, keep them separate.
+
+Self-check each hypothesis: Does it "drive people to act"? Is it "hidden"? Is it a "true motive"?
 
 Output format (per hypothesis):
 
 ```
-【仮説】
-[主語]は、[常識]だと思われているが、
-実は[隠れたホンネ]。
-なぜなら[根拠/推論]。（※素材から直接導けない推論には「※推論」と注記する）
+[Hypothesis]
+[Subject] is assumed to [conventional wisdom],
+but actually [hidden true motive].
+Because [evidence / reasoning]. (Mark inferences not directly derivable from materials with "※ Inference")
 
-- 温度感: [低/中/高]（当事者にとってどれくらい切実か）
-- 隠れ度: [低/中/高]（どれくらい無自覚か）
-- 動かす力: [低/中/高]（行動変容につながりそうか）
+- Intensity: [Low / Medium / High] (How urgent is this for the person?)
+- Hiddenness: [Low / Medium / High] (How unaware are they?)
+- Driving Force: [Low / Medium / High] (How likely to trigger behavioral change?)
 ```
 
-**→ この言葉は、ターゲットの実感に近いですか？「そうそう、まさにそれ！」と言いそうな表現はどれですか？温度感が足りない/過剰な表現はありますか？**
+**→ Does this wording feel true to the target's experience? Which phrasing would make them say "Yes, that's exactly it!"? Is the intensity too weak or too strong anywhere?**
 
-### 5. 検証し、裏付ける（説得力）
+### 5. Validate and Substantiate (Persuasion)
 
-仮説が「N=1の思い込み」ではないことを確認し、裏付けを構築する。
+Confirm the hypothesis is not just an "N=1 assumption" and build supporting evidence.
 
-**5a. 裏付けを集める（出力は5cにまとめる）:**
+**5a. Gather supporting evidence (output consolidated in 5c):**
 
-- 定量: 関連する統計・調査データ・トレンド
-- 定性: 素材内の類似発言・行動パターン
-- 事例（任意）: 他業界・他領域の参考事例。素材内の裏付けで十分なら省略
+- Quantitative: Related statistics, survey data, trends
+- Qualitative: Similar statements or behavioral patterns within the materials
+- Case studies (optional): Reference examples from other industries or domains. Omit if in-material evidence is sufficient
 
-**5b. 仮説を攻撃する:**
+**5b. Stress-test the hypothesis:**
 
-素材に戻り、以下の観点で仮説を疑う:
+Return to the materials and challenge the hypothesis from these angles:
 
-- 素材の中にこの仮説と矛盾する事実はないか？（あれば引用する）
-- 仮説の主語を別の誰か（例: 2回目以降のユーザー、別業界の人）に入れ替えても同じことが言えるか？言えるなら一般論であってホンネではない。ただし、ターゲットを限定しただけで固有性を主張していないか点検する。固有性はターゲットの狭さではなく、この文脈でしか言えない具体性から生まれる
-- この仮説を聞いたステークホルダーの反応を想像する:
-  - 「知ってた」→ 新規性がない。言語化の切り口を変えてSTEP4に戻る
-  - 「だから何？」→ 行動に繋がらない。ファインディングス止まりの可能性。STEP4で「動かす力」を再点検
-  - 「それ本当？」→ 裏付けが弱い。5aの裏付けを補強するか、裏付けが見つからなければその旨を5cに正直に書く
+- Is there any fact in the materials that contradicts this hypothesis? (If so, quote it)
+- If you replace the subject with someone else (e.g., repeat users, people from another industry), does the same thing hold? If yes, it's a generality, not a true motive. However, check whether you're merely narrowing the target rather than claiming specificity. Specificity comes from contextual concreteness, not from a narrow target definition
+- Imagine how stakeholders would react to this hypothesis:
+  - "Knew it" → Lacks novelty. Rephrase the angle and return to STEP 4
+  - "So what?" → Doesn't drive action. Possibly stuck at Findings. Re-examine "Driving Force" in STEP 4
+  - "Is that really true?" → Weak evidence. Reinforce 5a, or if no evidence is found, honestly note that in 5c
 
-反論を書いた後、仮説と反論のどちらが素材の事実により多く支えられているか比較する。反論のほうが強い場合、仮説を修正して5aからやり直すか、STEP4に戻る。
+After writing counterarguments, compare whether the hypothesis or the counterarguments are better supported by the facts in the materials. If counterarguments are stronger, revise the hypothesis and redo from 5a, or return to STEP 4.
 
-**5c. 総合評価:**
+**5c. Overall assessment:**
 
 Output format:
 
 ```
-【インサイト候補】
-[仮説の最終表現（5bで修正した場合は修正後）]
+[Insight Candidate]
+[Final expression of the hypothesis (revised version if modified in 5b)]
 
-【裏付け】
-- 定量: [データ/統計]
-- 定性: [類似発言/行動パターン]
-- 事例（任意）: [他領域の参考事例]
+[Supporting Evidence]
+- Quantitative: [Data / Statistics]
+- Qualitative: [Similar statements / Behavioral patterns]
+- Case studies (optional): [Reference examples from other domains]
 
-【反証・リスク】
-- [5bで最も手強かった反論と、それに対する応答]
+[Counterevidence & Risks]
+- [The strongest counterargument from 5b and the response to it]
 
-【総合評価】
-- ファインディングスではなくインサイトか: [Yes/No + 理由]
-- 人を動かせるか: [評価]
+[Overall Assessment]
+- Is this an Insight, not just a Finding?: [Yes / No + reason]
+- Can it drive people to act?: [Assessment]
 ```
 
-**→ このインサイトは「人を動かせる」と感じますか？自分がこのインサイトを聞いて、行動を変えたくなりますか？**
+**→ Does this insight feel like it can "move people"? If you heard this insight, would it make you want to change your behavior?**
 
 ## Strict Rules
 
-- 確認ゲート（→）をスキップしない（soloモード以外）
-- ステップの順序を守る（1→2→3→4→5）。前のステップに戻ることは推奨
-- 仮説統合時は個別仮説→上位仮説の論理接続を明示。不自然なら個別のまま進める
-- 常套句に逃げない。「本質」「認識論」等の抽象語を使う場合は直後に具体化する
-- 3軸評価がすべて同じ値にならないか点検する
-- 外部理論（JTBD等）は素材の論理を補強する場合のみ引用。素材の論理の代替にしない
-- 素材の事実と自分の推論を区別する。推論を事実のように書かない
-- 素材中のファシリテーター・分析者の意見と、参加者の行動事実を区別する。意見を事実として扱わない
-- フォーマットを埋めることが目的化していると感じたら、フォーマットを無視して素材に戻る
-  - 目的化の兆候: 引っかかりの表が毎回同じパターンで埋まる / 確認ゲートの自己判断が定型文になる / 3軸評価が全部同じ値になる
+- Never skip checkpoints (→) (except in solo mode)
+- Follow the step order (1→2→3→4→5). Returning to a previous step is encouraged
+- When synthesizing hypotheses, explicitly show the logical connection from individual to higher-level. If the connection is forced, keep them separate
+- Avoid clichés. When using abstract terms like "essence" or "epistemological," immediately follow with a concrete example
+- Check that the 3-axis ratings are not all the same value
+- Only cite external theories (JTBD, etc.) to reinforce the logic derived from materials. Never substitute them for material-based reasoning
+- Distinguish between facts from the materials and your own inferences. Never present inferences as facts
+- Distinguish between facilitator/analyst opinions and participant behavioral facts in the materials. Do not treat opinions as facts
+- If you sense that filling in the format has become the goal, abandon the format and return to the materials
+  - Signs of format-as-goal: the Hook table follows the same pattern every time / checkpoint self-assessments become boilerplate / all 3-axis ratings are the same value
 
-アンチパターンと用語定義の詳細は [framework.md](framework.md) を参照。
+For anti-patterns and term definitions, see [framework.md](references/framework.md).
 
 ## Completion
 
-- インサイト候補が1つ以上言語化され、ユーザーが採用/不採用を判断した
-- 各候補は STEP1の引っかかり → STEP5の裏付けまで追跡可能
-- soloモードの場合: インサイト候補の一覧が出力された（採用判断は人間に委ねる）
+- At least one insight candidate has been verbalized and the user has decided to adopt or discard it
+- Each candidate is traceable from the STEP 1 hook through STEP 5 validation
+- In solo mode: a list of insight candidates has been output (adoption decisions are deferred to the human)
