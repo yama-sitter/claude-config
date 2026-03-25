@@ -106,6 +106,8 @@
       "Edit(id_ed25519)"
     ],
     "ask": [
+      "Read(.env*)",
+      "Read(**/.env*)",
       "Bash(rm *)",
       "Bash(chmod *)",
       "Bash(wget *)",
