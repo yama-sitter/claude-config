@@ -24,6 +24,7 @@ Invoked when a failure is detected. A subagent performs analysis → idea genera
 - ALWAYS show the before-state when editing settings.json
 - ALWAYS save improvement records to agent-memory after implementation
 - ALWAYS deduplicate: merge into existing rules instead of adding redundant new ones
+- NEVER propose improvement ideas with ICE score below 700 — they are noise, not signal
 
 ## Argument Routing
 
@@ -91,7 +92,9 @@ Follow the flowchart in harness-catalog.md to determine the optimal improvement 
 3. Is process structuring (multi-step workflow) needed? → Yes → skills
 4. Should it apply globally? → Yes → rules/ / Project-specific → CLAUDE.md
 
-### Step 3: Generate 5+ Improvement Ideas
+### Step 3: Generate Improvement Ideas
+
+Generate at least 5 candidate ideas, then apply filters below. Present only surviving ideas.
 
 Score each idea with ICE (Impact × Confidence × Ease, 1-10 each).
 
@@ -99,6 +102,9 @@ Filter conditions — exclude ideas that match:
 - "Be more careful next time" (willpower-dependent)
 - "Check before executing" (human attention-dependent)
 - "Read more carefully" (effort-dependent)
+- Score threshold — exclude ideas with ICE score < 700 (low-scoring ideas waste decision effort)
+
+If no ideas survive filtering, skip Step 4 and output "No actionable improvement found" in the Recommendation section.
 
 ### Step 4: Recommend the Best Idea
 
@@ -117,6 +123,7 @@ Structural factor: [Why this failure is structurally likely to occur]
 ## Improvement Ideas
 | # | Idea | Target | I | C | E | Score | Pros | Cons |
 |---|------|--------|---|---|---|-------|------|------|
+※ ICE < 700 のアイデアは除外済み
 
 ## Recommendation
 Recommended: #N [Idea name]
@@ -128,6 +135,8 @@ Side-effect risk: ...
 ### Confirmation Gate (main agent) `(default, diagnose)`
 
 Present the subagent's analysis results to the user and obtain approval.
+
+If the subagent reported "No actionable improvement found", display: **「有効な改善案が見つかりませんでした」** and stop (do not proceed to Phase 3).
 
 Options to present:
 - Implement the recommended idea as-is
@@ -222,14 +231,14 @@ Save the improvement record output by Phase 3 subagent using the agent-memory sk
 
 ### default (full process)
 - Failure identified and root cause structurally analyzed
-- 5+ improvement ideas presented with ICE scores
+- Improvement ideas presented (filtered by ICE ≥ 700)
 - User approved one idea
 - Approved improvement implemented
 - Improvement record saved to agent-memory
 
 ### diagnose
 - Failure identified and root cause structurally analyzed
-- 5+ improvement ideas presented with ICE scores
+- Improvement ideas presented (filtered by ICE ≥ 700)
 - `/kaizen apply` guidance displayed
 
 ### apply
