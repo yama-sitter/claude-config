@@ -123,6 +123,9 @@ AskUserQuestion:
      - Clean + pushed → `ExitWorktree(action: "remove", discard_changes: true)` (no confirmation needed)
      - Clean + unpushed → warn "未プッシュのコミットがあります" → confirm → `ExitWorktree(action: "remove", discard_changes: true)`
      - Dirty (uncommitted changes) → warn "未コミットの変更があります" → confirm → `ExitWorktree(action: "remove", discard_changes: true)`
+  4. **Verify removal**: After ExitWorktree completes, run `git worktree list --porcelain` and check the worktree path is gone.
+     - Still present → attempt `git worktree remove --force <path>` as automatic recovery, then `git worktree prune`
+     - Recovery also fails → report to user: "worktreeの削除に失敗しました。手動で実行してください: `git worktree remove --force <path> && git branch -D <branch>`"
 
 ---
 

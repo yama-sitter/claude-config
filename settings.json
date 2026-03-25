@@ -184,6 +184,17 @@
           }
         ]
       }
+    ],
+    "WorktreeRemove": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/worktree-remove.sh",
+            "timeout": 300
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
