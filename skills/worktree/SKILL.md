@@ -9,98 +9,146 @@ description: |
   Do not use when the user has explicitly requested superpowers workflow (e.g., "/superpowers:brainstorming")
   or when executing a plan from docs/superpowers/plans/.
 user-invocable: true
+args: "[subcommand] [args]"
 ---
 
 # Worktree Skill
 
 Create and manage worktrees using Claude Code's built-in EnterWorktree/ExitWorktree tools.
-WorktreeCreate hook automatically handles dependency installation and .env copying.
+WorktreeCreate hook automatically handles branch naming, dependency installation, and .env copying.
 
-## Purpose
+## Subcommands
 
-- Create isolated worktrees for code reviews, PR checks, and feature work
-- Automatic setup via WorktreeCreate hook (dependencies, .env files)
-- Stay in the same session (no separate process needed)
-
-This skill **prepares a work-ready worktree**.
-The actual review, investigation, or implementation is done afterward.
+| Command | Description |
+|---|---|
+| `/worktree <branch>` | Enter the worktree for `<branch>`. Create if not exists (with confirmation) |
+| `/worktree current` | Re-enter the last worktree used in this session |
+| `/worktree exit` | Exit the current worktree (keep/remove confirmation) |
+| `/worktree search <query>` | Search worktrees by natural language query |
+| `/worktree search` | List all worktrees and select interactively |
+| `/worktree` (no args) | Same as `/worktree search` |
 
 ---
 
 ## Prerequisites
 
 - The current directory is within a Git repository
-- Not already inside a worktree (EnterWorktree cannot be nested)
+- Not already inside a worktree (for enter commands)
 
 ---
 
-## Workflow
+## Subcommand: `/worktree <branch>`
 
-### 1. Understand the Task and Propose Branch Name
+### 1. Sanitize branch name
 
-Analyze the user's request and propose a branch name.
+If the name contains `/`, replace with `-` and notify the user:
+> `feature/login_bug` → `feature-login_bug` に変換しました（EnterWorktreeは `/` を含む名前に対応していません）
 
-**Naming rules:**
-- Flat format: `<type>-<summary>` (no `/` — EnterWorktree hangs with `/` in the name)
-- Types: feature, fix, docs, style, refactor, test, chore
-- Use snake_case for the summary part
-- Examples: `feature-login_bug`, `fix-api_timeout`, `refactor-auth_middleware`
+### 2. Check existing worktrees
 
-**Present the proposed name to the user and get approval with AskUserQuestion.**
-Do NOT skip this step.
-
----
-
-### 2. Execute EnterWorktree
-
-Call the EnterWorktree tool with the approved name:
-
-```
-EnterWorktree(name: "<branch-name>")
+```bash
+git worktree list --porcelain
 ```
 
-The WorktreeCreate hook automatically:
-- Creates the worktree at `.claude/worktrees/<name>/`
-- Creates a branch named `<name>` (no `worktree-` prefix)
-- Installs dependencies (detects pnpm-lock.yaml / package-lock.json / yarn.lock)
-- Copies gitignored `.env*` files from the source repository
+Search for a worktree whose branch matches the specified name.
+Skip the first entry (main worktree).
+
+### 3. Enter or create
+
+- **Exists** → `EnterWorktree(name: "<branch>")` to enter (hook returns existing path)
+- **Not exists** → AskUserQuestion: "ブランチ `<branch>` のworktreeは存在しません。作成しますか？"
+  - Approved → `EnterWorktree(name: "<branch>")`
+  - Declined → Stop
+
+### 4. Verify setup
+
+After entering, confirm dependencies and .env files are present.
+If missing, report to the user.
 
 ---
 
-### 3. Verify Setup
+## Subcommand: `/worktree current`
 
-After entering the worktree, confirm:
-- Dependencies are installed (`node_modules/` or equivalent exists)
-- Required `.env*` files exist (if the source repo has them)
+### 1. Check session history
 
-If anything is missing, report to the user. Do not proceed with work until setup is complete.
+Look back in this session's conversation history for the most recent `EnterWorktree` call.
 
----
+### 2. Re-enter
 
-### 4. Work (outside this skill's scope)
-
-The worktree is ready. Proceed with the requested task (review, implementation, etc.).
-
----
-
-## ExitWorktree
-
-Use ExitWorktree **only when the user explicitly asks** to leave the worktree ("worktreeを出て", "exit worktree", "go back", etc.).
-
-- `action: "keep"` — Leave worktree and branch on disk for later
-- `action: "remove"` — Delete worktree and branch
-  - If there are uncommitted changes, ExitWorktree will refuse. Confirm with the user, then re-invoke with `discard_changes: true`
-
-**Do NOT call ExitWorktree proactively.**
+- **Found** → `EnterWorktree(name: "<name>")` with the same name
+- **Not found** → Fall back to worktree list:
+  ```bash
+  git worktree list --porcelain
+  ```
+  - 1 worktree → Enter it
+  - Multiple → AskUserQuestion to select
+  - None → Report "このセッションでworktreeを使っていません。`/worktree <branch>` で作成できます。"
 
 ---
 
-## Fallback (hook not configured)
+## Subcommand: `/worktree exit`
 
-If the WorktreeCreate hook is not configured (e.g., in a different environment), EnterWorktree will still create the worktree with default behavior (branch named `worktree-<name>`). In this case:
+### 1. Verify in worktree
 
-1. After entering the worktree, suggest the user run setup manually:
-   ```
-   ! pnpm install --frozen-lockfile && cp <repo-root>/.env* .
-   ```
-2. Or use `! npm ci` / `! yarn install --frozen-lockfile` depending on the lock file present.
+Check if currently inside a worktree (`.git` is a file, not a directory).
+If not in a worktree, report and stop.
+
+### 2. Confirm action
+
+AskUserQuestion:
+- **keep** — worktreeとブランチを残す（後で再開可能）
+- **remove** — worktreeとブランチを削除
+
+### 3. Execute
+
+- keep → `ExitWorktree(action: "keep")`
+- remove → `ExitWorktree(action: "remove")`
+  - If refused due to uncommitted changes → confirm with user, then `ExitWorktree(action: "remove", discard_changes: true)`
+
+---
+
+## Subcommand: `/worktree search <query>`
+
+### 1. Get worktree list
+
+```bash
+git worktree list --porcelain
+```
+
+### 2. Match
+
+Compare branch names and paths against the natural language query.
+Filter to matching candidates.
+
+### 3. Select and enter
+
+- 1 match → Confirm and enter
+- Multiple matches → AskUserQuestion to select → Enter
+- No matches → Report
+
+---
+
+## Subcommand: `/worktree search` (no query) / `/worktree` (no args)
+
+### 1. Get worktree list
+
+```bash
+git worktree list --porcelain
+```
+
+### 2. Present
+
+List all worktrees (excluding main) with AskUserQuestion.
+
+### 3. Enter selected
+
+`EnterWorktree(name: "<selected-branch>")` for the chosen worktree.
+
+---
+
+## Notes
+
+- **Branch naming**: Use flat format `<type>-<summary>` (e.g., `feature-login_bug`). No `/` in names.
+- **WorktreeCreate hook**: Automatically handles branch creation (no `worktree-` prefix), dependency installation, and .env copying.
+- **Do NOT call ExitWorktree proactively** — only via `/worktree exit` or explicit user request.
+- **Fallback**: If WorktreeCreate hook is not configured, suggest `! pnpm install --frozen-lockfile && cp <repo-root>/.env* .` after entering.
