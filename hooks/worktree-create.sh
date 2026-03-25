@@ -1,5 +1,5 @@
 #!/bin/bash
-# WorktreeCreate hook (Step 1b: ブランチ名カスタマイズ + 依存インストール)
+# WorktreeCreate hook: ブランチ名カスタマイズ + 外部配置 + セットアップ
 #
 # stdin: JSON {"name": "<slug>", ...}
 # stdout: worktreeの絶対パスのみ
@@ -11,7 +11,33 @@ NAME=$(echo "$INPUT" | jq -r '.name // empty')
 [ -z "$NAME" ] && exit 1
 
 REPO_ROOT="${CLAUDE_PROJECT_DIR:-.}"
-WORKTREE_PATH="$REPO_ROOT/.claude/worktrees/$NAME"
+
+# --- worktreeパスを算出（gwq命名規則: ~/Sources/<host>/<owner>/<repo>=<name>） ---
+REMOTE_URL=$(git -C "$REPO_ROOT" remote get-url origin 2>/dev/null || echo "")
+
+if [ -n "$REMOTE_URL" ]; then
+  # .git 拡張子を除去
+  URL="${REMOTE_URL%.git}"
+
+  # git@github.com:owner/repo → github.com / owner / repo
+  if [[ "$URL" =~ ^git@([^:]+):(.+)/([^/]+)$ ]]; then
+    HOST="${BASH_REMATCH[1]}"
+    OWNER="${BASH_REMATCH[2]}"
+    REPO="${BASH_REMATCH[3]}"
+  # ssh://git@github.com/owner/repo or https://github.com/owner/repo
+  elif [[ "$URL" =~ ^(ssh|https?)://[^@]*@?([^/]+)/([^/]+)/([^/]+)$ ]]; then
+    HOST="${BASH_REMATCH[2]}"
+    OWNER="${BASH_REMATCH[3]}"
+    REPO="${BASH_REMATCH[4]}"
+  fi
+fi
+
+if [ -n "${HOST:-}" ] && [ -n "${OWNER:-}" ] && [ -n "${REPO:-}" ]; then
+  WORKTREE_PATH="$HOME/Sources/${HOST}/${OWNER}/${REPO}=${NAME}"
+else
+  # フォールバック: URL解析失敗時はデフォルトパス
+  WORKTREE_PATH="$REPO_ROOT/.claude/worktrees/$NAME"
+fi
 
 mkdir -p "$(dirname "$WORKTREE_PATH")"
 
