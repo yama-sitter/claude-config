@@ -39,10 +39,13 @@ WorktreeCreate hook automatically handles branch naming, dependency installation
 
 ## Subcommand: `/worktree <branch>`
 
-### 1. Sanitize branch name
+### 1. Process branch name
 
-If the name contains `/`, replace with `-` and notify the user:
-> `feature/login_bug` → `feature-login_bug` に変換しました（EnterWorktreeは `/` を含む名前に対応していません）
+- If the name does **not** contain `/` → `name = branch = input` (no change needed)
+- If the name contains `/`:
+  - `branch` = original input (e.g., `feature/login_bug`)
+  - `name` = replace `/` with `-` (e.g., `feature-login_bug`) — for EnterWorktree
+  - Notify: `feature/login_bug` → worktree名 `feature-login_bug`（ブランチ名は `feature/login_bug` を維持）
 
 ### 2. Check existing worktrees
 
@@ -50,14 +53,21 @@ If the name contains `/`, replace with `-` and notify the user:
 git worktree list --porcelain
 ```
 
-Search for a worktree whose branch matches the specified name.
-Skip the first entry (main worktree).
+Search for existing worktrees. Skip the first entry (main worktree).
+Match by **either**:
+1. `name` (hyphen form) in the worktree path
+2. `branch` (slash form) in `branch refs/heads/` lines
 
 ### 3. Enter or create
 
-- **Exists** → `EnterWorktree(name: "<branch>")` to enter (hook returns existing path)
-- **Not exists** → AskUserQuestion: "ブランチ `<branch>` のworktreeは存在しません。作成しますか？"
-  - Approved → `EnterWorktree(name: "<branch>")`
+- **Exists** → `EnterWorktree(name: "<name>")` to enter (hook returns existing path). No override file needed.
+- **Not exists** → AskUserQuestion: "ブランチ `<branch>` のworktreeを新規作成しますか？"
+  - Approved:
+    1. If `branch` contains `/`, write override file first:
+       ```bash
+       echo "<branch>" > ~/.claude/.worktree-branch-override
+       ```
+    2. `EnterWorktree(name: "<name>")`
   - Declined → Stop
 
 ### 4. Verify setup
@@ -148,7 +158,7 @@ List all worktrees (excluding main) with AskUserQuestion.
 
 ## Notes
 
-- **Branch naming**: Use flat format `<type>-<summary>` (e.g., `feature-login_bug`). No `/` in names.
+- **Branch naming**: Slash format `<type>/<summary>` (e.g., `feature/login_bug`) is supported. The worktree name (directory) uses hyphen form `<type>-<summary>`, while the git branch preserves the original slash form.
 - **WorktreeCreate hook**: Automatically handles branch creation (no `worktree-` prefix), dependency installation, and .env copying.
 - **Do NOT call ExitWorktree proactively** — only via `/worktree exit` or explicit user request.
 - **Fallback**: If WorktreeCreate hook is not configured, suggest `! pnpm install --frozen-lockfile && cp <repo-root>/.env* .` after entering.

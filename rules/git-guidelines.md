@@ -15,9 +15,8 @@
 
 Examples: `feature/user_profile_edit`, `fix/login_bug`
 
-> **Worktree用**: EnterWorktree で使用する場合は `/` を `-` に置き換えたフラット形式を使用する。
-> 例: `feature-user_profile_edit`, `fix-login_bug`
-> EnterWorktree の name に `/` を含めるとハングするため。
+> **Worktree用**: EnterWorktree の name には `/` を使えないため、worktree名（ディレクトリ名）はハイフン形式 `feature-user_profile_edit` となる。
+> ただし git ブランチ名はスラッシュ形式 `feature/user_profile_edit` が維持される（WorktreeCreate フックが一時ファイル経由で元のブランチ名を受け取る）。
 
 ## Commit Messages
 

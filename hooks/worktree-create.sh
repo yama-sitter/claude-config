@@ -10,6 +10,15 @@ INPUT=$(cat)
 NAME=$(echo "$INPUT" | jq -r '.name // empty')
 [ -z "$NAME" ] && exit 1
 
+# 一時ファイルから元のブランチ名を取得（スキルが書き出す）
+BRANCH_OVERRIDE_FILE="$HOME/.claude/.worktree-branch-override"
+if [ -f "$BRANCH_OVERRIDE_FILE" ]; then
+  BRANCH=$(cat "$BRANCH_OVERRIDE_FILE")
+  rm -f "$BRANCH_OVERRIDE_FILE"
+else
+  BRANCH="$NAME"
+fi
+
 REPO_ROOT="${CLAUDE_PROJECT_DIR:-.}"
 
 # --- worktreeパスを算出（gwq命名規則: ~/Sources/<host>/<owner>/<repo>=<name>） ---
@@ -46,11 +55,11 @@ if [ -d "$WORKTREE_PATH" ]; then
   exit 0
 fi
 
-# ブランチ名: nameそのまま（worktree- プレフィックスなし）
-if git -C "$REPO_ROOT" show-ref --verify --quiet "refs/heads/$NAME" 2>/dev/null; then
-  git -C "$REPO_ROOT" worktree add "$WORKTREE_PATH" "$NAME" >/dev/null 2>&1
+# ブランチ名: BRANCH を使用（スラッシュ付きブランチ名に対応）
+if git -C "$REPO_ROOT" show-ref --verify --quiet "refs/heads/$BRANCH" 2>/dev/null; then
+  git -C "$REPO_ROOT" worktree add "$WORKTREE_PATH" "$BRANCH" >/dev/null 2>&1
 else
-  git -C "$REPO_ROOT" worktree add -b "$NAME" "$WORKTREE_PATH" HEAD >/dev/null 2>&1
+  git -C "$REPO_ROOT" worktree add -b "$BRANCH" "$WORKTREE_PATH" HEAD >/dev/null 2>&1
 fi
 
 # --- 依存インストール ---
