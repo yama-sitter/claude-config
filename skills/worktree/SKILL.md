@@ -116,8 +116,13 @@ AskUserQuestion:
 ### 3. Execute
 
 - keep → `ExitWorktree(action: "keep")`
-- remove → `ExitWorktree(action: "remove")`
-  - If refused due to uncommitted changes → confirm with user, then `ExitWorktree(action: "remove", discard_changes: true)`
+- remove → Pre-check worktree state before calling ExitWorktree:
+  1. Run `git status --short` to check for uncommitted changes
+  2. Run `git log --oneline @{u}..HEAD 2>/dev/null` to check for unpushed commits (if command fails, treat as unpushed)
+  3. Decision:
+     - Clean + pushed → `ExitWorktree(action: "remove", discard_changes: true)` (no confirmation needed)
+     - Clean + unpushed → warn "未プッシュのコミットがあります" → confirm → `ExitWorktree(action: "remove", discard_changes: true)`
+     - Dirty (uncommitted changes) → warn "未コミットの変更があります" → confirm → `ExitWorktree(action: "remove", discard_changes: true)`
 
 ---
 
