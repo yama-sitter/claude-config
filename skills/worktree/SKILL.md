@@ -19,14 +19,14 @@ WorktreeCreate hook automatically handles branch naming, dependency installation
 
 ## Subcommands
 
-| Command | Description |
-|---|---|
-| `/worktree <branch>` | Enter the worktree for `<branch>`. Create if not exists (with confirmation) |
-| `/worktree current` | Re-enter the last worktree used in this session |
-| `/worktree exit` | Exit the current worktree (keep/remove confirmation) |
-| `/worktree search <query>` | Search worktrees by natural language query |
-| `/worktree search` | List all worktrees and select interactively |
-| `/worktree` (no args) | Same as `/worktree search` |
+| Command                    | Description                                                                 |
+| -------------------------- | --------------------------------------------------------------------------- |
+| `/worktree <branch>`       | Enter the worktree for `<branch>`. Create if not exists (with confirmation) |
+| `/worktree current`        | Re-enter the last worktree used in this session                             |
+| `/worktree exit`           | Exit the current worktree (keep/remove confirmation)                        |
+| `/worktree search <query>` | Search worktrees by natural language query                                  |
+| `/worktree search`         | List all worktrees and select interactively                                 |
+| `/worktree` (no args)      | Same as `/worktree search`                                                  |
 
 ---
 
@@ -55,6 +55,7 @@ git worktree list --porcelain
 
 Search for existing worktrees. Skip the first entry (main worktree).
 Match by **either**:
+
 1. `name` (hyphen form) in the worktree path
 2. `branch` (slash form) in `branch refs/heads/` lines
 
@@ -63,17 +64,19 @@ Match by **either**:
 - **Exists** → `EnterWorktree(name: "<name>")` to enter (hook returns existing path). No override file needed.
 - **Not exists** → AskUserQuestion: "ブランチ `<branch>` のworktreeを新規作成しますか？"
   - Approved:
-    1. If `branch` contains `/`, write override file first:
-       ```bash
-       echo "<branch>" > ~/.claude/.worktree-branch-override
-       ```
+    1. If `branch` contains `/`, write override file using the Write tool:
+       `Write(file_path: "~/.claude/.worktree-branch-override", content: "<branch>\n")`
     2. `EnterWorktree(name: "<name>")`
   - Declined → Stop
 
 ### 4. Verify setup
 
-After entering, confirm dependencies and .env files are present.
-If missing, report to the user.
+After entering, use Glob to confirm setup:
+
+- `Glob(pattern: "node_modules/.pnpm/lock.yaml", path: "<worktree-root>")` — check dependencies installed
+- `Glob(pattern: ".env*", path: "<worktree-root>")` — check .env files copied
+
+If either is missing, report to the user.
 
 ---
 
@@ -106,6 +109,7 @@ If not in a worktree, report and stop.
 ### 2. Confirm action
 
 AskUserQuestion:
+
 - **keep** — worktreeとブランチを残す（後で再開可能）
 - **remove** — worktreeとブランチを削除
 
