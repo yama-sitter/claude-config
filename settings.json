@@ -174,17 +174,6 @@
         ]
       }
     ],
-    "PostToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ~/.claude/hooks/worktree-setup.sh"
-          }
-        ]
-      }
-    ],
     "WorktreeCreate": [
       {
         "hooks": [
@@ -192,17 +181,6 @@
             "type": "command",
             "command": "bash ~/.claude/hooks/worktree-create.sh",
             "timeout": 300
-          }
-        ]
-      }
-    ],
-    "WorktreeRemove": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ~/.claude/hooks/worktree-remove.sh",
-            "timeout": 30
           }
         ]
       }
