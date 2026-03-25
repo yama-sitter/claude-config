@@ -45,7 +45,7 @@ WorktreeCreate hook automatically handles branch naming, dependency installation
 - If the name contains `/`:
   - `branch` = original input (e.g., `feature/login_bug`)
   - `name` = replace `/` with `-` (e.g., `feature-login_bug`) — for EnterWorktree
-  - Notify: `feature/login_bug` → worktree名 `feature-login_bug`（ブランチ名は `feature/login_bug` を維持）
+  - Notify: `feature/login_bug` → worktree name `feature-login_bug` (branch name `feature/login_bug` is preserved)
 
 ### 2. Check existing worktrees
 

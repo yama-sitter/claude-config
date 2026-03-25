@@ -15,8 +15,8 @@
 
 Examples: `feature/user_profile_edit`, `fix/login_bug`
 
-> **Worktree用**: EnterWorktree の name には `/` を使えないため、worktree名（ディレクトリ名）はハイフン形式 `feature-user_profile_edit` となる。
-> ただし git ブランチ名はスラッシュ形式 `feature/user_profile_edit` が維持される（WorktreeCreate フックが一時ファイル経由で元のブランチ名を受け取る）。
+> **Worktree**: EnterWorktree does not accept `/` in names, so the worktree directory uses hyphen form (e.g., `feature-user_profile_edit`).
+> The git branch name preserves the original slash form (`feature/user_profile_edit`) via an override file passed to the WorktreeCreate hook.
 
 ## Commit Messages
 
