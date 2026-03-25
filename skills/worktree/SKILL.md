@@ -1,7 +1,7 @@
 ---
 name: worktree
 description: |
-  Create Git worktrees in .worktrees/ for isolated branch work.
+  Create and manage worktrees using EnterWorktree/ExitWorktree.
   Use for "create worktree", "worktreeを作って", "review this PR in worktree", etc.
   Use this skill whenever the user mentions "worktree" in their request,
   even if they also mention development work — this skill handles the worktree setup part.
@@ -13,17 +13,16 @@ user-invocable: true
 
 # Worktree Skill
 
-Create and manage Git worktrees within `.worktrees/` for isolated branch work.
-Handles new branch creation + worktree setup in a single step, or worktree creation for an existing branch.
+Create and manage worktrees using Claude Code's built-in EnterWorktree/ExitWorktree tools.
+WorktreeCreate hook automatically handles dependency installation and .env copying.
 
 ## Purpose
 
-- Prepare worktrees for tasks such as code reviews, PR checks, and feature work
-- Create worktrees in `.worktrees/` to avoid Claude Code permission prompts
-- Create a new branch simultaneously when one doesn't exist yet
-- Follow the project's Git branch naming conventions
+- Create isolated worktrees for code reviews, PR checks, and feature work
+- Automatic setup via WorktreeCreate hook (dependencies, .env files)
+- Stay in the same session (no separate process needed)
 
-This skill **only prepares the worktree**.
+This skill **prepares a work-ready worktree**.
 The actual review, investigation, or implementation is done afterward.
 
 ---
@@ -31,137 +30,77 @@ The actual review, investigation, or implementation is done afterward.
 ## Prerequisites
 
 - The current directory is within a Git repository
-- Follow the branch naming conventions defined in the [Git Guidelines](@../rules/git-guidelines.md)
+- Not already inside a worktree (EnterWorktree cannot be nested)
 
 ---
 
 ## Workflow
 
-### 1. Understand the Task and Determine Mode
+### 1. Understand the Task and Propose Branch Name
 
-Analyze the user's request to determine the mode:
+Analyze the user's request and propose a branch name.
 
-| Condition | Mode | Action |
-|-----------|------|--------|
-| Task description only (no branch name) | **Branch + Worktree** | Propose branch name → approval → create both with `-b` |
-| Existing branch name specified | **Worktree Only** | Create worktree for that branch |
-| `/branch` was used earlier in conversation | **Worktree Only (fallback)** | Detect and handle checkout conflicts |
-
-If anything is unclear, confirm with AskUserQuestion.
-
----
-
-### 2. Propose Branch Name (Branch + Worktree mode only)
-
-Based on the task description, propose a branch name following Git Guidelines:
-
-- Format: `<type>/<summary>` (snake_case)
+**Naming rules:**
+- Flat format: `<type>-<summary>` (no `/` — EnterWorktree hangs with `/` in the name)
 - Types: feature, fix, docs, style, refactor, test, chore
+- Use snake_case for the summary part
+- Examples: `feature-login_bug`, `fix-api_timeout`, `refactor-auth_middleware`
 
-**Present the proposed branch name to the user and get approval before proceeding.**
-Do NOT skip this step even if a branch name was discussed earlier in the conversation. Always confirm with AskUserQuestion.
-
----
-
-### 3. Verify .gitignore
-
-Before creating any worktree, verify `.worktrees/` is ignored:
-
-```bash
-git check-ignore -q .worktrees
-```
-
-> **Important**:
-> - You MUST use `git check-ignore`, not Grep on `.gitignore`. `git check-ignore` checks all ignore sources including global gitignore (`~/.gitignore_global`).
-> - Run the command **exactly as written**. Do not append `; echo ...`, `2>/dev/null`, or any other suffix — it will cause a permission error.
-
-If NOT ignored (exit code is non-zero):
-1. Add `.worktrees/` to `.gitignore`
-2. Commit the change
-3. Proceed with worktree creation
+**Present the proposed name to the user and get approval with AskUserQuestion.**
+Do NOT skip this step.
 
 ---
 
-### 4. Check for Conflicts
+### 2. Execute EnterWorktree
 
-Run the following to assess the current state:
+Call the EnterWorktree tool with the approved name:
 
-```bash
-git worktree list
-git branch --list <branch-name>
-current_branch=$(git symbolic-ref --short HEAD 2>/dev/null)
+```
+EnterWorktree(name: "<branch-name>")
 ```
 
-Handle each case:
-
-**Branch does not exist:**
-→ Proceed to Step 5 with `-b` flag (creates branch + worktree simultaneously).
-
-**Branch exists, no worktree for it, NOT currently checked out:**
-→ Proceed to Step 5 without `-b` flag.
-
-**Branch exists, no worktree for it, IS currently checked out (e.g., after `/branch`):**
-1. Check for uncommitted changes with `git status`.
-2. If uncommitted changes exist: ask the user whether to stash or commit them first.
-3. Run `git checkout main` (or the appropriate base branch).
-4. Proceed to Step 5 without `-b` flag.
-
-**Branch exists AND worktree exists:**
-→ Notify the user and ask whether to reuse the existing worktree. Do not proceed without confirmation.
+The WorktreeCreate hook automatically:
+- Creates the worktree at `.claude/worktrees/<name>/`
+- Creates a branch named `<name>` (no `worktree-` prefix)
+- Installs dependencies (detects pnpm-lock.yaml / package-lock.json / yarn.lock)
+- Copies gitignored `.env*` files from the source repository
 
 ---
 
-### 5. Create the Worktree
+### 3. Verify Setup
 
-Derive the worktree directory name from the branch name by replacing `/` with `_`:
-- `feature/add_mcp_auth` → `feature_add_mcp_auth`
-- `fix/login_bug` → `fix_login_bug`
-- `test/worktree_check` → `test_worktree_check`
+After entering the worktree, confirm:
+- Dependencies are installed (`node_modules/` or equivalent exists)
+- Required `.env*` files exist (if the source repo has them)
 
-Use `--no-checkout` with pathspec negation to exclude dotfiles from the working tree.
-The sandbox blocks creation of dotfiles/dotdirectories (`.claude/`, `.env*`, `.vscode/`, `.mcp.json`, etc.).
-
-> **Why not sparse-checkout?** The sandbox blocks both `.git/config` writes and `.git/worktrees/` writes. Pathspec negation is the only approach that avoids all `.git/` writes.
-
-**Step 5a: Create worktree without checkout**
-
-Run from the **project root** directory (not from inside a worktree or subdirectory):
-
-```bash
-git worktree add --no-checkout .worktrees/<worktree-name> -b <branch-name>
-
-# Worktree Only (existing branch)
-git worktree add --no-checkout .worktrees/<worktree-name> <branch-name>
-```
-
-**Step 5b: Checkout excluding all dotfiles**
-
-```bash
-cd .worktrees/<worktree-name> && git checkout HEAD -- . ':(exclude).*' && git reset HEAD -- .
-```
-
-> **Known limitations**:
-> - Dotfiles (`.claude/`, `.env*`, `.vscode/`, etc.) are excluded from checkout and unstaged by `git reset HEAD -- .`. They may still appear in `git status` as missing from the working tree, but they will NOT be staged — so they cannot be accidentally committed.
-> - Branch deletion (`git branch -d` or `git worktree remove`) may show `could not write config file .git/config: Operation not permitted`. The branch IS deleted — this warning is harmless and can be ignored.
-
-If the command fails:
-- Branch already exists unexpectedly → drop the `-b` flag and retry from 5a (the failed `git worktree add -b` creates the branch even though the worktree creation failed)
-- Worktree path conflicts → (1) `git worktree remove --force .worktrees/<worktree-name>`, then retry from 5a. (2) If fails with "not a working tree" (orphaned directory), ask the user to run `! rm -rf .worktrees/<worktree-name>`, then run `git worktree prune`. **NEVER delete `.git/worktrees/` entries directly — this corrupts git and breaks all commands.**
-- Otherwise → report the error to the user
+If anything is missing, report to the user. Do not proceed with work until setup is complete.
 
 ---
 
-### 6. Completion
+### 4. Work (outside this skill's scope)
 
-After the worktree is created:
+The worktree is ready. Proceed with the requested task (review, implementation, etc.).
 
-- Report the branch name
-- Report the worktree path (absolute)
-- Stop execution
+---
 
-Do **not** do any of the following:
+## ExitWorktree
 
-- Modify files
-- Run tests
-- Install dependencies
-- Automatically start implementation
+Use ExitWorktree **only when the user explicitly asks** to leave the worktree ("worktreeを出て", "exit worktree", "go back", etc.).
+
+- `action: "keep"` — Leave worktree and branch on disk for later
+- `action: "remove"` — Delete worktree and branch
+  - If there are uncommitted changes, ExitWorktree will refuse. Confirm with the user, then re-invoke with `discard_changes: true`
+
+**Do NOT call ExitWorktree proactively.**
+
+---
+
+## Fallback (hook not configured)
+
+If the WorktreeCreate hook is not configured (e.g., in a different environment), EnterWorktree will still create the worktree with default behavior (branch named `worktree-<name>`). In this case:
+
+1. After entering the worktree, suggest the user run setup manually:
+   ```
+   ! pnpm install --frozen-lockfile && cp <repo-root>/.env* .
+   ```
+2. Or use `! npm ci` / `! yarn install --frozen-lockfile` depending on the lock file present.

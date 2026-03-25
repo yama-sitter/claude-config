@@ -15,6 +15,10 @@
 
 Examples: `feature/user_profile_edit`, `fix/login_bug`
 
+> **Worktree用**: EnterWorktree で使用する場合は `/` を `-` に置き換えたフラット形式を使用する。
+> 例: `feature-user_profile_edit`, `fix-login_bug`
+> EnterWorktree の name に `/` を含めるとハングするため。
+
 ## Commit Messages
 
 ```
