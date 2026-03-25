@@ -9,6 +9,7 @@ description: |
     - (default): Run the full process (analyze → ideas → confirm → implement → record)
     - `diagnose`: Analyze and present improvement ideas only. Does not implement
     - `apply`: Implement an improvement idea agreed upon in the conversation
+    - `commit`: Commit kaizen changes to claude-config repository
 user-invocable: true
 ---
 
@@ -33,6 +34,7 @@ Invoked when a failure is detected. A subagent performs analysis → idea genera
 | (empty) | Full process: Phase 1 → Phase 2 → Confirmation Gate → Phase 3 → Record |
 | `diagnose` | Analysis only: Phase 1 → Phase 2 → Confirmation Gate (stop. Guide user to `/kaizen apply`) |
 | `apply` | Implementation only: Identify approved idea from conversation → Phase 3 → Record |
+| `commit` | Commit to claude-config: Detect changes → Generate commit message → Commit (auto or manual fallback) |
 
 ## Workflow
 
@@ -227,6 +229,35 @@ Save the improvement record output by Phase 3 subagent using the agent-memory sk
 - Directory: `<YYYY-MM-DD>_kaizen-<failure-summary>/`
 - File: `improvement.md`
 
+After saving, display: **`/kaizen commit` で claude-config にコミットできます**
+
+### Commit to claude-config (main agent) `(commit)`
+
+Commit kaizen changes to the claude-config repository.
+
+**claude-config path**: `~/Sources/github.com/yama-sitter/claude-config`
+
+**Steps:**
+
+1. Detect changed files in claude-config:
+   - Modified/deleted: `git -C <path> diff --name-only`
+   - Untracked (new files): `git -C <path> ls-files --others --exclude-standard`
+2. If no changes detected, display "コミット対象の変更がありません" and stop
+3. Generate commit message:
+   - If Phase 3 improvement record exists in conversation → generate from it
+   - If no record in conversation → generate from diff output
+   - Follow `rules/git-guidelines.md` conventions
+4. Attempt automatic commit:
+   - `git -C <path> add <changed files>`
+   - `git -C <path> commit -m "<message>"`
+5. If sandbox blocks the operation, present a `!` command for the user to execute:
+   ```
+   ! cd ~/Sources/github.com/yama-sitter/claude-config && git add <files> && git commit -m "$(cat <<'EOF'
+   <message>
+   EOF
+   )"
+   ```
+
 ## Completion
 
 ### default (full process)
@@ -235,6 +266,7 @@ Save the improvement record output by Phase 3 subagent using the agent-memory sk
 - User approved one idea
 - Approved improvement implemented
 - Improvement record saved to agent-memory
+- `/kaizen commit` の案内を表示済み
 
 ### diagnose
 - Failure identified and root cause structurally analyzed
@@ -244,3 +276,7 @@ Save the improvement record output by Phase 3 subagent using the agent-memory sk
 ### apply
 - Approved improvement implemented
 - Improvement record saved to agent-memory
+- `/kaizen commit` の案内を表示済み
+
+### commit
+- Kaizen changes committed to claude-config (or `!` command presented for manual execution)
