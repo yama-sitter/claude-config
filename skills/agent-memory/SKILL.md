@@ -30,7 +30,7 @@ A persistent memory space for storing knowledge that survives across conversatio
 1. **Determine content**: Identify what to save from the conversation context or `<description>` argument
 2. **Expand context from sources**: If the content being saved builds upon, extends, or references an existing memory (e.g., a recalled memo from earlier in the conversation), do both:
    - **Embed context**: Incorporate the necessary background from the source memory so the new memo is fully understandable on its own. A reader with no prior knowledge must be able to follow the content without reading the source memo. Do not merely summarize — include the specific facts, decisions, and context that the new content depends on
-   - **Link source**: Add all source memory paths to the `related` field in frontmatter (e.g., `related: [..., memories/scope/date_topic/file.md]`)
+   - **Link source**: Add all source memory paths to the `related` field in frontmatter (e.g., `related: [..., scope/date_topic/file.md]`)
 3. **Choose scope and path**: Select scope (repository name or `general`) and build the path:
    `<scope>/<YYYY-MM-DD>_<descriptive-name>/<filename>.md`
    - Use `date +%Y-%m-%d` for the current date
@@ -49,15 +49,15 @@ A persistent memory space for storing knowledge that survives across conversatio
 
 1. **Scope narrowing** (optional): If the relevant scope is known, narrow search path
 2. **Staged search** — stop when useful results are found:
-   - Stage 1: `rg "^summary:.*<keyword>" memories/ --no-ignore --hidden -i`
-   - Stage 2: `rg "^tags:.*<keyword>" memories/ --no-ignore --hidden -i`
-   - Stage 3: `rg "<keyword>" memories/ --no-ignore --hidden -i`
+   - Stage 1: `rg "^summary:.*<keyword>" ~/.agent-memory/ --no-ignore --hidden -i`
+   - Stage 2: `rg "^tags:.*<keyword>" ~/.agent-memory/ --no-ignore --hidden -i`
+   - Stage 3: `rg "<keyword>" ~/.agent-memory/ --no-ignore --hidden -i`
 3. **Present results**: Display as a numbered list with summaries
 4. **Show detail**: Display the full content of the user's selected memory
 
 ### Without query: `search`
 
-1. **List scopes**: Run `ls memories/` to retrieve the list of scopes
+1. **List scopes**: Run `ls ~/.agent-memory/` to retrieve the list of scopes
    - If there is only one scope, skip and auto-select it
    - If there are multiple scopes, use AskUserQuestion to let the user choose
 2. **List topics**: Display the directory listing (date + topic name) within the selected scope
@@ -92,15 +92,14 @@ Guidelines:
 Example:
 
 ```text
-memories/
-├── taimee-rails-api/
-│   ├── 2026-02-06_suspended-company-email-registration/
-│   │   └── finding.md
-│   └── 2026-02-10_bulk-export-performance-issue/
-│       └── finding.md
-└── general/
-    └── 2026-01-20_docker-compose-networking-tips/
-        └── finding.md
+taimee-rails-api/
+├── 2026-02-06_suspended-company-email-registration/
+│   └── finding.md
+└── 2026-02-10_bulk-export-performance-issue/
+    └── finding.md
+general/
+└── 2026-01-20_docker-compose-networking-tips/
+    └── finding.md
 ```
 
 ### Frontmatter
@@ -129,7 +128,7 @@ tags: [performance, worker, memory-leak]
 related:
   [
     src/core/file/fileProcessor.ts,
-    memories/general/2026-01-10_worker-architecture/design.md,
+    general/2026-01-10_worker-architecture/design.md,
   ]
 ---
 ```
@@ -178,7 +177,7 @@ Organize memories when needed:
    "pitfalls" rather than combining into one large file). This makes summaries more precise
    and searchable.
 7. **Use `related` for discoverability**: Always include directory/file paths in the `related`
-   field. This enables reverse lookup by path: `rg "^related:.*keyword" memories/`
+   field. This enables reverse lookup by path: `rg "^related:.*keyword" ~/.agent-memory/`
 
 ### Content Reference
 
