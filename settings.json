@@ -13,6 +13,7 @@
       "Bash(pbcopy*)",
       "Read(**)",
       "Write(**)",
+      "Write(~/.claude/.worktree-branch-override)",
       "Edit(**)",
       "Bash(git add *)",
       "Bash(git commit *)",
