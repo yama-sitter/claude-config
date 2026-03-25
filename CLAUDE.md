@@ -23,7 +23,6 @@ The superpowers flow is considered active when any of the following is true:
 - Implementation is being driven by a plan file in `docs/superpowers/plans/`
 
 When active:
-- Worktree → Use `superpowers:using-git-worktrees` (do not use custom `worktree` skill)
 - Plan template → Use `superpowers:writing-plans` (do not use `plan-template.md`)
 - Plan review → Use superpowers subagent review
 - Plan storage → Save to `docs/superpowers/plans/` and also copy to `agent-memory`
@@ -32,7 +31,7 @@ When active:
 
 This includes: direct code change requests, Plan Mode, or any task where the user has not explicitly requested superpowers.
 
-- Worktree → Use custom `worktree` skill (gwq)
+- Worktree → Use custom `worktree` skill (EnterWorktree/ExitWorktree)
 - Plan template → Use `plan-template.md`
 - Plan review → Use `plan-review.md` (2-cycle self-review)
 - Plan storage → `agent-memory` only
@@ -41,3 +40,4 @@ This includes: direct code change requests, Plan Mode, or any task where the use
 
 - All rules/ guidelines apply regardless of which flow is active
 - Even if `superpowers:brainstorming` would auto-trigger, prefer custom skills unless the user explicitly requested superpowers
+- Worktree operations always use the custom `worktree` skill (EnterWorktree/ExitWorktree), regardless of flow
