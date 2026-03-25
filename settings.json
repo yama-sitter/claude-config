@@ -55,8 +55,6 @@
       "Bash(rm -rf ~)",
       "Bash(rm -rf ~/*)",
       "Bash(rm -rf /*)",
-      "Read(.env*)",
-      "Read(**/.env*)",
       "Read(**/*secret*.json)",
       "Read(**/*secret*.yaml)",
       "Read(**/*secret*.yml)",
