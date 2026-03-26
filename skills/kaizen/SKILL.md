@@ -240,23 +240,17 @@ Commit kaizen changes to the claude-config repository.
 **Steps:**
 
 1. Detect changed files in claude-config:
-   - Modified/deleted: `git -C <path> diff --name-only`
-   - Untracked (new files): `git -C <path> ls-files --others --exclude-standard`
+   - Modified/deleted: `cd <path> && git diff --name-only`
+   - Untracked (new files): `cd <path> && git ls-files --others --exclude-standard`
 2. If no changes detected, display "コミット対象の変更がありません" and stop
 3. Generate commit message:
    - If Phase 3 improvement record exists in conversation → generate from it
    - If no record in conversation → generate from diff output
    - Follow `rules/git-guidelines.md` conventions
-4. Attempt automatic commit:
-   - `git -C <path> add <changed files>`
-   - `git -C <path> commit -m "<message>"`
-5. If sandbox blocks the operation, present a `!` command for the user to execute:
-   ```
-   ! cd ~/Sources/github.com/yama-sitter/claude-config && git add <files> && git commit -m "$(cat <<'EOF'
-   <message>
-   EOF
-   )"
-   ```
+4. Commit:
+   - `cd <path> && git add <changed files>`
+   - `cd <path> && git commit -m "<message>"`
+5. If the commit fails, present the equivalent `!` command for the user to execute
 
 ## Completion
 
@@ -279,4 +273,4 @@ Commit kaizen changes to the claude-config repository.
 - `/kaizen commit` の案内を表示済み
 
 ### commit
-- Kaizen changes committed to claude-config (or `!` command presented for manual execution)
+- Kaizen changes committed to claude-config
