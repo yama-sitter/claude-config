@@ -62,21 +62,65 @@ else
   git -C "$REPO_ROOT" worktree add -b "$BRANCH" "$WORKTREE_PATH" HEAD >/dev/null 2>&1
 fi
 
-# --- 依存インストール ---
-cd "$WORKTREE_PATH" || true
-if [ -f pnpm-lock.yaml ]; then
-  pnpm install --frozen-lockfile >&2 || true
-elif [ -f package-lock.json ]; then
-  npm ci >&2 || true
-elif [ -f yarn.lock ]; then
-  yarn install --frozen-lockfile >&2 || true
-fi
+# --- 依存インストール（モノレポ対応） ---
+install_deps() {
+  local dir="$1"
+  cd "$dir" || return
+  if [ -f pnpm-lock.yaml ]; then
+    echo "Installing dependencies in $dir ..." >&2
+    pnpm install --frozen-lockfile >&2 || true
+  elif [ -f package-lock.json ]; then
+    echo "Installing dependencies in $dir ..." >&2
+    npm ci >&2 || true
+  elif [ -f yarn.lock ]; then
+    echo "Installing dependencies in $dir ..." >&2
+    yarn install --frozen-lockfile >&2 || true
+  elif [ -f bun.lockb ] || [ -f bun.lock ]; then
+    echo "Installing dependencies in $dir ..." >&2
+    bun install --frozen-lockfile >&2 || true
+  fi
+}
 
-# --- gitignore済み.envファイルをソースリポジトリからコピー ---
-for f in "$REPO_ROOT"/.env*; do
-  [ -f "$f" ] || continue
-  base=$(basename "$f")
-  [ ! -f "$WORKTREE_PATH/$base" ] && cp "$f" "$WORKTREE_PATH/$base"
+# ルートを先にインストール（hoistedモノレポで重要）
+install_deps "$WORKTREE_PATH"
+
+# サブディレクトリのロックファイルを検出してインストール
+find "$WORKTREE_PATH" -mindepth 2 \
+  -name node_modules -prune -o \
+  -name .git -prune -o \
+  \( -name pnpm-lock.yaml -o -name package-lock.json -o -name yarn.lock -o -name bun.lockb -o -name bun.lock \) \
+  -print | while read -r lockfile; do
+  install_deps "$(dirname "$lockfile")"
+done
+
+# --- .envファイルをソースリポジトリからコピー（サブディレクトリ対応） ---
+find "$REPO_ROOT" \
+  -name node_modules -prune -o \
+  -name .git -prune -o \
+  \( -name '.env*' ! -name '*.sample' ! -name '*.example' -type f \) \
+  -print | while read -r src; do
+  rel="${src#$REPO_ROOT/}"
+  dest="$WORKTREE_PATH/$rel"
+  if [ ! -f "$dest" ]; then
+    mkdir -p "$(dirname "$dest")"
+    cp "$src" "$dest"
+  fi
+done
+
+# --- .envサンプル/exampleファイルをリネームしてコピー ---
+find "$REPO_ROOT" \
+  -name node_modules -prune -o \
+  -name .git -prune -o \
+  \( -name '.env*.sample' -o -name '.env*.example' \) -type f \
+  -print | while read -r src; do
+  rel="${src#$REPO_ROOT/}"
+  dest_rel="${rel%.sample}"
+  dest_rel="${dest_rel%.example}"
+  dest="$WORKTREE_PATH/$dest_rel"
+  if [ ! -f "$dest" ]; then
+    mkdir -p "$(dirname "$dest")"
+    cp "$src" "$dest"
+  fi
 done
 
 echo "$WORKTREE_PATH"

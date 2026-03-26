@@ -69,12 +69,15 @@ Match by **either**:
 
 ### 4. Verify setup
 
-After entering, use Glob to confirm setup:
+After entering, verify setup:
 
-- `Glob(pattern: "node_modules/.pnpm/lock.yaml", path: "<worktree-root>")` — check dependencies installed
-- `Glob(pattern: ".env*", path: "<worktree-root>")` — check .env files copied
+1. Check dependencies: Run bash to find all lock files and check each has a sibling `node_modules/` directory
+   ```bash
+   find <worktree-root> -name node_modules -prune -o \( -name pnpm-lock.yaml -o -name package-lock.json -o -name yarn.lock -o -name bun.lockb -o -name bun.lock \) -print | while read f; do dir=$(dirname "$f"); [ -d "$dir/node_modules" ] || echo "MISSING: $dir/node_modules"; done
+   ```
+2. Check .env files: `Glob(pattern: "**/.env*", path: "<worktree-root>")` — check .env files present at all levels
 
-If either is missing, report to the user.
+If any directory is missing dependencies or .env files, report to the user.
 
 ---
 
