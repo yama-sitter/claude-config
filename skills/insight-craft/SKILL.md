@@ -15,7 +15,7 @@ user-invocable: true
 
 # Insight Craft — Shusseuo Model
 
-Named after *shusseuo* — fish that change names as they grow — this model nurtures raw dissonance into mature insight through 5 progressive stages of dialogue and structured thinking.
+Named after _shusseuo_ — fish that change names as they grow — this model nurtures raw dissonance into mature insight through 5 progressive stages of dialogue and structured thinking.
 
 ## Prerequisites
 
@@ -42,6 +42,7 @@ Named after *shusseuo* — fish that change names as they grow — this model nu
 Read through the materials and extract phenomena that contain "prediction errors."
 
 Extraction lenses:
+
 - Behaviors or statements that contradict general expectations
 - Two facts that contradict each other
 - Points where emotions surface strongly (frustration, joy, resignation)
@@ -50,8 +51,8 @@ Extraction lenses:
 
 Output as a table:
 
-| # | Hook | Source / Evidence | Why it hooks you (Prediction Error) | Lens |
-|---|---|---|---|---|
+| #   | Hook | Source / Evidence | Why it hooks you (Prediction Error) | Lens |
+| --- | ---- | ----------------- | ----------------------------------- | ---- |
 
 **Lens coverage check**: Review the Lens column above. If any of the 5 lenses (Behavior, Contradiction, Emotion, Workaround, Extra-effort) appears 0 times, explore that lens for additional hooks before proceeding.
 
@@ -69,8 +70,8 @@ Clarify the conventional wisdom, established beliefs, or assumptions behind the 
 
 Output as a table:
 
-| # | Dissonance | Underlying Conventional Wisdom | Whose conventional wisdom? |
-|---|---|---|---|
+| #   | Dissonance | Underlying Conventional Wisdom | Whose conventional wisdom? |
+| --- | ---------- | ------------------------------ | -------------------------- |
 
 **→ Do these "givens" ring true? Are there any unspoken assumptions I'm missing? Please share them.**
 
@@ -84,8 +85,8 @@ Generate three types of questions against each identified conventional wisdom:
 
 Output as a table:
 
-| # | Conventional Wisdom | Question Type | Question |
-|---|---|---|---|
+| #   | Conventional Wisdom | Question Type | Question |
+| --- | ------------------- | ------------- | -------- |
 
 **→ Which of these questions spark something for you? Which do you want to explore further? Feel free to add your own.**
 
@@ -94,6 +95,7 @@ Output as a table:
 Verbalize hypotheses in response to the selected questions.
 
 Verbalization techniques:
+
 - **Make the subject specific**: Not "everyone," but "people in X situation"
 - **Capture emotional intensity**: Express the strength and urgency of the feeling
 - **Use contrast**: "It's assumed to be X, but actually it's Y"
@@ -121,6 +123,7 @@ Because [evidence / reasoning]. (Mark inferences not directly derivable from mat
 ### 5. Validate and Substantiate (Persuasion)
 
 **Material type gate** — Determine which path to follow:
+
 - **Quantitative materials** (analysis reports, KPI aggregations, dashboards): Use 5a-quant and 5b-quant below
 - **Qualitative materials** (interviews, feedback, meeting notes): Use 5a-qual and 5b-qual below
 - **Mixed materials**: Execute both paths. Run 5a-qual/5b-qual first, then additionally run 5a-quant/5b-quant
@@ -136,6 +139,7 @@ Confirm the hypothesis is not just an "N=1 assumption" and build supporting evid
 **5a-quant. Design follow-up analysis questions from the data (output consolidated in 5c):**
 
 List the unverified assumptions embedded in the data at hand, and design a follow-up analysis question for each. For each question, specify:
+
 - **Metric**: What to measure
 - **Segment / comparison axis**: How to slice or compare
 - **Expected result vs. hypothesis-breaking result**: What you expect to see if the hypothesis holds, and what would overturn it
@@ -156,6 +160,7 @@ After writing counterarguments, compare whether the hypothesis or the counterarg
 **5b-quant. Stress-test the hypothesis with data angles:**
 
 Challenge the hypothesis from these quantitative angles:
+
 - **Alternative cuts**: Would a different segment or time period overturn the hypothesis?
 - **Confounding variables**: Does the relationship hold after controlling for confounders?
 - **Reverse causality**: Can the hypothesis be explained by swapping cause and effect?
@@ -184,8 +189,9 @@ Output format:
 ```
 
 **→ [Next action branching]**
+
 - If follow-up analysis questions were designed → Consider passing them to `/bq-analysis` or recording as the next analysis theme
-- If a hypothesis candidate has sufficient strength → Consider passing it to `/experiment-discipline` for experiment design
+- If a hypothesis candidate has sufficient strength → Pass to `/experiment-discipline` for experiment design. Include: the final hypothesis statement, the 3-axis ratings (Intensity/Hiddenness/Driving Force), supporting evidence, and counterevidence & risks from 5c
 - If the hypothesis is weak or counterevidence is strong → Return to STEP 4 to re-hypothesize, or collect additional materials
 
 **→ Does this insight feel like it can "move people"? If you heard this insight, would it make you want to change your behavior?**
