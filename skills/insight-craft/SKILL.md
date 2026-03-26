@@ -1,9 +1,12 @@
 ---
 name: insight-craft
 description: |
-  Extract "hidden true motives that drive people to act" from raw materials (interview logs, meeting notes, feedback, etc.).
+  Uncover "hidden true motives that drive people to act" by questioning what lies behind the data.
+  Works with any material type — qualitative (interviews, feedback) or quantitative (analysis reports, KPI aggregations).
   Uses the Shusseuo Model (Dissonance → Conventional Wisdom → Question → Hypothesis → Validation) to progressively nurture insights through 5 stages.
-  Use when: deriving insights from qualitative materials or customer data.
+  Use when: deriving insight candidates and designing follow-up analysis questions from any material.
+  Do not use when: structuring demand/JTBD from customer behavior (use insight-digestion instead).
+  Do not use when: designing experiments from an existing hypothesis (use experiment-discipline instead).
   Subcommands:
     - (default): Collaborative mode. Includes a checkpoint at each step for user confirmation
     - `solo`: LLM-only mode. Replaces checkpoints with self-assessment and outputs insight candidates in batch
@@ -20,6 +23,7 @@ Named after *shusseuo* — fish that change names as they grow — this model nu
 - When using quantitative data (analysis reports, KPI aggregations, etc.) as materials, also provide what you want to ask from those numbers (a hypothesis to verify, or a sense of incongruity you noticed)
 - Insight = a hidden true motive that drives people to act — a desire or motivation that the person themselves cannot consciously articulate
 - Findings = interesting discoveries that do not lead to action. Distinct from insights
+- This skill questions "why people act that way" and designs follow-up questions. To structure demand (Job-to-be-Done) from customer behavior, use insight-digestion instead
 
 ## Mode
 
@@ -178,6 +182,11 @@ Output format:
 - Is this an Insight, not just a Finding?: [Yes / No + reason]
 - Can it drive people to act?: [Assessment]
 ```
+
+**→ [Next action branching]**
+- If follow-up analysis questions were designed → Consider passing them to `/bq-analysis` or recording as the next analysis theme
+- If a hypothesis candidate has sufficient strength → Consider passing it to `/experiment-discipline` for experiment design
+- If the hypothesis is weak or counterevidence is strong → Return to STEP 4 to re-hypothesize, or collect additional materials
 
 **→ Does this insight feel like it can "move people"? If you heard this insight, would it make you want to change your behavior?**
 
