@@ -39,6 +39,7 @@ related: [memories/centou/2026-03-19_shusse-uo-model-ab-test/ab-test-results.md,
 - Concluding "this is an insight" automatically just because supporting evidence was found
 - Skipping counterevidence
 - Judging solely on quantitative data (numbers without context are meaningless)
+- Using quantitative materials but only citing external statistics, without designing follow-up analysis questions from the data at hand
 
 ---
 
@@ -65,3 +66,4 @@ related: [memories/centou/2026-03-19_shusse-uo-model-ab-test/ab-test-results.md,
 
 - Raising the ceiling of sharpness (sharp expressions can emerge without the framework)
 - Replacing human intuition and dissonance (LLM-only mode can reach "insight candidates" at best, not confirmed insights)
+- When applied with quantitative materials only, qualitative evidence in STEP 5 is structurally insufficient. Follow-up analysis questions can be designed, but final verification of "why it happens" requires qualitative data

@@ -17,6 +17,7 @@ Named after *shusseuo* — fish that change names as they grow — this model nu
 ## Prerequisites
 
 - Raw materials for analysis (interview logs, meeting notes, feedback, behavioral data, etc.) must be provided
+- When using quantitative data (analysis reports, KPI aggregations, etc.) as materials, also provide what you want to ask from those numbers (a hypothesis to verify, or a sense of incongruity you noticed)
 - Insight = a hidden true motive that drives people to act — a desire or motivation that the person themselves cannot consciously articulate
 - Findings = interesting discoveries that do not lead to action. Distinct from insights
 
@@ -27,6 +28,7 @@ Named after *shusseuo* — fish that change names as they grow — this model nu
   1. State the rationale for each choice explicitly
   2. Flag the choice with the lowest confidence
   3. Check whether any discarded options support the opposite conclusion
+  4. State the "direction" of your insight candidate in one line (what is assumed as the motive), and output at least one candidate that explains the phenomenon through a non-psychological axis (operational efficiency, temporal constraints, structural rules, or platform mechanics)
   - Label outputs as "insight candidates" — never call them "insights"
 
 ## Workflow
@@ -44,8 +46,10 @@ Extraction lenses:
 
 Output as a table:
 
-| # | Hook | Source / Evidence | Why it hooks you (Prediction Error) |
-|---|---|---|---|
+| # | Hook | Source / Evidence | Why it hooks you (Prediction Error) | Lens |
+|---|---|---|---|---|
+
+**Lens coverage check**: Review the Lens column above. If any of the 5 lenses (Behavior, Contradiction, Emotion, Workaround, Extra-effort) appears 0 times, explore that lens for additional hooks before proceeding.
 
 **→ Which of these feel intriguing or unsettling to you? If you sense a dissonance not on the list, please add it.**
 
@@ -112,15 +116,27 @@ Because [evidence / reasoning]. (Mark inferences not directly derivable from mat
 
 ### 5. Validate and Substantiate (Persuasion)
 
+**Material type gate** — Determine which path to follow:
+- **Quantitative materials** (analysis reports, KPI aggregations, dashboards): Use 5a-quant and 5b-quant below
+- **Qualitative materials** (interviews, feedback, meeting notes): Use 5a-qual and 5b-qual below
+- **Mixed materials**: Execute both paths. Run 5a-qual/5b-qual first, then additionally run 5a-quant/5b-quant
+
 Confirm the hypothesis is not just an "N=1 assumption" and build supporting evidence.
 
-**5a. Gather supporting evidence (output consolidated in 5c):**
+**5a-qual. Gather supporting evidence (output consolidated in 5c):**
 
 - Quantitative: Related statistics, survey data, trends
 - Qualitative: Similar statements or behavioral patterns within the materials
 - Case studies (optional): Reference examples from other industries or domains. Omit if in-material evidence is sufficient
 
-**5b. Stress-test the hypothesis:**
+**5a-quant. Design follow-up analysis questions from the data (output consolidated in 5c):**
+
+List the unverified assumptions embedded in the data at hand, and design a follow-up analysis question for each. For each question, specify:
+- **Metric**: What to measure
+- **Segment / comparison axis**: How to slice or compare
+- **Expected result vs. hypothesis-breaking result**: What you expect to see if the hypothesis holds, and what would overturn it
+
+**5b-qual. Stress-test the hypothesis:**
 
 Return to the materials and challenge the hypothesis from these angles:
 
@@ -132,6 +148,15 @@ Return to the materials and challenge the hypothesis from these angles:
   - "Is that really true?" → Weak evidence. Reinforce 5a, or if no evidence is found, honestly note that in 5c
 
 After writing counterarguments, compare whether the hypothesis or the counterarguments are better supported by the facts in the materials. If counterarguments are stronger, revise the hypothesis and redo from 5a, or return to STEP 4.
+
+**5b-quant. Stress-test the hypothesis with data angles:**
+
+Challenge the hypothesis from these quantitative angles:
+- **Alternative cuts**: Would a different segment or time period overturn the hypothesis?
+- **Confounding variables**: Does the relationship hold after controlling for confounders?
+- **Reverse causality**: Can the hypothesis be explained by swapping cause and effect?
+
+After examining these angles, compare whether the hypothesis or the counterarguments are better supported by the data. If counterarguments are stronger, revise the hypothesis and redo from 5a-quant, or return to STEP 4.
 
 **5c. Overall assessment:**
 
