@@ -62,12 +62,10 @@ Match by **either**:
 ### 3. Enter or create
 
 - **Exists** → `EnterWorktree(name: "<name>")` to enter (hook returns existing path). No override file needed.
-- **Not exists** → AskUserQuestion: "ブランチ `<branch>` のworktreeを新規作成しますか？"
-  - Approved:
+- **Not exists** →
     1. If `branch` contains `/`, write override file using the Write tool:
        `Write(file_path: "~/.claude/.worktree-branch-override", content: "<branch>\n")`
     2. `EnterWorktree(name: "<name>")`
-  - Declined → Stop
 
 ### 4. Verify setup
 
