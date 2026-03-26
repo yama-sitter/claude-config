@@ -3,7 +3,7 @@ name: insight-digestion
 description: |
   Extract Jobs-to-be-Done from customer behavior facts, interview logs, or feedback data.
   Use when the user provides raw customer data and wants to understand the underlying demand structure before designing solutions.
-  Do not use when the user already has a clear hypothesis and wants to design experiments (use experiment-discipline instead).
+  Do not use when the user already has a clear hypothesis and wants to design experiments.
   Do not use when the user wants to brainstorm or evaluate solutions.
 user-invocable: true
 ---
@@ -15,7 +15,7 @@ Digest raw customer data into a structured Job-to-be-Done by climbing the Ladder
 ## Prerequisites
 
 - Customer interview logs, behavior data, or feedback are accessible
-- This skill produces demand-side analysis only — output feeds into experiment-discipline
+- This skill produces demand-side analysis only — output feeds into experiment design
 
 ## Workflow
 
@@ -74,7 +74,7 @@ The statement must trace back to specific facts from Step 1 and struggling momen
 - Do not skip from facts (Step 1) to job definition (Step 5)
 - Do not proceed past a confirmation gate (→) without user approval
 - Do not treat customer opinions or stated preferences as behavioral facts
-- Do not score, rank, or prioritize — that belongs to experiment-discipline
+- Do not score, rank, or prioritize — that belongs to experiment design
 
 ## Completion
 
@@ -82,4 +82,4 @@ This skill is complete when all three conditions are met:
 
 - A Job Statement exists that the user confirms as accurate
 - The statement is traceable to at least one specific fact and one struggling moment
-- The user is ready to proceed to experiment-discipline, or explicitly stops
+- The user is ready to proceed to experiment design, or explicitly stops

@@ -1,10 +1,9 @@
 ---
 name: experiment-discipline
 description: |
-  Transform insights into testable hypotheses and design minimum-cost experiments.
-  Use when you have a hypothesis or JTBD to validate and need to decide what to test next.
-  Accepts input from any source: insight-digestion (JTBD), insight-craft (insight candidate), or direct user input.
-  Do not use when the problem space is still unclear (use insight-digestion or insight-craft first),
+  Transform digested insights into testable hypotheses and design minimum-cost experiments.
+  Use when you have a hypothesis to test — whether derived from demand analysis (JTBD) or insight discovery — and need to decide what to test next.
+  Do not use when the problem space is still unclear (conduct demand analysis or insight discovery first),
   or when the task is implementation, investigation, or code changes.
 user-invocable: true
 ---
@@ -16,26 +15,20 @@ Focus on which metric to move, not what to build.
 
 ## Prerequisites
 
-The following information must be available (source does not matter — insight-digestion, insight-craft, or direct user input):
-
-1. **A hypothesis or job to validate** — what is happening and why you think so
-   - JTBD form: "When [situation], I want to [motivation], so that [expected progress]"
-   - Hypothesis form: "[Subject] is assumed to [conventional wisdom], but actually [hidden motive]. Because [evidence]."
-   - Or any equivalent statement that identifies a gap between expectation and reality
-2. **A behavioral or metric clue** — what to measure (baseline preferred but "baseline TBD" is acceptable)
-3. **Supporting evidence** — data, observations, or reasoning that supports the hypothesis
-
-If these are insufficient, ask the user to provide the missing information rather than blocking.
+- One of the following inputs exists:
+  - A JTBD statement (in the form: "When [situation], I want to [motivation], so that [expected progress]")
+  - An insight hypothesis (a hypothesis about a hidden motive that drives people to act, with supporting evidence)
+- If neither exists, stop and direct the user to conduct demand analysis or insight discovery first
 
 ## Workflow
 
 ### 1. Confirm Target Outcome
 
-- Identify which stage of the pirate metrics (AARRR: Acquisition, Activation, Retention, Revenue, Referral) the input relates to
+- Identify which stage of the pirate metrics (AARRR: Acquisition, Activation, Retention, Revenue, Referral) the input (JTBD or insight hypothesis) relates to
 - Define a single measurable outcome (metric + current baseline + target) the experiment aims to move
 - If the user cannot provide a baseline, acknowledge the gap and note "baseline TBD" as the first thing to measure
 
-**Output:** One sentence: "We aim to move [metric] from [baseline] to [target] by addressing [hypothesis/JTBD summary]."
+**Output:** One sentence: "We aim to move [metric] from [baseline] to [target] based on [input summary]."
 
 **→ Confirm the target outcome with the user before proceeding.**
 
@@ -47,7 +40,7 @@ If these are insufficient, ask the user to provide the missing information rathe
 **Output as a table:**
 
 | Opportunity | Solution A | Solution B | Solution C |
-| ----------- | ---------- | ---------- | ---------- |
+|---|---|---|---|
 
 **→ Ask the user which opportunities to carry forward to prioritization.**
 
@@ -61,8 +54,8 @@ Score each carried-forward solution on a 1-10 scale:
 
 **Output as a table:**
 
-| Solution | I   | C   | E   | Score (I x C x E) | Justification |
-| -------- | --- | --- | --- | ----------------- | ------------- |
+| Solution | I | C | E | Score (I x C x E) | Justification |
+|---|---|---|---|---|---|
 
 **→ Review scores with the user. Adjust before selecting the top experiment.**
 
