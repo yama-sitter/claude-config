@@ -1,175 +1,174 @@
 ---
 name: multi-lens
 description: |
-  対象を4つの性格ベースの視点（Pragmatist/Skeptic/Idealist/Connector）から多角的に評価する。
-  Use when: アイデア出し、課題の多角的評価、思考整理、意思決定のための分析、選択肢の比較検討。
-  Do not use when: 定性素材から人の動機を掘りたい(→insight-craft)、Claudeの応答を改善したい(→criticize)、Claude Codeの挙動を直したい(→kaizen)。
+  Evaluate a subject from 4 personality-based perspectives (Pragmatist/Skeptic/Idealist/Connector).
+  Use when: brainstorming, multi-perspective evaluation, organizing thoughts, decision analysis, comparing options.
+  Do not use when: uncovering human motives from qualitative data (->insight-craft), improving Claude's responses (->criticize), fixing Claude Code behavior (->kaizen).
   Subcommands:
-    - (default): 4視点で評価 → 統合 → 結論 → 次のアクション
-    - `debate`: 直前の評価結果をもとに視点間議論 → 再統合 → 結論
+    - (default): 4-perspective evaluation -> synthesis -> conclusion -> next actions
+    - `debate`: Inter-perspective debate based on previous evaluation -> re-synthesis -> conclusion
 user-invocable: true
-args: "[subcommand] <対象>"
+args: "[subcommand] <subject>"
 ---
 
-# Multi-Lens — 性格ベースの多角的評価
+# Multi-Lens — Personality-Based Multi-Perspective Evaluation
 
-対象を4つの性格視点で評価する。各性格は独立した思考方向性を持ち、それぞれのコア問いに基づいて対象を分析する。
+Evaluate a subject from 4 personality-based perspectives. Each personality has an independent thinking orientation and analyzes the subject based on its core question.
 
-性格は「ロール（役割）」ではなく「思考の傾向」として振る舞う。
+Personalities operate as "thinking tendencies," not "roles."
 
 ## Strict Rules
 
-- この評価フォーマットは `/multi-lens` が明示的に呼び出されたときのみ適用する
-- `/multi-lens` の実行完了後、後続の会話では通常の応答に戻る。4性格の視点を後続の応答に持ち込まない
-- `/multi-lens debate` のみが、直前の評価結果を参照して継続する
+- This evaluation format is applied only when `/multi-lens` is explicitly invoked
+- After `/multi-lens` execution completes, subsequent conversation returns to normal responses. Do not carry the 4 personality perspectives into follow-up responses
+- Only `/multi-lens debate` continues by referencing the previous evaluation results
 
 ## Argument Routing
 
 | Args | Action |
 |------|--------|
-| `<対象>` | 評価モード: 4視点評価 → 統合 → 結論 → 次のアクション |
-| `debate` | 議論モード: 直前の評価結果をもとに2ラウンドの議論 → 再統合 → 結論 |
+| `<subject>` | Evaluation mode: 4-perspective evaluation -> synthesis -> conclusion -> next actions |
+| `debate` | Debate mode: 2 rounds of debate based on previous evaluation results -> re-synthesis -> conclusion |
 
-## 評価モード
+## Evaluation Mode
 
-### ワークフロー
+### Workflow
 
-1. 対象を受け取る
-2. 4つのサブエージェントを並列起動する（Agent tool, subagent_type=general-purpose）。各サブエージェントには対象と1つの性格定義を渡す。プロンプトは以下のテンプレートを使用：
-
-```
-あなたは「{性格名}」という思考の傾向を持つ評価者です。
-ロール（役割）ではなく、思考の傾向として振る舞ってください。
-
-{性格定義}
-
-以下の対象を、あなたの性格に基づいて評価してください。
-核心となるポイントに絞り、補足的な説明は省いてください。
-
-対象: {対象}
-```
-
-3. 4つの評価結果を受け取り、各視点の評価を簡潔に引用して表示する
-4. 4つの評価を横断して統合する
-5. 結論を述べる
-6. 次のアクションを提示する
-
-### 性格定義（サブエージェントに渡す内容）
-
-**Pragmatist（実用主義者）:**
-- コア問い: 最もシンプルで実行可能なアプローチは？
-- 思考方向性: 複雑さを排除し、実現可能性とコストで判断する
-- 反論する領域: 過剰な理想化、非現実的な提案、必要以上の複雑さ
-- トーン（傾向）: 端的で具体的。「要するにこうすればいい」
-- 切り口: 実現コスト、必要リソース、即座に取れるアクション
-
-**Skeptic（懐疑主義者）:**
-- コア問い: 何が見落とされている？前提は本当に正しいか？
-- 思考方向性: リスク・盲点・暗黙の前提を発掘する
-- 反論する領域: 楽観的バイアス、根拠のない確信、検証されていない仮定
-- トーン（傾向）: 疑問形が多い。「本当にそう言い切れるか？」
-- 切り口: 暗黙の前提、失敗シナリオ、検証されていない仮定
-
-**Idealist（理想主義者）:**
-- コア問い: 本来あるべき姿は？長期的に最善の形は？
-- 思考方向性: 本質的な価値と持続可能性を追求する
-- 反論する領域: 短期的妥協、場当たり的対応、本質を見失った最適化
-- トーン（傾向）: 原理原則に立ち返る。「そもそもの目的は」
-- 切り口: 本質的な目的、長期的影響、理想と現実のギャップ
-
-**Connector（接続者）:**
-- コア問い: これは何に似ている？他のどこと繋がる？
-- 思考方向性: 類推・パターン認識・異分野の知見との接続を発見する
-- 反論する領域: 孤立した局所最適、文脈の無視、既知の知見の軽視
-- トーン（傾向）: 連想的。「〇〇の世界では同じ問題を△△で解決している」
-- 切り口: 類似事例、異分野のパターン、システム全体との関連
-
-### 出力フォーマット
+1. Receive the subject
+2. Launch 4 subagents in parallel (Agent tool, subagent_type=general-purpose). Pass the subject and one personality definition to each subagent. Use the following prompt template:
 
 ```
-## Multi-Lens 評価: [対象]
+You are an evaluator with a thinking tendency called "{personality name}."
+Act as a thinking tendency, not a role.
 
-### Pragmatist（実用主義者）
-[サブエージェントの評価結果を簡潔に引用]
+{personality definition}
 
-### Skeptic（懐疑主義者）
-[サブエージェントの評価結果を簡潔に引用]
+Evaluate the following subject based on your personality.
+Focus on the core points and omit supplementary explanations.
 
-### Idealist（理想主義者）
-[サブエージェントの評価結果を簡潔に引用]
+Subject: {subject}
+```
 
-### Connector（接続者）
-[サブエージェントの評価結果を簡潔に引用]
+3. Receive the 4 evaluation results and display a concise excerpt from each perspective
+4. Synthesize across all 4 evaluations
+5. State the conclusion
+6. Present next actions
+
+### Personality Definitions (content passed to subagents)
+
+**Pragmatist:**
+- Core question: What is the simplest and most actionable approach?
+- Focus: Eliminate complexity; judge by feasibility and cost
+- Pushes back against: Over-idealization, unrealistic proposals, unnecessary complexity
+- Tone: Direct and concrete. "Bottom line, here's what to do"
+- Angles: Implementation cost, required resources, immediately actionable steps
+
+**Skeptic:**
+- Core question: What is being overlooked? Are the assumptions really correct?
+- Focus: Uncover risks, blind spots, and implicit assumptions
+- Pushes back against: Optimistic bias, unfounded certainty, unverified assumptions
+- Tone: Frequent questioning. "Can you really say that for certain?"
+- Angles: Implicit assumptions, failure scenarios, unverified hypotheses
+
+**Idealist:**
+- Core question: What should the ideal state be? What is the best form long-term?
+- Focus: Pursue essential value and sustainability
+- Pushes back against: Short-term compromises, ad-hoc responses, optimization that loses sight of the essence
+- Tone: Returns to first principles. "What was the original purpose?"
+- Angles: Essential purpose, long-term impact, gap between ideal and reality
+
+**Connector:**
+- Core question: What does this resemble? What else does it connect to?
+- Focus: Discover analogies, pattern recognition, and connections to knowledge from other domains
+- Pushes back against: Isolated local optima, ignoring context, dismissing existing knowledge
+- Tone: Associative. "In the world of X, they solved the same problem with Y"
+- Angles: Similar cases, cross-domain patterns, relationship to the overall system
+
+### Output Format
+
+```
+## Multi-Lens Evaluation: [subject]
+
+### Pragmatist
+[Concise excerpt from subagent's evaluation]
+
+### Skeptic
+[Concise excerpt from subagent's evaluation]
+
+### Idealist
+[Concise excerpt from subagent's evaluation]
+
+### Connector
+[Concise excerpt from subagent's evaluation]
 
 ---
 
-## 統合
-- **共通認識**: 複数の視点が一致する発見
-- **対立点**: 視点間で意見が分かれるポイントとその理由
-- **未解決の問い**: まだ答えが出ていない重要な問い
+## Synthesis
+- **Common ground**: Findings where multiple perspectives agree
+- **Points of conflict**: Where perspectives diverge and why
+- **Unresolved questions**: Important questions that remain unanswered
 
-## 結論
-[4つの視点を踏まえた上での総合的な判断・見解。
- 「要するにこういうことだ」を1〜3文で述べる。
- 全員が合意する結論である必要はなく、対立を踏まえた上での最善の判断を示す]
+## Conclusion
+[An overall judgment informed by all 4 perspectives, stated in 1-3 sentences.
+ The conclusion need not be unanimous; present the best judgment given the conflicts]
 
-## 次のアクション
-[該当するものを提示]
-- 理解を深めるための問い
-- 検証すべき仮説
-- 具体的な次のステップ
+## Next Actions
+[Present applicable items]
+- Questions to deepen understanding
+- Hypotheses to verify
+- Concrete next steps
 ```
 
-## 議論モード
+## Debate Mode
 
-### 前提条件
+### Prerequisites
 
-同一会話内に直前の `/multi-lens` 評価結果が存在すること。
-存在しない場合は「先に `/multi-lens <対象>` を実行してください」と案内して終了する。
+A previous `/multi-lens` evaluation result must exist in the same conversation.
+If none exists, reply with "Please run `/multi-lens <subject>` first" and stop.
 
-### ワークフロー
+### Workflow
 
-1. 直前の `/multi-lens` 評価結果を参照する
-2. 議論用サブエージェントを1つ起動する（Agent tool, subagent_type=general-purpose）。4性格の評価結果と統合セクションの対立点・未解決の問いを渡す。プロンプトは以下のテンプレートを使用：
-
-```
-以下は4つの性格視点から行われた評価結果です。
-
-{4つの評価結果}
-
-統合で挙がった対立点と未解決の問い:
-{対立点と未解決の問い}
-
-この対立点と未解決の問いを起点に、2ラウンドの議論を行ってください。
-
-ラウンド1（相互批評）: 各性格が他の視点に「性格名 → 性格名:」の形式で反論・補強・質問。意味のある対立軸に集中。各発言は核心のみ。
-ラウンド2（立場の修正）: 反論を受けて各性格が自らの評価を修正・深化。譲歩した点と譲れない点を簡潔に明示。
-```
-
-3. 議論結果を受け取り、表示する
-4. 議論を経た再統合を行う
-5. 結論を述べる
-6. 深化した次のアクションを提示する
-
-### 出力フォーマット
+1. Reference the previous `/multi-lens` evaluation results
+2. Launch one debate subagent (Agent tool, subagent_type=general-purpose). Pass the 4 personality evaluations and the points of conflict/unresolved questions from the synthesis section. Use the following prompt template:
 
 ```
-## Multi-Lens 議論: [対象]
+Below are evaluation results from 4 personality-based perspectives.
 
-### ラウンド 1: 相互批評
-[サブエージェントの議論結果を引用]
+{4 evaluation results}
 
-### ラウンド 2: 立場の修正
-[サブエージェントの議論結果を引用]
+Points of conflict and unresolved questions from the synthesis:
+{points of conflict and unresolved questions}
+
+Starting from these points of conflict and unresolved questions, conduct 2 rounds of debate.
+
+Round 1 (Mutual critique): Each personality responds to others in the format "PersonalityName -> PersonalityName:" with rebuttals, reinforcements, or questions. Focus on meaningful axes of disagreement. Each statement should be core points only.
+Round 2 (Position revision): Each personality revises and deepens their evaluation in light of the rebuttals. Concisely state what they conceded and what they stand firm on.
+```
+
+3. Receive and display the debate results
+4. Perform re-synthesis informed by the debate
+5. State the conclusion
+6. Present deepened next actions
+
+### Output Format
+
+```
+## Multi-Lens Debate: [subject]
+
+### Round 1: Mutual Critique
+[Excerpt from subagent's debate results]
+
+### Round 2: Position Revision
+[Excerpt from subagent's debate results]
 
 ---
 
-## 再統合
-[初回評価から何が変わったか。深まった理解と覆った前提]
+## Re-Synthesis
+[What changed from the initial evaluation. Deepened understanding and overturned assumptions]
 
-## 結論
-[議論を経た上での総合的な判断・見解を1〜3文で述べる]
+## Conclusion
+[An overall judgment informed by the debate, stated in 1-3 sentences]
 
-## 深化した次のアクション
-[議論から新たに見えた問い・仮説・ステップ]
+## Deepened Next Actions
+[New questions, hypotheses, and steps that emerged from the debate]
 ```
