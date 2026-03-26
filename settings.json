@@ -34,7 +34,8 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:npmjs.org)",
       "mcp__serena__*",
-      "mcp__sequential-thinking__*"
+      "mcp__sequential-thinking__*",
+      "mcp__plugin_context7_context7__*"
     ],
     "deny": [
       "Bash(sudo *)",
