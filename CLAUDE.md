@@ -25,7 +25,7 @@ The superpowers flow is considered active when any of the following is true:
 When active:
 - Plan template → Use `superpowers:writing-plans` (do not use `plan-template.md`)
 - Plan review → Use superpowers subagent review
-- Plan storage → Save to `docs/superpowers/plans/` and also copy to `agent-memory`
+- Plan storage → Save to `docs/superpowers/plans/` → Execution Handoff の前に Memory Guidelines の手順で `agent-memory` にも保存
 
 ### When superpowers flow is NOT active
 

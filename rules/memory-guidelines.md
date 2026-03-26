@@ -6,9 +6,14 @@
 - Do not write directly to the auto memory directory (`memory/`); use it only as an index pointing to the agent-memory skill
 - Follow the agent-memory skill's folder structure and frontmatter format when saving
 
-## Saving Plans After Approval
+## Saving Plans to agent-memory
 
-After the user approves a plan (ExitPlanMode approved), save the plan content using the `/agent-memory` skill:
+Save the plan content using the `/agent-memory` skill when either of the following triggers occurs:
+
+- **Trigger 1**: After the user approves a plan in Plan Mode (ExitPlanMode approved)
+- **Trigger 2**: After the superpowers writing-plans skill saves a plan file to `docs/superpowers/plans/`, before Execution Handoff (presenting execution choices)
+
+Save procedure:
 
 - Scope: the current repository name
 - Directory name: `<YYYY-MM-DD>_<task-description>-plan`
