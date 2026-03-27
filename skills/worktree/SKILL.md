@@ -24,6 +24,8 @@ WorktreeCreate hook automatically handles branch naming, dependency installation
 | `/worktree <branch>`       | Enter the worktree for `<branch>`. Create if not exists (with confirmation) |
 | `/worktree current`        | Re-enter the last worktree used in this session                             |
 | `/worktree exit`           | Exit the current worktree (keep/remove confirmation)                        |
+| `/worktree verify`         | Enter verify mode: checkout worktree HEAD as detached HEAD on main          |
+| `/worktree resume`         | Exit verify mode: return to worktree for development                        |
 | `/worktree search <query>` | Search worktrees by natural language query                                  |
 | `/worktree search`         | List all worktrees and select interactively                                 |
 | `/worktree` (no args)      | Same as `/worktree search`                                                  |
@@ -34,6 +36,16 @@ WorktreeCreate hook automatically handles branch naming, dependency installation
 
 - The current directory is within a Git repository
 - Not already inside a worktree (for enter commands)
+
+### Verify state detection
+
+On every `/worktree` invocation, check if `~/.claude/.worktree-verify-state` exists.
+If it does, read the file and warn:
+
+> ⚠️ 確認モードが残っています（ブランチ: `<worktreeBranch>`）。
+> `/worktree resume` で開発に戻るか、状態をクリーンアップしてください。
+
+Then stop processing. Do NOT proceed with the requested subcommand (except `resume` and `exit`, which handle verify state).
 
 ---
 
