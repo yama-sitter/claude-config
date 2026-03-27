@@ -1,304 +1,304 @@
 ---
 name: research
 description: |
-  リサーチの設計を支援する — リサーチクエスチョン（RQ）の構築、リサーチ計画の策定、インタビューガイドの作成。
-  書籍「プロダクトリサーチ・ルールズ」の4ステップを基盤とし、FINER基準・Known/Unknownマトリクス等をレイヤーとして組み込む。
-  Use when: リサーチの設計（何を調べるか・どう調べるか）
-  Do not use when: 収集済みデータの分析（insight-craft / insight-digestionを使うこと）、実験仮説の設計（experiment-disciplineを使うこと）
-  サブコマンド:
-    - (default): サブコマンド案内
-    - `rq`: リサーチクエスチョン構築の壁打ち
-    - `plan`: リサーチ計画の設計
-    - `interview`: インタビューガイドの作成
+  Support research design — building Research Questions (RQs), designing research plans, and creating interview guides.
+  Built on the "Product Research Rules" 4-step framework, layered with FINER criteria, Known/Unknown matrix, and more.
+  Use when: designing research (what to investigate and how)
+  Do not use when: analyzing collected data (use insight-craft / insight-digestion), designing experiment hypotheses (use experiment-discipline)
+  Subcommands:
+    - (default): Subcommand guide
+    - `rq`: Research Question construction sparring
+    - `plan`: Research plan design
+    - `interview`: Interview guide creation
 user-invocable: true
 ---
 
-# Research — リサーチ設計スキル
+# Research — Research Design Skill
 
-リサーチの「設計」を壁打ちで支援するスキル。単体で完結し、下流スキル（insight-craft, insight-digestion, experiment-discipline）にも接続可能。
+A skill that supports the "design" phase of research through collaborative sparring. Self-contained, and can connect to downstream skills (insight-craft, insight-digestion, experiment-discipline).
 
-## 共通原則
+## Common Principles
 
-- **RQ ≠ インタビュー質問**: RQは「知りたいこと」、インタビュー質問は「聞き方」。RQをそのまま聞くと参加者が「期待される答え」を返してしまう
-- **対話スタイル**: ハイブリッド。対話で導きつつ、Claudeも外部調査・ドメイン知識を織り交ぜる
-- **1問1答**: 複数の質問を一度に投げない。ユーザーの負荷を下げる
-- **調査の織り込み方**: Claudeの調査結果は「答え」として提示せず、壁打ちの素材として対話に自然に織り込む
+- **RQ ≠ Interview Question**: An RQ is "what you want to know"; an interview question is "how you ask it." Asking the RQ directly causes participants to guess the "expected answer"
+- **Dialogue style**: Hybrid. Guide through dialogue while weaving in external research and domain knowledge
+- **One question at a time**: Never ask multiple questions at once. Reduce cognitive load on the user
+- **Weaving in research**: Present Claude's research not as "answers" but as material naturally woven into the sparring dialogue
 
-## サブコマンドルーティング
+## Subcommand Routing
 
-| 引数        | 動作                                                           |
-| ----------- | -------------------------------------------------------------- |
-| なし        | サブコマンド案内を表示。ユーザーの状況をヒアリングし推奨を示す |
-| `rq`        | → RQ構築ワークフローへ                                         |
-| `plan`      | → リサーチ計画ワークフローへ                                   |
-| `interview` | → インタビューガイドワークフローへ                             |
+| Argument    | Behavior                                                                 |
+| ----------- | ------------------------------------------------------------------------ |
+| (none)      | Show subcommand guide. Interview the user's situation and suggest one    |
+| `rq`        | → RQ construction workflow                                               |
+| `plan`      | → Research plan workflow                                                 |
+| `interview` | → Interview guide workflow                                               |
 
-**デフォルト動作（引数なし）**:
+**Default behavior (no argument)**:
 
-> 「リサーチのどの段階を手伝いますか？」
+> "Which stage of research can I help with?"
 >
-> - `rq` — リサーチクエスチョンの構築
-> - `plan` — リサーチ計画の設計
-> - `interview` — インタビューガイドの作成
+> - `rq` — Research Question construction
+> - `plan` — Research plan design
+> - `interview` — Interview guide creation
 
 ---
 
-## `/research rq` — リサーチクエスチョン構築
+## `/research rq` — Research Question Construction
 
-書籍「プロダクトリサーチ・ルールズ」の4ステップを基盤とし、各ステップの出口に品質ゲートを追加したレイヤード強化版。
+A layered, enhanced version of the "Product Research Rules" 4-step framework with quality gates at each step exit.
 
-### Step 0: 対話前の準備ステップ（Claude側）
+### Step 0: Pre-dialogue Preparation (Claude's side)
 
-ユーザーがテーマを伝えた後、Claudeの最初のターンでWebSearch/WebFetchにより調査を実施:
+After the user shares their theme, Claude conducts research via WebSearch/WebFetch on the first turn:
 
-- 対象ドメインの基本構造（市場、主要プレイヤー、トレンド）
-- 類似領域での既存リサーチ事例
-- 関連する学術的知見やフレームワーク
+- Basic domain structure (market, key players, trends)
+- Existing research examples in similar areas
+- Related academic findings and frameworks
 
-「テーマについて少し調べてから壁打ちを始めます」とユーザーに伝える。調査結果はStep 1以降の壁打ちで素材として自然に織り込む。一括提示しない。
+Tell the user: "Let me do a bit of research on your theme before we start sparring." Weave research results naturally into the sparring from Step 1 onward. Do not present them all at once.
 
-**フォールバック**: テーマが曖昧すぎて調査できない場合、調査をスキップしてStep 1から直接始める。テーマが具体化した時点で調査を実施する。
+**Fallback**: If the theme is too vague to research, skip research and start directly from Step 1. Conduct research once the theme becomes more specific.
 
-### Step 1: 直感を捕まえる
+### Step 1: Capture Your Intuition
 
-ユーザーの漠然とした違和感・関心を言語化する。
+Verbalize the user's vague discomfort or interest.
 
-- 「何について調べたいですか？」「どんな違和感やもやもやがありますか？」と問いかけ
-- ユーザーの回答に対してStep 0の調査結果を織り交ぜながら深掘り
-- 1問1答で進め、直感が1-3個の文として言語化されるまで対話を続ける
+- Ask: "What do you want to investigate?" "What kind of discomfort or unease do you feel?"
+- Deepen the user's response by weaving in research results from Step 0
+- Proceed one question at a time, continuing dialogue until the intuition is verbalized as 1-3 statements
 
-**→ 「この直感の表現で合っていますか？」**
+**→ "Does this expression of your intuition feel right?"**
 
-### Step 2: 5W1Hで分解する + Known/Unknownマトリクス
+### Step 2: Decompose with 5W1H + Known/Unknown Matrix
 
-直感の解像度を上げ、「わかっていること」と「わかっていないこと」を切り分ける。
+Increase the resolution of the intuition and separate "what is known" from "what is unknown."
 
-- Step 1の直感に対して5W1H（誰が？何を？なぜ？どこで？いつ？どのように？）を1つずつ問いかけ
-- 各回答を「既知（事実）」と「未知（疑問）」に振り分け
+- For each intuition from Step 1, ask 5W1H questions one at a time (Who? What? Why? Where? When? How?)
+- Sort each answer into "Known (fact)" and "Unknown (question)"
 
-Known/Unknownマトリクスの詳細は [known-unknown-matrix.md](references/known-unknown-matrix.md) を参照。
+See [known-unknown-matrix.md](references/known-unknown-matrix.md) for details on the Known/Unknown matrix.
 
 Output:
 
-| 5W1H  | 既知（事実） | 未知（疑問） |
-| ----- | ------------ | ------------ |
-| Who   | ...          | ...          |
-| What  | ...          | ...          |
-| Why   | ...          | ...          |
-| Where | ...          | ...          |
-| When  | ...          | ...          |
-| How   | ...          | ...          |
+| 5W1H  | Known (facts) | Unknown (questions) |
+| ----- | ------------- | ------------------- |
+| Who   | ...           | ...                 |
+| What  | ...           | ...                 |
+| Why   | ...           | ...                 |
+| Where | ...           | ...                 |
+| When  | ...           | ...                 |
+| How   | ...           | ...                 |
 
-**→ 「この整理で合っていますか？未知の欄で特に気になるものはどれですか？」**
+**→ "Does this breakdown look right? Which items in the Unknown column concern you most?"**
 
-### Step 3: 3視点 + FINERで評価・絞り込む
+### Step 3: Evaluate & Filter with 3 Perspectives + FINER
 
-Step 2で出た「未知（疑問）」の中から、調べる価値のある問いに絞り込む。
+From the "Unknown (questions)" identified in Step 2, filter down to questions worth investigating.
 
-**一次評価（3視点）**:
+**Primary evaluation (3 perspectives)**:
 
-1. **使用の視点**: ユーザーにとって重要か？
-2. **事業の視点**: ビジネスにとって重要か？
-3. **専門の視点**: リサーチせずとも既存知識で答えが出ないか？
+1. **User perspective**: Is it important to the user?
+2. **Business perspective**: Is it important to the business?
+3. **Expert perspective**: Can it be answered with existing knowledge without research?
 
-→ 「専門の視点」でClaudeがWeb調査を実施。既に答えが出ている疑問は除外。
+→ For the "Expert perspective," Claude conducts a web search. Questions already answered are excluded.
 
-**二次評価（FINER基準、残った疑問に対して）**:
+**Secondary evaluation (FINER criteria, applied to remaining questions)**:
 
-- **F**easible: 利用可能なリソースで調べられるか？
-- **I**nteresting: チームや関係者が関心を持つか？
-- **N**ovel: 新しい知見が得られるか？
-- ※ Ethical / Relevant は必要な場合のみ
+- **F**easible: Can it be investigated with available resources?
+- **I**nteresting: Will the team and stakeholders care?
+- **N**ovel: Will it yield new insights?
+- ※ Ethical / Relevant only when necessary
 
-FINER基準の詳細は [finer-criteria.md](references/finer-criteria.md) を参照。
+See [finer-criteria.md](references/finer-criteria.md) for details on FINER criteria.
 
-Output: 優先度付き疑問リスト
+Output: Prioritized question list
 
-| 疑問 | 使用 | 事業 | 専門で解決? | F   | I   | N   | 優先度 |
-| ---- | ---- | ---- | ----------- | --- | --- | --- | ------ |
+| Question | User | Business | Resolved by expert? | F   | I   | N   | Priority |
+| -------- | ---- | -------- | ------------------- | --- | --- | --- | -------- |
 
-**→ 「この評価結果を見て、どの疑問をRQにしたいですか？」**
+**→ "Looking at these results, which questions would you like to turn into RQs?"**
 
-### Step 4: RQ文章化 + 品質チェック
+### Step 4: RQ Formulation + Quality Check
 
-選んだ疑問をリサーチで答えを出せる具体的な質問文にする。
+Turn the selected questions into specific, researchable question statements.
 
-- ユーザーにまずRQを書いてもらう（拙くてOK）
-- [rq-quality-checklist.md](references/rq-quality-checklist.md) で評価しフィードバック
-- 改善を繰り返し、ユーザーが納得するRQが完成するまで対話
+- Ask the user to write an RQ first (rough is fine)
+- Evaluate with [rq-quality-checklist.md](references/rq-quality-checklist.md) and provide feedback
+- Iterate improvements through dialogue until the user is satisfied with the RQ
 
-**→ 完了時:「/research planで計画を立てたり、/research interviewでガイドを作ることもできます」と案内（任意）**
-
----
-
-## `/research plan` — リサーチ計画の設計
-
-### 入口ゲート
-
-「このリサーチで何を明らかにしたいですか？」
-
-| ユーザーの状態 | 対応                                       |
-| -------------- | ------------------------------------------ |
-| 明確なRQを提示 | そのまま → Step 1へ                        |
-| 漠然と説明     | 1-2往復で方向性確認 → Step 1へ             |
-| 「わからない」 | `/research rq`を案内し、まずRQ構築を勧める |
-
-**やらないこと**: RQの本格構築（4ステップ）。入口での確認は「方向性の合意」まで。
-
-### Step 1: RQの性質分析
-
-RQの性質に応じてリサーチの方向性を判断:
-
-- **探索的**（なぜ？どのように？）→ 定性調査推奨（インタビュー、行動観察）
-- **検証的**（〜は正しいか？どちらが？）→ 定量調査推奨（サーベイ、A/Bテスト）
-- **混合** → 定性で仮説を立て、定量で検証するシーケンシャル設計
-
-**→ RQの性質と推奨方向をユーザーに確認**
-
-### Step 2: リサーチ手法の選定
-
-Step 1の方向性に基づき、具体的な手法を提案。Pros/Consと適合度を解説。
-
-手法の詳細は [research-methods.md](references/research-methods.md) を参照。
-
-Claude調査: 手法選定時にベストプラクティスをWeb調査。
-
-**→ ユーザーが手法を選択**
-
-### Step 3: 対象者の定義
-
-- スクリーニング条件（年齢、職業、行動特性等）
-- リクルーティング基準
-- サンプルサイズの目安（定性: 5-8名、定量: 統計的に有意なN数）
-
-**→ 対象者定義をユーザーに確認**
-
-### Step 4: 分析方針
-
-- RQに答えるために収集データをどう分析するか
-- 定性: テーマ分析、親和図法、KJ法等
-- 定量: 記述統計、クロス集計、仮説検定等
-- 分析の完了基準（何が見えたらRQに答えられたと言えるか）
-
-Output: リサーチ計画書（RQ、手法、対象者、スケジュール目安、分析方針をまとめた1ドキュメント）
-
-**→ リサーチ計画書全体をユーザーに確認。必要に応じて修正を繰り返す**
+**→ On completion: "You can also design a plan with /research plan or create an interview guide with /research interview" (optional)**
 
 ---
 
-## `/research interview` — インタビューガイドの作成
+## `/research plan` — Research Plan Design
 
-### 入口ゲート
+### Entry Gate
 
-「このインタビューで何を明らかにしたいですか？対象者はどんな人ですか？」
+"What do you want to clarify through this research?"
 
-| ユーザーの状態 | 対応                                                       |
-| -------------- | ---------------------------------------------------------- |
-| RQ + 計画あり  | そのまま → Step 1へ                                        |
-| RQのみ         | 対象者・時間配分を簡易確認 → Step 1へ                      |
-| 漠然と説明     | 目的と対象者を1-2往復で確認 → Step 1へ                     |
-| 「わからない」 | `/research rq`を案内し、まず「知りたいこと」の整理を勧める |
+| User's state              | Response                                                     |
+| ------------------------- | ------------------------------------------------------------ |
+| Presents a clear RQ       | Proceed directly → Step 1                                    |
+| Vague explanation         | Confirm direction in 1-2 exchanges → Step 1                  |
+| "I don't know"            | Suggest `/research rq` and recommend building an RQ first    |
 
-**やらないこと**: リサーチ計画策定、RQの本格構築。
+**What this does NOT do**: Full RQ construction (4 steps). The entry gate only confirms "directional alignment."
 
-### Step 1: RQからインタビュー質問への変換
+### Step 1: RQ Nature Analysis
 
-核心原則: **RQ ≠ インタビュー質問**
+Determine the research direction based on the nature of the RQ:
 
-各RQに対して、間接的に答えを引き出す質問群を設計する。
+- **Exploratory** (Why? How?) → Qualitative research recommended (interviews, behavioral observation)
+- **Confirmatory** (Is X true? Which one?) → Quantitative research recommended (surveys, A/B testing)
+- **Mixed** → Sequential design: qualitative to form hypotheses, then quantitative to validate
 
-RQ→IQ変換の原則と例は [interview-design.md](references/interview-design.md) を参照。
+**→ Confirm the RQ nature and recommended direction with the user**
 
-変換チェック:
+### Step 2: Research Method Selection
 
-- 誘導的でないか？
-- 開放的か？（Yes/Noで終わらない）
-- 具体的な経験を聞いているか？（「普段〜」より「最後に〜した時」）
+Based on the direction from Step 1, propose specific methods with pros/cons and fit analysis.
 
-**→ 変換結果をユーザーに確認**
+See [research-methods.md](references/research-methods.md) for method details.
 
-### Step 2: インタビュー構成の設計
+Claude research: Conduct web research on best practices during method selection.
 
-4パート構成:
+**→ User selects a method**
 
-1. **ウォームアップ**（5-10分）: 信頼関係構築。テーマに関連するが答えやすい質問
-2. **本質的質問**（20-30分）: Step 1で変換した質問群。RQへの回答を引き出す
-3. **深掘り質問**: 各回答に対するフォローアップの型を準備（「それはなぜ？」「具体的には？」「他には？」）
-4. **クロージング**（5分）: 「他に話したかったこと」「聞き漏らしたこと」の確認
+### Step 3: Participant Definition
 
-Output: 各質問にRQとの対応関係を明示したインタビューガイド
+- Screening criteria (age, occupation, behavioral characteristics, etc.)
+- Recruitment criteria
+- Sample size guidelines (qualitative: 5-8 participants, quantitative: statistically significant N)
 
-| #   | パート         | 質問 | 対応するRQ | 意図     |
-| --- | -------------- | ---- | ---------- | -------- |
-| 1   | ウォームアップ | ...  | -          | 信頼構築 |
-| 2   | 本質           | ...  | RQ1        | ...      |
-| ... | ...            | ...  | ...        | ...      |
+**→ Confirm participant definition with the user**
 
-**→ インタビューガイドをユーザーに確認。必要に応じて修正を繰り返す**
+### Step 4: Analysis Approach
+
+- How to analyze collected data to answer the RQ
+- Qualitative: thematic analysis, affinity diagramming, KJ method, etc.
+- Quantitative: descriptive statistics, cross-tabulation, hypothesis testing, etc.
+- Completion criteria for analysis (what constitutes having answered the RQ)
+
+Output: Research plan document (a single document summarizing RQ, methods, participants, estimated schedule, and analysis approach)
+
+**→ Confirm the entire research plan with the user. Iterate revisions as needed**
 
 ---
 
-## 責務の境界
+## `/research interview` — Interview Guide Creation
 
-|                         | rq  | plan | interview |
-| ----------------------- | --- | ---- | --------- |
-| RQ本格構築（4ステップ） | ◯   | ×    | ×         |
-| 方向性の簡易確認        | -   | ◯    | ◯         |
-| リサーチ手法選定        | ×   | ◯    | ×         |
-| 対象者の本格定義        | ×   | ◯    | ×         |
-| 対象者の簡易確認        | ×   | -    | ◯         |
-| IQ設計                  | ×   | ×    | ◯         |
-| 情報不足時の案内        | -   | ◯    | ◯         |
+### Entry Gate
 
-## 下流スキルとの接続
+"What do you want to clarify through this interview? Who are the participants?"
 
-- `/research rq` → インタビュー実施の起点
-- インタビューログ → `/insight-digestion`（JTBD抽出）/ `/insight-craft`（洞察発掘）
-- 洞察・JTBD → `/experiment-discipline`（実験設計）
+| User's state              | Response                                                              |
+| ------------------------- | --------------------------------------------------------------------- |
+| Has RQ + plan             | Proceed directly → Step 1                                             |
+| Has RQ only               | Briefly confirm participants and time allocation → Step 1             |
+| Vague explanation         | Confirm purpose and participants in 1-2 exchanges → Step 1            |
+| "I don't know"            | Suggest `/research rq` and recommend clarifying "what you want to know" first |
 
-## 成果物管理
+**What this does NOT do**: Research plan creation, full RQ construction.
 
-### SSOT原則
+### Step 1: Converting RQs to Interview Questions
 
-成果物のSSOTはagent-memoryとする。plan fileは作業中のワーキングドキュメントであり、最終版ではない。外部ファイル（~/Downloads等）への出力はユーザー要求時のみ行い、agent-memoryの内容から生成する。複数箇所に同じ内容を保持しない。
+Core principle: **RQ ≠ Interview Question**
 
-### 制約管理
+For each RQ, design a set of questions that indirectly elicit answers.
 
-対話中にcriticize等で発見された制約（例:「仮定質問は自己分析を求めるのでNG」）は、agent-memoryの当該リサーチディレクトリに`constraints.md`として保存する。成果物を更新する際はconstraints.mdを必ず再読し、制約に違反していないか確認する。
+See [interview-design.md](references/interview-design.md) for RQ → IQ conversion principles and examples.
 
-### 整合性チェックゲート
+Conversion checks:
 
-RQの文面を変更した時、またはインタビューガイドを出力する前に、[artifact-consistency-checklist.md](references/artifact-consistency-checklist.md) を参照して整合性チェックを実施する。
+- Is it non-leading?
+- Is it open-ended? (doesn't end with Yes/No)
+- Does it ask about specific experiences? ("the last time you..." rather than "usually...")
 
-## 厳格ルール
+**→ Confirm conversion results with the user**
 
-1. チェックポイント（→）をスキップしない
-2. RQ ≠ インタビュー質問を常に区別する
-3. Claudeの調査結果を「答え」として提示しない — 壁打ちの素材として織り込む
-4. 1問1答で進める — 複数の質問を一度に投げない
-5. 入口分岐で無理に進めない — コンテキスト不足なら適切なサブコマンドを案内する
-6. `/research plan`と`/research interview`の中でRQの本格構築（4ステップ）をやらない
-7. 品質チェックで全項目OKの場合、最も弱い項目を1つ特定し、なぜOKと判断したかの根拠を明示する
-8. 外部調査は対話の流れを壊さない範囲で行う
-9. 成果物のSSOTはagent-memoryとする — plan fileは作業中のワーキングドキュメントであり、最終版ではない
-10. RQ・仮説・ガイドを変更した時は、[artifact-consistency-checklist.md](references/artifact-consistency-checklist.md) に基づく整合性チェックを実施する
-11. 対話中に発見された制約はagent-memoryのconstraints.mdに保存し、成果物更新時に再読する
-12. 探索的RQと仮説駆動型RQに優劣をつけない — ユーザーの知識状態に応じて適切な型を提案する
+### Step 2: Interview Structure Design
 
-## 完了条件
+4-part structure:
+
+1. **Warm-up** (5-10 min): Build rapport. Questions related to the theme but easy to answer
+2. **Core questions** (20-30 min): Question sets converted in Step 1. Elicit answers to the RQs
+3. **Deep-dive questions**: Prepare follow-up patterns for each response ("Why is that?" "Can you be more specific?" "What else?")
+4. **Closing** (5 min): Check for "anything else you wanted to share" or "anything we missed"
+
+Output: Interview guide with explicit RQ mapping for each question
+
+| #   | Section   | Question | Mapped RQ | Intent          |
+| --- | --------- | -------- | --------- | --------------- |
+| 1   | Warm-up   | ...      | -         | Build rapport   |
+| 2   | Core      | ...      | RQ1       | ...             |
+| ... | ...       | ...      | ...       | ...             |
+
+**→ Confirm the interview guide with the user. Iterate revisions as needed**
+
+---
+
+## Responsibility Boundaries
+
+|                                    | rq  | plan | interview |
+| ---------------------------------- | --- | ---- | --------- |
+| Full RQ construction (4 steps)     | Yes | No   | No        |
+| Brief directional confirmation     | -   | Yes  | Yes       |
+| Research method selection          | No  | Yes  | No        |
+| Full participant definition        | No  | Yes  | No        |
+| Brief participant confirmation     | No  | -    | Yes       |
+| IQ design                          | No  | No   | Yes       |
+| Redirect when context is lacking   | -   | Yes  | Yes       |
+
+## Downstream Skill Connections
+
+- `/research rq` → Starting point for conducting interviews
+- Interview logs → `/insight-digestion` (JTBD extraction) / `/insight-craft` (insight discovery)
+- Insights / JTBD → `/experiment-discipline` (experiment design)
+
+## Artifact Management
+
+### SSOT Principle
+
+The SSOT for artifacts is agent-memory. The plan file is a working document during the session, not the final version. Output to external files (e.g., ~/Downloads) is done only on user request, generated from agent-memory content. Do not maintain the same content in multiple locations.
+
+### Constraint Management
+
+Constraints discovered during dialogue (e.g., via criticize, such as "hypothetical questions are NG because they demand self-analysis") are saved as `constraints.md` in the relevant research directory in agent-memory. When updating artifacts, always re-read constraints.md and verify no constraints are violated.
+
+### Consistency Check Gate
+
+When an RQ is modified or before outputting an interview guide, run a consistency check by referring to [artifact-consistency-checklist.md](references/artifact-consistency-checklist.md).
+
+## Strict Rules
+
+1. Never skip checkpoints (→)
+2. Always distinguish RQ ≠ Interview Question
+3. Never present Claude's research as "answers" — weave them in as sparring material
+4. Proceed one question at a time — never ask multiple questions at once
+5. Do not force progress at the entry gate — if context is lacking, direct to the appropriate subcommand
+6. Do not perform full RQ construction (4 steps) within `/research plan` or `/research interview`
+7. When a quality check shows all items OK, identify the weakest item and explicitly state the rationale for marking it OK
+8. Conduct external research only within a range that does not disrupt the dialogue flow
+9. The SSOT for artifacts is agent-memory — the plan file is a working document during the session, not the final version
+10. When an RQ, hypothesis, or guide is modified, run a consistency check based on [artifact-consistency-checklist.md](references/artifact-consistency-checklist.md)
+11. Save constraints discovered during dialogue to constraints.md in agent-memory, and re-read them when updating artifacts
+12. Do not rank exploratory RQs and hypothesis-driven RQs — propose the appropriate type based on the user's knowledge state
+
+## Completion Criteria
 
 ### `/research rq`
 
-- 品質チェックリストを通過したRQが少なくとも1つ完成
-- ユーザーがRQに納得している
+- At least one RQ has passed the quality checklist
+- The user is satisfied with the RQ
 
 ### `/research plan`
 
-- リサーチ計画書（RQ、手法、対象者、分析方針）が完成
-- ユーザーが計画に合意している
+- A research plan document (RQ, methods, participants, analysis approach) is complete
+- The user has agreed to the plan
 
 ### `/research interview`
 
-- 全RQに対応するインタビュー質問が設計されている
-- 4パート構成のインタビューガイドが完成
-- ユーザーがガイドに合意している
+- Interview questions are designed for all RQs
+- A 4-part interview guide is complete
+- The user has agreed to the guide

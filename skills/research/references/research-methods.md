@@ -1,76 +1,76 @@
-# リサーチ手法一覧
+# Research Methods Catalog
 
-RQの性質に応じたリサーチ手法の選定ガイド。`/research plan` のStep 2で使用する。
+A guide for selecting research methods based on the nature of the RQ. Used in Step 2 of `/research plan`.
 
-## 手法一覧
+## Method Catalog
 
-### 定性調査（探索的RQに適する）
+### Qualitative Research (suited for exploratory RQs)
 
-#### デプスインタビュー
-- **概要**: 1対1の半構造化インタビュー。30-60分
-- **適するRQ**: 「なぜ〜するのか？」「どのように〜しているのか？」
-- **サンプルサイズ**: 5-8名（5名で約85%の問題を発見できるとされる）
-- **Pros**: 深い動機や背景を理解できる。柔軟に深掘り可能
-- **Cons**: 時間がかかる。参加者のリクルーティングが必要。分析に労力
+#### Depth Interview
+- **Overview**: One-on-one semi-structured interview. 30-60 minutes
+- **Suited for**: "Why do they...?" "How do they...?"
+- **Sample size**: 5-8 participants (5 participants are said to uncover ~85% of issues)
+- **Pros**: Deep understanding of motivations and context. Flexible deep-diving
+- **Cons**: Time-consuming. Requires participant recruitment. Analysis is labor-intensive
 
-#### コンテキスチュアルインクワイアリ（文脈的質問法）
-- **概要**: 参加者の実際の環境で行動を観察しながらインタビュー
-- **適するRQ**: 「実際にどのように〜しているのか？」「どの場面で〜が起きるのか？」
-- **サンプルサイズ**: 4-6名
-- **Pros**: 言語化されない行動やワークアラウンドを発見できる
-- **Cons**: 高コスト。参加者の環境にアクセスする必要がある
+#### Contextual Inquiry
+- **Overview**: Interview conducted while observing behavior in the participant's actual environment
+- **Suited for**: "How do they actually...?" "In what situations does X occur?"
+- **Sample size**: 4-6 participants
+- **Pros**: Discovers unarticulated behaviors and workarounds
+- **Cons**: High cost. Requires access to the participant's environment
 
-#### 日記調査（ダイアリースタディ）
-- **概要**: 参加者が一定期間、特定の行動や感情を記録
-- **適するRQ**: 「時間経過に伴って〜はどう変化するか？」「日常的に〜はどう使われているか？」
-- **サンプルサイズ**: 10-15名
-- **Pros**: 時間軸での変化を捉えられる。回想バイアスが少ない
-- **Cons**: 参加者の負担が大きく離脱リスク。期間が長い
+#### Diary Study
+- **Overview**: Participants record specific behaviors or feelings over a set period
+- **Suited for**: "How does X change over time?" "How is X used in daily life?"
+- **Sample size**: 10-15 participants
+- **Pros**: Captures changes over time. Less recall bias
+- **Cons**: High participant burden with dropout risk. Long duration
 
-#### フォーカスグループ
-- **概要**: 4-8名のグループでテーマについて議論
-- **適するRQ**: 「〜についてどんな認識があるか？」「〜の受容性はどうか？」
-- **サンプルサイズ**: 2-3グループ（各4-8名）
-- **Pros**: 短時間で多くの視点を収集。参加者間の相互作用で発想が広がる
-- **Cons**: 集団圧力で意見が偏る可能性。深い個人的動機は出にくい
+#### Focus Group
+- **Overview**: A group of 4-8 people discusses a topic together
+- **Suited for**: "What perceptions exist about X?" "How receptive are people to X?"
+- **Sample size**: 2-3 groups (4-8 per group)
+- **Pros**: Collects many perspectives in a short time. Interaction sparks new ideas
+- **Cons**: Group pressure may skew opinions. Deep personal motivations are hard to surface
 
-### 定量調査（検証的RQに適する）
+### Quantitative Research (suited for confirmatory RQs)
 
-#### サーベイ（アンケート）
-- **概要**: 構造化された質問票をオンラインまたは対面で配布
-- **適するRQ**: 「〜はどの程度の割合か？」「〜と〜の間に関連はあるか？」
-- **サンプルサイズ**: 最低100名（統計的有意性のため）
-- **Pros**: 低コスト。大量データ収集可能。定量的な裏付け
-- **Cons**: 深い理由がわからない。質問設計のバイアスリスク
+#### Survey
+- **Overview**: Distribute a structured questionnaire online or in person
+- **Suited for**: "What proportion...?" "Is there a correlation between X and Y?"
+- **Sample size**: At least 100 (for statistical significance)
+- **Pros**: Low cost. Can collect large amounts of data. Quantitative evidence
+- **Cons**: Cannot uncover deep reasons. Risk of question design bias
 
-#### ユーザビリティテスト
-- **概要**: 参加者にタスクを実行してもらい、操作の様子を観察
-- **適するRQ**: 「ユーザーは〜をスムーズに完了できるか？」「どこで詰まるか？」
-- **サンプルサイズ**: 5-8名
-- **Pros**: 具体的な使用上の問題を特定できる。改善ポイントが明確
-- **Cons**: プロトタイプやプロダクトが必要。人工的な環境での行動
+#### Usability Testing
+- **Overview**: Observe participants executing tasks
+- **Suited for**: "Can users complete X smoothly?" "Where do they get stuck?"
+- **Sample size**: 5-8 participants
+- **Pros**: Identifies specific usability issues. Clear improvement points
+- **Cons**: Requires a prototype or product. Behavior in an artificial environment
 
-#### A/Bテスト
-- **概要**: 2つのバリエーションをランダムに表示し、行動データで比較
-- **適するRQ**: 「AとBのどちらが〜に効果的か？」
-- **サンプルサイズ**: 統計的検出力に依存（通常数百〜数千）
-- **Pros**: 因果関係を検証できる。客観的なデータ
-- **Cons**: 大量のトラフィックが必要。「なぜ」はわからない
+#### A/B Testing
+- **Overview**: Randomly display two variations and compare behavioral data
+- **Suited for**: "Which is more effective for X — A or B?"
+- **Sample size**: Depends on statistical power (typically hundreds to thousands)
+- **Pros**: Can verify causal relationships. Objective data
+- **Cons**: Requires high traffic volume. Cannot answer "why"
 
-### 混合調査
+### Mixed Methods
 
-#### シーケンシャルデザイン（探索→検証）
-- **概要**: まず定性調査で仮説を立て、次に定量調査で検証
-- **適するRQ**: 混合型のRQ。例:「〜はなぜ起きているのか？（探索）それはどの程度一般的か？（検証）」
-- **Pros**: 深い理解と統計的裏付けの両方が得られる
-- **Cons**: 時間とコストが2倍
+#### Sequential Design (Exploratory → Confirmatory)
+- **Overview**: First conduct qualitative research to form hypotheses, then validate with quantitative research
+- **Suited for**: Mixed RQs. e.g., "Why is X happening? (exploratory) How prevalent is it? (confirmatory)"
+- **Pros**: Yields both deep understanding and statistical evidence
+- **Cons**: Doubles time and cost
 
-## 手法選定の判断基準
+## Method Selection Criteria
 
-| 判断軸 | 定性を選ぶ | 定量を選ぶ |
+| Decision axis | Choose qualitative | Choose quantitative |
 |---|---|---|
-| RQの型 | なぜ？どのように？ | どの程度？どちらが？ |
-| 既存知識 | 少ない（探索段階） | ある程度ある（検証段階） |
-| 必要な成果物 | 仮説、インサイト、ペルソナ | 数値、統計的裏付け、比較結果 |
-| 時間 | 1-4週間 | 1-2週間（準備除く） |
-| 予算 | 中〜高 | 低〜中 |
+| RQ type | Why? How? | How much? Which? |
+| Existing knowledge | Limited (exploratory stage) | Moderate (validation stage) |
+| Required deliverables | Hypotheses, insights, personas | Numbers, statistical evidence, comparison results |
+| Timeline | 1-4 weeks | 1-2 weeks (excluding preparation) |
+| Budget | Medium to high | Low to medium |

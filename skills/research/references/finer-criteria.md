@@ -1,66 +1,66 @@
-# FINER基準
+# FINER Criteria
 
-リサーチクエスチョンの価値を評価するための基準。元は医学研究で確立されたフレームワークだが、プロダクトリサーチにも適用可能。`/research rq` のStep 3（二次評価）で使用する。
+Criteria for evaluating the value of a Research Question. Originally established in medical research, but applicable to product research. Used in Step 3 (secondary evaluation) of `/research rq`.
 
-## 基準の定義
+## Criteria Definitions
 
-### Feasible（実行可能）
+### Feasible
 
-利用可能な時間、データアクセス、予算、専門知識で調べられるか？
+Can it be investigated with available time, data access, budget, and expertise?
 
-- 良い例: 「既存ユーザー10名へのインタビューで調査可能」
-- 悪い例: 「全世界のユーザー行動を1年間トラッキングする必要がある」
+- Good example: "Can be investigated through interviews with 10 existing users"
+- Bad example: "Requires tracking all global user behavior for one year"
 
-評価のポイント:
-- 対象者にアクセスできるか
-- 必要なデータは取得可能か
-- チームに必要なスキルがあるか
-- 予算・時間の制約内で実施できるか
+Evaluation points:
+- Can you access the target participants?
+- Is the required data obtainable?
+- Does the team have the necessary skills?
+- Can it be conducted within budget and time constraints?
 
-### Interesting（関心を集める）
+### Interesting
 
-チームや関係者が関心を持つか？調査結果が意思決定に使われるか？
+Will the team and stakeholders care? Will the findings be used in decision-making?
 
-- 良い例: 「この結果は次のスプリントの優先順位に直結する」
-- 悪い例: 「面白いが、事業判断には影響しない」
+- Good example: "The results directly influence the next sprint's priorities"
+- Bad example: "Interesting, but won't impact business decisions"
 
-評価のポイント:
-- 結果を待っているステークホルダーがいるか
-- 答えが出たら具体的なアクションにつながるか
-- チーム内で議論を呼ぶテーマか
+Evaluation points:
+- Are there stakeholders waiting for the results?
+- Will the answer lead to concrete actions?
+- Is it a topic that sparks discussion within the team?
 
-### Novel（新規性）
+### Novel
 
-新しい知見が得られるか？既知の事実の再確認に終わらないか？
+Will it yield new insights? Or will it merely reconfirm known facts?
 
-- 良い例: 「まだ誰も調べていない利用文脈を明らかにできる」
-- 悪い例: 「業界レポートに既に同じ結論が出ている」
+- Good example: "Can reveal a usage context that no one has investigated yet"
+- Bad example: "Industry reports already show the same conclusion"
 
-評価のポイント:
-- 既存のリサーチや業界レポートで既に答えが出ていないか（Claude調査で確認）
-- 既知の事実に新しい角度を加えているか
-- 対象者や文脈が異なることで新しい知見が期待できるか
+Evaluation points:
+- Has existing research or industry reports already provided the answer? (verify via Claude research)
+- Does it add a new angle to known facts?
+- Can new insights be expected because the target audience or context is different?
 
-### Ethical（倫理的）— 必要な場合のみ
+### Ethical — Only When Necessary
 
-参加者のプライバシーや権利を侵害しないか？
+Does it avoid violating participants' privacy or rights?
 
-- 一般的なプロダクトリサーチ（インタビュー、サーベイ等）では通常問題にならない
-- 以下の場合に確認: 脆弱な対象者（子ども、患者等）、センシティブなデータ、行動の操作を伴う実験
+- Generally not an issue for typical product research (interviews, surveys, etc.)
+- Check when: vulnerable participants (children, patients, etc.), sensitive data, experiments involving behavioral manipulation
 
-### Relevant（関連性）— 必要な場合のみ
+### Relevant — Only When Necessary
 
-事業やプロダクトの現在の課題に関連しているか？
+Is it related to current business or product challenges?
 
-- 3視点評価（使用・事業・専門）でカバー済みの場合は省略可
-- 以下の場合に確認: 研究的関心が先行している場合、事業目標とのつながりが不明確な場合
+- Can be omitted if already covered by the 3-perspective evaluation (User, Business, Expert)
+- Check when: academic/research interests are leading, or the connection to business goals is unclear
 
-## このスキルでの適用方法
+## Application in This Skill
 
-Step 3の「3視点評価」で一次フィルタを通過した疑問に対して、FINER基準を二次フィルタとして適用する。
+Apply FINER criteria as a secondary filter to questions that passed the "3-perspective evaluation" primary filter in Step 3.
 
-1. 各疑問に対してF, I, Nを評価（E, Rは必要な場合のみ）
-2. 3つとも満たす疑問を優先的にRQ候補とする
-3. 一部欠ける場合は、欠けている点を補う方法がないかユーザーと議論
-   - 例: Feasibleが弱い → スコープを狭めれば実行可能になるか？
-   - 例: Novelが弱い → 切り口や対象者を変えれば新規性が出るか？
+1. Evaluate each question on F, I, N (E and R only when necessary)
+2. Prioritize questions that satisfy all three as RQ candidates
+3. For questions that partially fall short, discuss with the user whether the gap can be filled
+   - Example: Weak on Feasible → Can scoping down make it doable?
+   - Example: Weak on Novel → Can changing the angle or target audience add novelty?

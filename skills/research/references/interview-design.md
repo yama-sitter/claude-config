@@ -1,62 +1,62 @@
-# インタビュー質問設計の原則
+# Interview Question Design Principles
 
-RQ（リサーチクエスチョン）をインタビューで使える質問に変換するための原則。`/research interview` のStep 1で使用する。
+Principles for converting RQs (Research Questions) into usable interview questions. Used in Step 1 of `/research interview`.
 
-## 核心原則: RQ ≠ インタビュー質問
+## Core Principle: RQ ≠ Interview Question
 
-| | RQ（リサーチクエスチョン） | IQ（インタビュー質問） |
+| | RQ (Research Question) | IQ (Interview Question) |
 |---|---|---|
-| 目的 | リサーチ全体で知りたいこと | 参加者に実際に聞く質問 |
-| レベル | 戦略的・高レベル | 戦術的・具体的 |
-| 対象 | 参加者には直接聞かない | 参加者に直接聞く |
-| 数 | 2-3個 | 複数（RQ1つにつき5-10個） |
+| Purpose | What you want to know through the entire research | Questions actually asked to participants |
+| Level | Strategic, high-level | Tactical, specific |
+| Target | Not asked directly to participants | Asked directly to participants |
+| Count | 2-3 | Multiple (5-10 per RQ) |
 
-**なぜRQをそのまま聞いてはいけないか**: RQをそのまま聞くと、参加者は「期待される答え」を推測して回答する傾向がある。間接的な質問で行動や経験を語ってもらうことで、バイアスのない回答を引き出す。
+**Why you must not ask the RQ directly**: When asked an RQ directly, participants tend to guess the "expected answer" and respond accordingly. By using indirect questions that elicit stories about behavior and experience, you draw out unbiased responses.
 
-## 変換パターン
+## Conversion Patterns
 
-### パターン1: 「なぜ？」型RQ → 行動・経験を聞く
+### Pattern 1: "Why?" RQ → Ask about behavior and experience
 
-- RQ: 「なぜユーザーはX機能を使わないのか？」
-- IQ: 「最後にXに関連する作業をした時のことを教えてください。どうやって進めましたか？」
+- RQ: "Why don't users use feature X?"
+- IQ: "Tell me about the last time you worked on something related to X. How did you go about it?"
 
-### パターン2: 「どのように？」型RQ → プロセスを聞く
+### Pattern 2: "How?" RQ → Ask about process
 
-- RQ: 「ユーザーは購入の意思決定をどのように行っているか？」
-- IQ: 「最近何か買い物をした時のことを、検討し始めた時から購入するまでの流れを教えてください」
+- RQ: "How do users make purchasing decisions?"
+- IQ: "Think about a recent purchase you made — walk me through the process from when you started considering it to when you bought it."
 
-### パターン3: 「何が？」型RQ → 具体的なエピソードを聞く
+### Pattern 3: "What?" RQ → Ask for specific episodes
 
-- RQ: 「新規ユーザーが感じる最大の障壁は何か？」
-- IQ: 「このサービスを使い始めた頃のことを思い出してください。困ったことや戸惑ったことはありましたか？」
+- RQ: "What is the biggest barrier for new users?"
+- IQ: "Think back to when you first started using this service. Was there anything that confused you or gave you trouble?"
 
-### パターン4: 「誰が？」型RQ → 関係者と文脈を聞く
+### Pattern 4: "Who?" RQ → Ask about people and context
 
-- RQ: 「購入の意思決定に関わるのは誰か？」
-- IQ: 「最後にこの種のサービスを契約した時、周りの人と相談しましたか？どんなやり取りがありましたか？」
+- RQ: "Who is involved in the purchasing decision?"
+- IQ: "The last time you signed up for this kind of service, did you talk to anyone about it? What was that conversation like?"
 
-## 変換チェックリスト
+## Conversion Checklist
 
-変換したIQが以下を満たしているか確認:
+Verify that each converted IQ meets the following:
 
-- [ ] **誘導的でない**: 特定の答えを示唆していない
-  - NG: 「X機能は使いにくいですか？」
-  - OK: 「X機能について、どんな印象を持っていますか？」
-- [ ] **開放的**: Yes/Noで終わらない
-  - NG: 「Xを使ったことはありますか？」
-  - OK: 「Xについてどんな経験がありますか？」
-- [ ] **具体的な経験を聞いている**: 習慣ではなく特定のエピソード
-  - NG: 「普段どうやって〜していますか？」（習慣の合理化が起きる）
-  - OK: 「最後に〜した時のことを教えてください」（具体的な記憶）
-- [ ] **複合質問になっていない**: 1つの質問で1つのことだけ聞く
-  - NG: 「UIの見た目と使いやすさについてどう思いますか？」
-  - OK: 「UIについてどう思いますか？」（→ 深掘りで使いやすさも聞く）
+- [ ] **Non-leading**: Does not suggest a specific answer
+  - NG: "Is feature X hard to use?"
+  - OK: "What's your impression of feature X?"
+- [ ] **Open-ended**: Cannot be answered with Yes/No
+  - NG: "Have you ever used X?"
+  - OK: "What has your experience with X been like?"
+- [ ] **Asks about specific experience**: A particular episode, not general habits
+  - NG: "How do you usually...?" (triggers rationalization of habits)
+  - OK: "Tell me about the last time you..." (triggers specific memory)
+- [ ] **Not a compound question**: Asks only one thing per question
+  - NG: "What do you think about the UI's appearance and usability?"
+  - OK: "What do you think about the UI?" (→ deepen into usability in follow-up)
 
-## インタビュー構成テンプレート
+## Interview Structure Template
 
-| パート | 時間 | 目的 | 質問の特徴 |
+| Section | Duration | Purpose | Question Characteristics |
 |---|---|---|---|
-| ウォームアップ | 5-10分 | 信頼構築 | テーマに関連するが答えやすい。仮定なし |
-| 本質的質問 | 20-30分 | RQへの回答を引き出す | 上記の変換パターンで設計した質問群 |
-| 深掘り | 随時 | 回答の背景を理解する | 「それはなぜ？」「具体的には？」「他には？」 |
-| クロージング | 5分 | 補足情報の収集 | 「他に話したかったこと」「聞き漏らし」 |
+| Warm-up | 5-10 min | Build rapport | Related to the theme but easy to answer. No hypotheticals |
+| Core questions | 20-30 min | Elicit answers to RQs | Questions designed using the conversion patterns above |
+| Deep-dive | As needed | Understand the context behind answers | "Why is that?" "Can you be more specific?" "What else?" |
+| Closing | 5 min | Collect supplementary information | "Anything else you wanted to share?" "Anything we missed?" |

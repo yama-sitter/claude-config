@@ -1,54 +1,54 @@
-# Known/Unknownマトリクス
+# Known/Unknown Matrix
 
-直感を「わかっていること」と「わかっていないこと」に構造化するためのツール。`/research rq` のStep 2で使用する。
+A tool for structuring intuitions into "what is known" and "what is unknown." Used in Step 2 of `/research rq`.
 
-## 定義
+## Definition
 
-5W1Hで分解した各要素を「既知（事実として知っていること）」と「未知（推測・疑問）」に振り分けることで、リサーチで明らかにすべき「問い」を可視化する。
+By sorting each element decomposed via 5W1H into "Known (facts you actually know)" and "Unknown (assumptions and questions)," you make visible the "questions" that research should address.
 
-## 使い方
+## How to Use
 
-### 1. 5W1Hで問いかける
+### 1. Ask 5W1H Questions
 
-Step 1で言語化された直感に対して、以下を1つずつ問いかける:
+For each intuition verbalized in Step 1, ask the following one at a time:
 
-| 5W1H | 問いかけ例 |
+| 5W1H | Example prompt |
 |---|---|
-| Who（誰が） | 「その問題を感じているのは具体的にどんな人？」 |
-| What（何を） | 「具体的にどんな行動や現象が起きている？」 |
-| Why（なぜ） | 「なぜそうなっていると思う？」 |
-| Where（どこで） | 「どの場面・チャネル・タッチポイントで起きている？」 |
-| When（いつ） | 「いつ・どのタイミングで起きている？」 |
-| How（どのように） | 「どんな手順・方法で行われている？」 |
+| Who | "Specifically, what kind of person is experiencing this problem?" |
+| What | "What specific behavior or phenomenon is occurring?" |
+| Why | "Why do you think this is happening?" |
+| Where | "In what context, channel, or touchpoint is this occurring?" |
+| When | "When or at what timing does this occur?" |
+| How | "Through what process or method is it being done?" |
 
-### 2. 既知と未知に振り分ける
+### 2. Sort into Known and Unknown
 
-各回答を振り分ける際の判断基準:
+Criteria for sorting each response:
 
-**既知（事実）に入れるもの**:
-- データや観察に基づく事実
-- チーム内で合意のある情報
-- 過去のリサーチで確認済みの知見
+**Known (facts)**:
+- Facts based on data or observation
+- Information the team has consensus on
+- Findings confirmed by previous research
 
-**未知（疑問）に入れるもの**:
-- 推測や仮説（「〜だと思う」「おそらく〜」）
-- チーム内で意見が割れている点
-- 「わからない」と明言できる点
-- 前提として置いているが検証していない点
+**Unknown (questions)**:
+- Assumptions or hypotheses ("I think..." "Probably...")
+- Points where team opinions diverge
+- Points explicitly acknowledged as "I don't know"
+- Premises that are assumed but not validated
 
-### 3. 出力テンプレート
+### 3. Output Template
 
-| 5W1H | 既知（事実） | 未知（疑問） |
+| 5W1H | Known (facts) | Unknown (questions) |
 |---|---|---|
-| Who | 例: 20-30代の新規登録ユーザー | 例: 離脱するのは特定セグメントか全体か？ |
-| What | 例: 登録後7日以内の離脱率が40% | 例: 離脱前に何をしている（or していない）のか？ |
-| Why | 例: （データなし） | 例: なぜ初期段階で離脱するのか？ |
-| Where | 例: 主にモバイルアプリ | 例: どの画面で離脱が起きているか？ |
-| When | 例: 直近3ヶ月のデータ | 例: 特定の時間帯や曜日に偏りがあるか？ |
-| How | 例: 自然検索経由の流入が多い | 例: 他サービスとどう使い分けているか？ |
+| Who | e.g., New users aged 20-30 | e.g., Is churn concentrated in a specific segment or across all? |
+| What | e.g., 40% churn rate within 7 days of registration | e.g., What are users doing (or not doing) before churning? |
+| Why | e.g., (no data) | e.g., Why do they churn in the early stage? |
+| Where | e.g., Primarily in the mobile app | e.g., On which screen does churn occur? |
+| When | e.g., Data from the last 3 months | e.g., Is there a bias toward specific times of day or days of the week? |
+| How | e.g., Majority of traffic from organic search | e.g., How do they divide usage across other services? |
 
-## 注意点
+## Notes
 
-- 「既知」に入れたものも、実は検証されていない前提かもしれない。「本当に事実か？」と疑うことも重要
-- 「未知」の欄が多いほどリサーチの余地が大きい。少ない場合は直感の分解が浅い可能性がある
-- 全ての5W1Hに無理に回答する必要はない。「この軸では分解が難しい」も有効な気づき
+- Even items placed in "Known" may actually be unvalidated assumptions. It's important to question: "Is this truly a fact?"
+- The more items in the "Unknown" column, the greater the room for research. If few, the intuition decomposition may be too shallow
+- It's not necessary to force an answer for every 5W1H dimension. "This axis doesn't decompose well" is also a valid observation

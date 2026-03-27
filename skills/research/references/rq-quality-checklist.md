@@ -1,121 +1,121 @@
-# RQ品質チェックリスト
+# RQ Quality Checklist
 
-RQ（リサーチクエスチョン）の品質を2段構成で評価する。`/research rq` のStep 4で使用する。
+A two-stage framework for evaluating the quality of Research Questions (RQs). Used in Step 4 of `/research rq`.
 
-- **第1段: 文面チェック** — RQ文面そのものの品質（項目1-5）
-- **第2段: 構造チェック** — RQを取り巻く周辺構造の品質（項目6-10）
+- **Stage 1: Text Check** — Quality of the RQ text itself (items 1-5)
+- **Stage 2: Structural Check** — Quality of the surrounding structure (items 6-10)
 
-第1段を通過してから第2段に進む。
-
----
-
-## 第1段: 文面チェック
-
-### 1. 開放的か？
-
-Yes/Noではなく、説明や理解を求める形になっているか。
-
-- 悪い例: 「ユーザーはX機能を使っているか？」（Yes/Noで終わる）
-- 良い例: 「ユーザーはX機能をどのような状況で、どのように使っているか？」
-
-### 2. 中立か？
-
-特定の答えを誘導していないか。質問文にバイアスや前提が含まれていないか。
-
-- 悪い例: 「なぜユーザーはX機能を嫌っているのか？」（「嫌っている」が前提）
-- 良い例: 「ユーザーはX機能に対してどのような認識を持っているか？」
-
-### 3. 答えられるか？
-
-利用可能なリサーチ手法（インタビュー、サーベイ、行動観察等）で実際に調べられるか。
-
-- 悪い例: 「5年後にユーザーはどんなサービスを求めるか？」（予測不可能）
-- 良い例: 「現在のユーザーが感じている未充足のニーズは何か？」
-
-### 4. 具体的か？
-
-対象者・状況・行動が明確に定義されているか。
-
-- 悪い例: 「人々はなぜサービスを使うのか？」（対象者も状況も曖昧）
-- 良い例: 「週3回以上利用するアクティブユーザーが、初回利用時に感じた障壁は何か？」
-
-### 5. RQ ≠ IQ か？
-
-そのままインタビューで聞く質問ではなく、リサーチ全体を通じて「知りたいこと」になっているか。
-
-- 悪い例: 「Xをやめた理由を教えてください」（これはインタビュー質問）
-- 良い例: 「長期利用者がサービスを離脱する要因は何か？」（リサーチで明らかにしたいこと）
+Pass Stage 1 before proceeding to Stage 2.
 
 ---
 
-## 第2段: 構造チェック
+## Stage 1: Text Check
 
-第1段（文面チェック）を通過したRQに対して、周辺構造を評価する。
+### 1. Is it open-ended?
 
-### 6. 仮説の状態が明示されているか？
+Does it require explanation and understanding rather than a Yes/No answer?
 
-RQに対する現時点の見立て（仮説）が、以下3タイプのいずれかとして明示されているか。
+- Bad example: "Are users using feature X?" (ends with Yes/No)
+- Good example: "In what situations and how are users using feature X?"
 
-| タイプ       | 状態                             | 例                                                        |
+### 2. Is it neutral?
+
+Does it avoid leading toward a specific answer? Is the question free from bias or embedded assumptions?
+
+- Bad example: "Why do users hate feature X?" ("hate" is assumed)
+- Good example: "What perceptions do users have about feature X?"
+
+### 3. Is it answerable?
+
+Can it actually be investigated using available research methods (interviews, surveys, behavioral observation, etc.)?
+
+- Bad example: "What kind of services will users want in 5 years?" (impossible to predict)
+- Good example: "What unmet needs do current users feel?"
+
+### 4. Is it specific?
+
+Are the target audience, situation, and behavior clearly defined?
+
+- Bad example: "Why do people use services?" (audience and situation are vague)
+- Good example: "What barriers did active users who use the service 3+ times per week experience during their first use?"
+
+### 5. Is it RQ ≠ IQ?
+
+Is it a "what you want to know" through the entire research, rather than a question you'd ask directly in an interview?
+
+- Bad example: "Tell me why you stopped using X" (this is an interview question)
+- Good example: "What factors lead long-term users to leave the service?" (what you want to learn through research)
+
+---
+
+## Stage 2: Structural Check
+
+Evaluate the surrounding structure for RQs that passed Stage 1 (Text Check).
+
+### 6. Is the hypothesis state explicitly declared?
+
+Is the current assessment (hypothesis) for the RQ explicitly declared as one of the following three types?
+
+| Type | State | Example |
 | ------------ | -------------------------------- | --------------------------------------------------------- |
-| 仮説駆動     | 明確な仮説と根拠がある           | 「Xが原因で離脱している。根拠は〇〇」                     |
-| 探索的       | 仮説がない。探索する方向だけ定義 | 「離脱要因は不明。利用頻度低下の文脈を探索する」          |
-| ハイブリッド | 方向の仮説はあるが中身は探索     | 「Xが影響しているはずだが、具体的にどう影響するかは不明」 |
+| Hypothesis-driven | Clear hypothesis with rationale | "X is causing churn. Evidence: ..." |
+| Exploratory | No hypothesis. Only direction defined | "Cause of churn is unknown. Exploring the context of declining usage frequency" |
+| Hybrid | Directional hypothesis but specifics are exploratory | "X should be involved, but exactly how it affects things is unknown" |
 
-- 問いかけ：「このRQに対して、現時点で『たぶんこうだろう』という見立てはありますか？ あってもなくてもOKです」
+- Prompt: "Do you have any 'I think it's probably this' sense about this RQ? It's fine either way."
 
-### 7. 物差し（検証メカニズム）が定義されているか？
+### 7. Is a measurement mechanism (validation metric) defined?
 
-リサーチ結果をどう判断するかの基準が定義されているか。仮説タイプによって物差しの形が異なる。
+Is there a criterion for judging the research results? The form of the metric differs by hypothesis type.
 
-- **仮説駆動**: 何が確認されれば仮説が支持され、何が出れば棄却されるか
-- **探索的**: 探索の焦点領域が定義されているか。成果物をどう評価するかの基準があるか
-- **ハイブリッド**: 方向の仮説に対する焦点領域 + 成果物の評価基準
-- 問いかけ：「インタビューが終わった後、結果をどう整理しますか？ 何が分かれば『このリサーチは成功だった』と言えますか？」
+- **Hypothesis-driven**: What would confirm the hypothesis, and what would reject it?
+- **Exploratory**: Are focus areas defined? Are there criteria for evaluating deliverables?
+- **Hybrid**: Focus areas for the directional hypothesis + evaluation criteria for deliverables
+- Prompt: "After the interviews are done, how will you organize the results? What would have to emerge for you to say 'this research was successful'?"
 
-### 8. スコープが明確か？
+### 8. Is the scope clear?
 
-対象（誰に・何を・どの範囲で）と対象外が明示されているか。
+Are the targets (who, what, what range) and exclusions explicitly stated?
 
-- 悪い例: 「ユーザーの離脱要因を調べる」（誰が対象外か不明）
-- 良い例: 「週1回以上利用していたが直近1ヶ月で利用停止したユーザーが対象。新規未利用ユーザーは対象外」
-- 問いかけ：「このリサーチで『聞かないこと』『扱わないこと』は何ですか？」
+- Bad example: "Investigate user churn factors" (unclear who is excluded)
+- Good example: "Targets users who were active once a week or more but stopped using in the past month. New users who never activated are excluded"
+- Prompt: "What will this research NOT ask about or NOT cover?"
 
-### 9. 物差しとして機能するか？（総合判定）
+### 9. Does it function as a measurement standard? (Overall judgment)
 
-項目6-8を踏まえた総合判定。RQと周辺構造を見て、別のインタビュアーが「何を聞くべきか」「結果をどう判断するか」を理解できるか。
+Overall judgment based on items 6-8. Looking at the RQ and its surrounding structure, could a different interviewer understand "what to ask" and "how to judge results"?
 
-- 問いかけ：「このRQセットをチームメンバーに渡して、『これでインタビューして』と言えますか？」
+- Prompt: "If you handed this RQ set to a team member and said 'go interview with this,' would they be able to?"
 
-### 10. リサーチの限界が明示されているか？（該当する場合のみ）
+### 10. Are the limitations of the research stated? (Only when applicable)
 
-設計上の制約により答えられないことがある場合、それが記述されているか。すべてのリサーチに該当するわけではないため、該当しなければスキップ。
+If there are things that cannot be answered due to design constraints, are they documented? Not all research has this, so skip if not applicable.
 
-- 問いかけ：「このリサーチで『分からないまま残ること』は何ですか？」
+- Prompt: "What will remain unknown even after this research?"
 
 ---
 
-## 品質チェックの進め方
+## How to Conduct the Quality Check
 
-### 第1段: 文面チェック
+### Stage 1: Text Check
 
-1. ユーザーにRQを書いてもらう（拙くてOK）
-2. 項目1-5でそれぞれ評価し、問題がある項目についてフィードバック
-3. 全項目OKの場合、最も弱い項目を1つ特定し、なぜOKと判断したかの根拠を明示する
-4. ユーザーが改善版を書き、再度チェック
-5. 納得いくRQが完成するまで繰り返す
+1. Ask the user to write an RQ (rough is fine)
+2. Evaluate on items 1-5, providing feedback on any problematic items
+3. If all items are OK, identify the weakest item and explicitly state the rationale for marking it OK
+4. User writes an improved version, then re-check
+5. Repeat until a satisfactory RQ is complete
 
-### 第2段: 構造チェック
+### Stage 2: Structural Check
 
-1. 第1段を通過したRQに対して、項目6-10を順に評価する
-2. 項目6（仮説タイプ）→ 項目7（物差し）→ 項目8（スコープ）の順に固める
-3. 項目9で総合判定し、不足があれば該当項目に戻る
-4. 項目10は該当する場合のみ確認する
+1. For RQs that passed Stage 1, evaluate items 6-10 in order
+2. Lock in the sequence: item 6 (hypothesis type) → item 7 (metric) → item 8 (scope)
+3. Use item 9 for overall judgment; if gaps exist, return to the relevant item
+4. Check item 10 only when applicable
 
-## 良いRQの追加特性
+## Additional Characteristics of Good RQs
 
-上記10項目を通過した上で、さらに良いRQの特性:
+Beyond passing the 10 items above, even better RQs also:
 
-- チームメンバーとの議論を促進する（意思決定に直結する）
-- 複数の角度から検証可能（1つの手法に依存しない）
-- 答えが出たとき、次のアクションが明確になる
+- Facilitate discussion among team members (directly inform decisions)
+- Can be validated from multiple angles (not dependent on a single method)
+- When answered, make the next action clear

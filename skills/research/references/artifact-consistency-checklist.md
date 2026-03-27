@@ -1,34 +1,34 @@
-# 成果物の整合性チェックリスト
+# Artifact Consistency Checklist
 
-RQ変更時・インタビューガイド出力前に実施する。
+Run this checklist when an RQ is modified or before outputting an interview guide.
 
-## 1. RQ文面と仮説チェーンの対応
+## 1. RQ Text and Hypothesis Chain Alignment
 
-- [ ] RQが問うている要素（変数・関係性）が、仮説チェーンに全て含まれているか
-- [ ] 仮説チェーンに含まれているがRQに反映されていない要素はないか
-- [ ] サブ問いがメインRQと重複していないか（メインRQに含まれるならサブ問いとして切り出す意味がない）
+- [ ] Are all elements (variables, relationships) that the RQ asks about included in the hypothesis chain?
+- [ ] Are there any elements in the hypothesis chain that are not reflected in the RQ?
+- [ ] Are sub-questions not duplicating the main RQ? (If a sub-question is already contained in the main RQ, there is no reason to break it out separately)
 
-## 2. 用語の参加者視点チェック
+## 2. Participant-Perspective Terminology Check
 
-- [ ] RQ・ガイドに分析者都合の用語（「翌月継続率」「コホート」「チャーン」等）が混入していないか
-- [ ] インタビュー参加者の行動・体験に即した用語になっているか（例: 「翌月継続」→「2回目の利用」）
-- [ ] インタビュアーが参加者に説明なしで共有できる表現か
+- [ ] Are analyst-centric terms ("month-over-month retention," "cohort," "churn," etc.) absent from RQs and guides?
+- [ ] Is the terminology grounded in participants' actions and experiences? (e.g., "month-over-month retention" → "using the service again the following month")
+- [ ] Can the interviewer share these expressions with participants without additional explanation?
 
-## 3. ガイドの内部整合性
+## 3. Guide Internal Consistency
 
-- [ ] 時間配分テーブルの合計とセクション見出しの目安時間が一致しているか
-- [ ] 時間チェックポイントの累積時間がテーブルと一致しているか
-- [ ] 余白時間の計算が正しいか（全体枠 - 本編 - クロージング = 余白）
-- [ ] MUST質問の数が各セクションの目安時間内で現実的か
+- [ ] Does the sum of the time allocation table match the estimated time in section headings?
+- [ ] Do time checkpoint cumulative times match the table?
+- [ ] Is the buffer time calculation correct? (total duration - main sections - closing = buffer)
+- [ ] Is the number of MUST questions realistic within the estimated time for each section?
 
-## 4. 複数ファイル間の同期チェック
+## 4. Cross-File Synchronization Check
 
-- [ ] RQ文面が全ファイルで同一か（plan file、ガイド、agent-memory）
-- [ ] 仮説チェーンの図が全ファイルで同一か
-- [ ] 焦点領域の名称・数・内容が全ファイルで一致しているか
-- [ ] スコープの記述が全ファイルで一致しているか
+- [ ] Is the RQ text identical across all files (plan file, guide, agent-memory)?
+- [ ] Is the hypothesis chain diagram identical across all files?
+- [ ] Do the focus area names, counts, and contents match across all files?
+- [ ] Is the scope description consistent across all files?
 
-## 5. 制約との整合性
+## 5. Constraint Compliance
 
-- [ ] agent-memoryの`constraints.md`（存在する場合）に記載された制約に違反していないか
-- [ ] 過去のcriticizeで指摘された問題パターンを再導入していないか
+- [ ] Does the content comply with constraints listed in `constraints.md` in agent-memory (if it exists)?
+- [ ] Are problem patterns identified in previous criticize sessions not reintroduced?
