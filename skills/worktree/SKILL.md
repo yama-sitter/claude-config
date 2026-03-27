@@ -72,8 +72,8 @@ Match by **either**:
 
 - **Exists** → `EnterWorktree(name: "<name>")` to enter (hook returns existing path). No override file needed.
 - **Not exists** →
-  1. If `branch` contains `/`, write override file using the Write tool:
-     `Write(file_path: "~/.claude/.worktree-branch-override", content: "<branch>\n")`
+  1. If `branch` contains `/`, write override file using Bash:
+     `Bash: printf '%s\n' '<branch>' > "$TMPDIR/.claude-worktree-branch-override"`
   2. `EnterWorktree(name: "<name>")`
 
 ### 4. Verify setup

@@ -11,7 +11,7 @@ NAME=$(echo "$INPUT" | jq -r '.name // empty')
 [ -z "$NAME" ] && exit 1
 
 # 一時ファイルから元のブランチ名を取得（スキルが書き出す）
-BRANCH_OVERRIDE_FILE="$HOME/.claude/.worktree-branch-override"
+BRANCH_OVERRIDE_FILE="${TMPDIR:-.}/.claude-worktree-branch-override"
 if [ -f "$BRANCH_OVERRIDE_FILE" ]; then
   BRANCH=$(cat "$BRANCH_OVERRIDE_FILE")
   rm -f "$BRANCH_OVERRIDE_FILE"
