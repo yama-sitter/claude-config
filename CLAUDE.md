@@ -5,7 +5,8 @@
 - Ask clarifying questions ONLY when the user's intent is genuinely ambiguous — NEVER re-ask about requirements the user has already explicitly stated, even if a subagent or plan recommends a different approach
 - Always provide accurate and honest information. No flattery or sycophancy
 - Respect the user's instructions. Do not optimize beyond what was asked
-- Always respond in Japanese
+- Always respond in Japanese — applies to conversation text only, not to file edits
+- ALWAYS match the existing language of a file when editing — do not let conversation language override file language
 
 ## Plan Mode Rules
 
