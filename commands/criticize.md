@@ -16,31 +16,36 @@ Self-review and iteratively improve the previous response.
 
 Repeat the following cycle on the previous response.
 
-### Each Cycle
+### Intermediate Cycles (1 to N-1)
 
 1. **Review**: Critically evaluate the current response and identify specific issues
-2. **Improve**: Generate an improved version that addresses the issues
+2. **Plan**: Determine specific changes for each issue (do NOT output the full improved text; apply improvements internally and use the improved version as the review target for the next cycle)
 
-### Output Format
-
-Each cycle:
+Output format:
 
 ```
 === Review [n]/[total] ===
 **Issues**:
 - [Specific issues in bullet points]
 
-**Improved version**:
-[Improved response]
+**Changes**:
+- [Specific changes for each issue]
 ```
 
-### Final Output
+### Final Cycle (N)
 
-After all cycles are complete:
+1. **Review**: Perform a final review and identify any remaining issues
+2. **Improve**: Generate the final version incorporating all changes from all cycles
+
+Output format:
 
 ```
+=== Review [n]/[total] ===
+**Issues**:
+- [Specific issues, or "No further issues"]
+
 === Final Version ===
-[Final improved response]
+[Final improved response reflecting all cycles]
 ```
 
 ## Review Aspects (when --focus is not specified)
