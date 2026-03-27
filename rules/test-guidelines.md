@@ -9,8 +9,8 @@
 
 Expected values must be independent of production code.
 
-❌ `assert result == width + height + PADDING * 2`  (replicates production formula)
-✅ `assert result == 524`  (hardcoded from manual calculation)
+❌ `assert result == width + height + PADDING * 2` (replicates production formula)
+✅ `assert result == 524` (hardcoded from manual calculation)
 
 Rationale: If the production formula has a bug, the test copies the same bug.
 
@@ -19,6 +19,7 @@ Rationale: If the production formula has a bug, the test copies the same bug.
 Mock only external boundaries (API calls, network, file I/O, timers, external services).
 
 Do NOT mock:
+
 - Simple predicates or type checks
 - Internal pure functions or utility functions
 - Functions that no test case exercises
@@ -37,3 +38,15 @@ Do NOT mock:
 - One behavior per test case
 - Group tests by function/method or scenario
 - Test name describes expected behavior and condition
+
+## Test Selection for Verification
+
+- NEVER select a test based on keyword similarity alone. The test must exercise the changed code path
+
+  - Bad: Changed a component's JSX layout → ran a hook test in the same feature directory
+  - Good: Changed a component's JSX layout → ran the parent component's integration test that renders it
+
+- When the changed file has no direct test file, ALWAYS trace the import chain to find a covering test:
+  1. Search for test files that import the changed file
+  2. If none found, search for test files that import a parent module which exercises the changed file
+  3. If no covering test exists, report this gap to the user instead of running an unrelated test
