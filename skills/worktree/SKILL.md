@@ -51,6 +51,11 @@ Then stop processing. Do NOT proceed with the requested subcommand (except `resu
 
 ## Subcommand: `/worktree <branch>`
 
+### 0. Verify state guard
+
+Check if `~/.claude/.worktree-verify-state` exists.
+If it does, report "確認モード中です。先に `/worktree resume` または `/worktree exit` を実行してください" and stop.
+
 ### 1. Process branch name
 
 - If the name does **not** contain `/` → `name = branch = input` (no change needed)
@@ -113,6 +118,17 @@ Look back in this session's conversation history for the most recent `EnterWorkt
 ---
 
 ## Subcommand: `/worktree exit`
+
+### 0. Handle verify state
+
+Check if `~/.claude/.worktree-verify-state` exists.
+
+If it does:
+1. Read the state file
+2. Restore main branch: `git symbolic-ref HEAD 2>/dev/null` — if fails (detached HEAD), run `git checkout <mainBranch>`
+3. Restore stash: if `stashed` is `true`, check `git stash list` first entry for `worktree-verify-auto-stash` — if match, `git stash pop`
+4. Delete the state file
+5. Continue to the normal exit flow (step 1 onward) — user will be asked keep/remove for the worktree
 
 ### 1. Verify in worktree
 
