@@ -80,10 +80,16 @@ Match by **either**:
 
 After entering, verify setup:
 
-1. Check dependencies: Run bash to find all lock files and check each has a sibling `node_modules/` directory
-   ```bash
-   find <worktree-root> -name node_modules -prune -o \( -name pnpm-lock.yaml -o -name package-lock.json -o -name yarn.lock -o -name bun.lockb -o -name bun.lock \) -print | while read f; do dir=$(dirname "$f"); [ -d "$dir/node_modules" ] || echo "MISSING: $dir/node_modules"; done
-   ```
+1. Check dependencies: Use Glob to find lock files, then verify each has a sibling `node_modules/` directory
+   - Step A: Search for lock files (5 patterns, can be called in parallel)
+     - `Glob(pattern: "**/pnpm-lock.yaml", path: "<worktree-root>")`
+     - `Glob(pattern: "**/package-lock.json", path: "<worktree-root>")`
+     - `Glob(pattern: "**/yarn.lock", path: "<worktree-root>")`
+     - `Glob(pattern: "**/bun.lockb", path: "<worktree-root>")`
+     - `Glob(pattern: "**/bun.lock", path: "<worktree-root>")`
+   - Step B: Collect parent directories of found lock files and deduplicate
+   - Step C: For each parent directory, run `Glob(pattern: "<parent-dir>/node_modules/*")` (empty result = dependencies not installed)
+   - Step D: Report `MISSING: <dir>/node_modules` for any directory without node_modules
 2. Check .env files: `Glob(pattern: "**/.env*", path: "<worktree-root>")` — check .env files present at all levels
 
 If any directory is missing dependencies or .env files, report to the user.
