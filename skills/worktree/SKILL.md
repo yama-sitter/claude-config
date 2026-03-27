@@ -37,16 +37,6 @@ WorktreeCreate hook automatically handles branch naming, dependency installation
 - The current directory is within a Git repository
 - Not already inside a worktree (for enter commands)
 
-### Verify state detection
-
-On every `/worktree` invocation, check if `~/.claude/.worktree-verify-state` exists.
-If it does, read the file and warn:
-
-> ⚠️ 確認モードが残っています（ブランチ: `<worktreeBranch>`）。
-> `/worktree resume` で開発に戻るか、状態をクリーンアップしてください。
-
-Then stop processing. Do NOT proceed with the requested subcommand (except `resume` and `exit`, which handle verify state).
-
 ---
 
 ## Subcommand: `/worktree <branch>`
@@ -100,6 +90,11 @@ If any directory is missing dependencies or .env files, report to the user.
 
 ## Subcommand: `/worktree current`
 
+### 0. Verify state guard
+
+Check if `~/.claude/.worktree-verify-state` exists.
+If it does, report "確認モード中です。`/worktree resume` または `/worktree exit` を実行してください" and stop.
+
 ### 1. Check session history
 
 Look back in this session's conversation history for the most recent `EnterWorktree` call.
@@ -128,7 +123,8 @@ If it does:
 2. Restore main branch: `git symbolic-ref HEAD 2>/dev/null` — if fails (detached HEAD), run `git checkout <mainBranch>`
 3. Restore stash: if `stashed` is `true`, check `git stash list` first entry for `worktree-verify-auto-stash` — if match, `git stash pop`
 4. Delete the state file
-5. Continue to the normal exit flow (step 1 onward) — user will be asked keep/remove for the worktree
+5. Re-enter worktree: `worktreeBranch` の `/` を `-` に置換して `worktreeName` を導出し、`EnterWorktree(name: "<worktreeName>")` で再入場する。verify中はメインの作業ディレクトリにいるため、Step 1の「worktree内にいるか」チェックを通過するにはこの再入場が必要
+6. Continue to the normal exit flow (step 1 onward) — user will be asked keep/remove for the worktree
 
 ### 1. Verify in worktree
 
@@ -161,6 +157,11 @@ AskUserQuestion:
 ## Subcommand: `/worktree verify`
 
 Switch to verify mode: checkout the worktree branch HEAD as detached HEAD on the main working directory, so you can run services and test changes without worktree environment setup.
+
+### 0. Verify state guard
+
+Check if `~/.claude/.worktree-verify-state` exists.
+If it does, report "既に確認モード中です。`/worktree resume` で開発に戻るか、`/worktree exit` で終了してください" and stop.
 
 ### 1. Verify in worktree
 
@@ -218,10 +219,10 @@ Save as `mainBranch`.
 git status --porcelain
 ```
 
-- Output is non-empty → run `git stash push -m "worktree-verify-auto-stash"` and set `stashed = true`
-- Output is empty → set `stashed = false`
+- Output contains lines NOT starting with `??` (staged/modified changes exist) → run `git stash push -m "worktree-verify-auto-stash"` and set `stashed = true`
+- Output is empty, or contains only `??` lines (untracked files only) → set `stashed = false`
 
-Note: untracked files are NOT stashed (default behavior). They don't affect checkout.
+Note: untracked files don't affect checkout, so stash は不要。
 
 ### 7. Checkout detached HEAD
 
@@ -299,9 +300,7 @@ Delete `~/.claude/.worktree-verify-state`.
 
 ### 5. Re-enter worktree
 
-Use the `/worktree <branch>` flow with `worktreeBranch` from the state file.
-
-The branch name is in slash format (e.g., `feature/foo`). The existing worktree detection logic matches both hyphen-form paths and slash-form branch refs, so the existing worktree will be found and entered.
+`worktreeBranch` の `/` を `-` に置換して `worktreeName` を導出する。`EnterWorktree(name: "<worktreeName>")` を直接実行する。（既存の `/worktree <branch>` フローを再帰的に呼び出す必要はない。状態ファイルはStep 4で既に削除済みのため、Step 0のガードも通過する。）
 
 ### 6. Notify
 
@@ -312,6 +311,11 @@ Report:
 ---
 
 ## Subcommand: `/worktree search <query>`
+
+### 0. Verify state guard
+
+Check if `~/.claude/.worktree-verify-state` exists.
+If it does, report "確認モード中です。`/worktree resume` または `/worktree exit` を実行してください" and stop.
 
 ### 1. Get worktree list
 
@@ -333,6 +337,11 @@ Filter to matching candidates.
 ---
 
 ## Subcommand: `/worktree search` (no query) / `/worktree` (no args)
+
+### 0. Verify state guard
+
+Check if `~/.claude/.worktree-verify-state` exists.
+If it does, report "確認モード中です。`/worktree resume` または `/worktree exit` を実行してください" and stop.
 
 ### 1. Get worktree list
 
