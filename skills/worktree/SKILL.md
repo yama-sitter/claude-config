@@ -142,6 +142,104 @@ AskUserQuestion:
 
 ---
 
+## Subcommand: `/worktree verify`
+
+Switch to verify mode: checkout the worktree branch HEAD as detached HEAD on the main working directory, so you can run services and test changes without worktree environment setup.
+
+### 1. Verify in worktree
+
+Check if currently inside a worktree (`.git` is a file, not a directory).
+If not in a worktree, report "worktree内でのみ実行できます" and stop.
+
+### 2. Check for uncommitted changes
+
+```bash
+git status --porcelain
+```
+
+- Output is empty → proceed
+- Output is non-empty → report "未コミットの変更があります。先にコミットしてから `/worktree verify` を実行してください" and stop
+
+### 3. Collect worktree info
+
+Run these commands and save the results:
+
+```bash
+# commit hash
+git rev-parse HEAD
+
+# branch name
+git rev-parse --abbrev-ref HEAD
+
+# worktree absolute path
+git rev-parse --show-toplevel
+```
+
+Save these as variables: `commitHash`, `worktreeBranch`, `worktreePath`.
+
+### 4. Exit worktree (keep)
+
+```
+ExitWorktree(action: "keep")
+```
+
+This exits the worktree session but preserves the worktree git registration. `git worktree remove` is NOT called.
+
+### 5. Get main branch name
+
+Now in the main working directory:
+
+```bash
+git rev-parse --abbrev-ref HEAD
+```
+
+Save as `mainBranch`.
+
+### 6. Stash main changes (if any)
+
+```bash
+git status --porcelain
+```
+
+- Output is non-empty → run `git stash push -m "worktree-verify-auto-stash"` and set `stashed = true`
+- Output is empty → set `stashed = false`
+
+Note: untracked files are NOT stashed (default behavior). They don't affect checkout.
+
+### 7. Checkout detached HEAD
+
+```bash
+git checkout <commitHash>
+```
+
+This puts the main working directory at the exact commit from the worktree branch, in detached HEAD state.
+
+### 8. Save state file
+
+Write to `~/.claude/.worktree-verify-state`:
+
+```json
+{
+  "worktreePath": "<worktreePath>",
+  "worktreeBranch": "<worktreeBranch>",
+  "mainBranch": "<mainBranch>",
+  "stashed": <true|false>,
+  "commitHash": "<commitHash>"
+}
+```
+
+**Important**: This file is written AFTER ExitWorktree and git checkout succeed, to avoid leaving orphaned state on failure.
+
+### 9. Notify
+
+Report:
+
+> 確認モードに移行しました。メインの作業ディレクトリが `<worktreeBranch>` のコミット `<commitHash short>` を指しています。
+> サービスを起動して動作確認してください。
+> 完了後、`/worktree resume` で開発に戻れます。
+
+---
+
 ## Subcommand: `/worktree search <query>`
 
 ### 1. Get worktree list
