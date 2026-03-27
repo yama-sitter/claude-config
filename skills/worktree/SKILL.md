@@ -240,6 +240,60 @@ Report:
 
 ---
 
+## Subcommand: `/worktree resume`
+
+Exit verify mode: restore the main working directory and re-enter the worktree.
+
+### 1. Check state file
+
+Read `~/.claude/.worktree-verify-state`.
+If the file does not exist, report "確認モードではありません" and stop.
+
+### 2. Restore main branch
+
+Check current HEAD state:
+
+```bash
+git symbolic-ref HEAD 2>/dev/null
+```
+
+- Command fails (detached HEAD) → run `git checkout <mainBranch>` to restore
+- Command succeeds (already on a branch) → user switched manually, skip this step
+
+### 3. Restore stashed changes
+
+If `stashed` is `true` in the state file:
+
+```bash
+git stash list
+```
+
+Check if the first entry message contains `worktree-verify-auto-stash`.
+
+- Match → `git stash pop`
+  - If pop fails with conflict → warn "stash popでコンフリクトが発生しました。手動で解決してください: `git stash pop`" and continue (do NOT stop — still need to clean up state and re-enter worktree)
+- No match → notify "自動stashが見つかりません。`git stash list` を確認してください" and continue
+
+If `stashed` is `false`, skip this step.
+
+### 4. Delete state file
+
+Delete `~/.claude/.worktree-verify-state`.
+
+### 5. Re-enter worktree
+
+Use the `/worktree <branch>` flow with `worktreeBranch` from the state file.
+
+The branch name is in slash format (e.g., `feature/foo`). The existing worktree detection logic matches both hyphen-form paths and slash-form branch refs, so the existing worktree will be found and entered.
+
+### 6. Notify
+
+Report:
+
+> 開発モードに戻りました。worktree `<worktreeBranch>` で作業を再開できます。
+
+---
+
 ## Subcommand: `/worktree search <query>`
 
 ### 1. Get worktree list
