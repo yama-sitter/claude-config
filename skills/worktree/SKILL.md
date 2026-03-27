@@ -174,7 +174,8 @@ git status --porcelain
 ```
 
 - Output is empty → proceed
-- Output is non-empty → report "未コミットの変更があります。先にコミットしてから `/worktree verify` を実行してください" and stop
+- Output contains lines NOT starting with `??` (staged/modified changes exist) → report "未コミットの変更があります。先にコミットしてから `/worktree verify` を実行してください" and stop
+- Output contains only `??` lines (untracked files only) → warn "untracked filesがあります。verify中は反映されませんが続行します" and proceed
 
 ### 3. Collect worktree info
 
