@@ -43,7 +43,7 @@ WorktreeCreate hook automatically handles branch naming, dependency installation
 
 ### 0. Verify state guard
 
-Read `~/.claude/.worktree-verify-state`. If the file exists, parse as JSON and check `active` field.
+Read `$TMPDIR/.claude-worktree-verify-state`. If the file exists, parse as JSON and check `active` field.
 
 - `active: true` (or field missing for backward compatibility) → report "確認モード中です。先に `/worktree resume` または `/worktree exit` を実行してください" and stop.
 - `active: false`, empty file, or file does not exist → proceed.
@@ -100,7 +100,7 @@ If any directory is missing dependencies or .env files, report to the user.
 
 ### 0. Verify state guard
 
-Read `~/.claude/.worktree-verify-state`. If the file exists, parse as JSON and check `active` field.
+Read `$TMPDIR/.claude-worktree-verify-state`. If the file exists, parse as JSON and check `active` field.
 
 - `active: true` (or field missing for backward compatibility) → report "確認モード中です。`/worktree resume` または `/worktree exit` を実行してください" and stop.
 - `active: false`, empty file, or file does not exist → proceed.
@@ -126,7 +126,7 @@ Look back in this session's conversation history for the most recent `EnterWorkt
 
 ### 0. Handle verify state
 
-Read `~/.claude/.worktree-verify-state`. If the file exists, parse as JSON and check `active` field.
+Read `$TMPDIR/.claude-worktree-verify-state`. If the file exists, parse as JSON and check `active` field.
 
 If `active: true` (or field missing for backward compatibility):
 
@@ -173,7 +173,7 @@ Switch to verify mode: checkout the worktree branch HEAD as detached HEAD on the
 
 ### 0. Verify state guard
 
-Read `~/.claude/.worktree-verify-state`. If the file exists, parse as JSON and check `active` field.
+Read `$TMPDIR/.claude-worktree-verify-state`. If the file exists, parse as JSON and check `active` field.
 
 - `active: true` (or field missing for backward compatibility) → report "既に確認モード中です。`/worktree resume` で開発に戻るか、`/worktree exit` で終了してください" and stop.
 - `active: false`, empty file, or file does not exist → proceed.
@@ -251,7 +251,7 @@ This puts the main working directory at the exact commit from the worktree branc
 
 ### 8. Save state file
 
-Write to `~/.claude/.worktree-verify-state`:
+Write to `$TMPDIR/.claude-worktree-verify-state`:
 
 ```json
 {
@@ -282,7 +282,7 @@ Exit verify mode: restore the main working directory and re-enter the worktree.
 
 ### 1. Check state file
 
-Read `~/.claude/.worktree-verify-state`. If the file does not exist, is empty, or parses as JSON with `active: false`, report "確認モードではありません" and stop.
+Read `$TMPDIR/.claude-worktree-verify-state`. If the file does not exist, is empty, or parses as JSON with `active: false`, report "確認モードではありません" and stop.
 If `active: true` (or field missing for backward compatibility), proceed with the state data.
 
 ### 2. Restore main branch
@@ -314,7 +314,7 @@ If `stashed` is `false`, skip this step.
 
 ### 4. Deactivate state file
 
-Use the Write tool to update `~/.claude/.worktree-verify-state` with `"active": false` (preserve all other fields). Do NOT use `rm` — sandbox may block file deletion.
+Use the Write tool to update `$TMPDIR/.claude-worktree-verify-state` with `"active": false` (preserve all other fields).
 
 ### 5. Re-enter worktree
 
@@ -332,7 +332,7 @@ Report:
 
 ### 0. Verify state guard
 
-Read `~/.claude/.worktree-verify-state`. If the file exists, parse as JSON and check `active` field.
+Read `$TMPDIR/.claude-worktree-verify-state`. If the file exists, parse as JSON and check `active` field.
 
 - `active: true` (or field missing for backward compatibility) → report "確認モード中です。`/worktree resume` または `/worktree exit` を実行してください" and stop.
 - `active: false`, empty file, or file does not exist → proceed.
@@ -360,7 +360,7 @@ Filter to matching candidates.
 
 ### 0. Verify state guard
 
-Read `~/.claude/.worktree-verify-state`. If the file exists, parse as JSON and check `active` field.
+Read `$TMPDIR/.claude-worktree-verify-state`. If the file exists, parse as JSON and check `active` field.
 
 - `active: true` (or field missing for backward compatibility) → report "確認モード中です。`/worktree resume` または `/worktree exit` を実行してください" and stop.
 - `active: false`, empty file, or file does not exist → proceed.
