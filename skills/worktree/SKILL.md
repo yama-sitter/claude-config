@@ -43,8 +43,10 @@ WorktreeCreate hook automatically handles branch naming, dependency installation
 
 ### 0. Verify state guard
 
-Check if `~/.claude/.worktree-verify-state` exists.
-If it does, report "確認モード中です。先に `/worktree resume` または `/worktree exit` を実行してください" and stop.
+Read `~/.claude/.worktree-verify-state`. If the file exists, parse as JSON and check `active` field.
+
+- `active: true` (or field missing for backward compatibility) → report "確認モード中です。先に `/worktree resume` または `/worktree exit` を実行してください" and stop.
+- `active: false`, empty file, or file does not exist → proceed.
 
 ### 1. Process branch name
 
@@ -70,9 +72,9 @@ Match by **either**:
 
 - **Exists** → `EnterWorktree(name: "<name>")` to enter (hook returns existing path). No override file needed.
 - **Not exists** →
-    1. If `branch` contains `/`, write override file using the Write tool:
-       `Write(file_path: "~/.claude/.worktree-branch-override", content: "<branch>\n")`
-    2. `EnterWorktree(name: "<name>")`
+  1. If `branch` contains `/`, write override file using the Write tool:
+     `Write(file_path: "~/.claude/.worktree-branch-override", content: "<branch>\n")`
+  2. `EnterWorktree(name: "<name>")`
 
 ### 4. Verify setup
 
@@ -92,8 +94,10 @@ If any directory is missing dependencies or .env files, report to the user.
 
 ### 0. Verify state guard
 
-Check if `~/.claude/.worktree-verify-state` exists.
-If it does, report "確認モード中です。`/worktree resume` または `/worktree exit` を実行してください" and stop.
+Read `~/.claude/.worktree-verify-state`. If the file exists, parse as JSON and check `active` field.
+
+- `active: true` (or field missing for backward compatibility) → report "確認モード中です。`/worktree resume` または `/worktree exit` を実行してください" and stop.
+- `active: false`, empty file, or file does not exist → proceed.
 
 ### 1. Check session history
 
@@ -116,15 +120,18 @@ Look back in this session's conversation history for the most recent `EnterWorkt
 
 ### 0. Handle verify state
 
-Check if `~/.claude/.worktree-verify-state` exists.
+Read `~/.claude/.worktree-verify-state`. If the file exists, parse as JSON and check `active` field.
 
-If it does:
+If `active: true` (or field missing for backward compatibility):
+
 1. Read the state file
-2. Restore main branch: `git symbolic-ref HEAD 2>/dev/null` — if fails (detached HEAD), run `git checkout <mainBranch>`
+2. Restore main branch: `git symbolic-ref HEAD 2>/dev/null` — if fails (detached HEAD), run `git checkout <mainBranch>`. If checkout fails due to sandbox permission errors on `.claude/` files, use `git checkout -f <mainBranch>`. Permission errors on `.claude/` files can be ignored if `Switched to branch` is confirmed in output.
 3. Restore stash: if `stashed` is `true`, check `git stash list` first entry for `worktree-verify-auto-stash` — if match, `git stash pop`
-4. Delete the state file
-5. Re-enter worktree: `worktreeBranch` の `/` を `-` に置換して `worktreeName` を導出し、`EnterWorktree(name: "<worktreeName>")` で再入場する。verify中はメインの作業ディレクトリにいるため、Step 1の「worktree内にいるか」チェックを通過するにはこの再入場が必要
+4. Deactivate the state file: use Write tool to update JSON with `"active": false` (preserve other fields)
+5. Re-enter worktree: Derive `worktreeName` by replacing `/` with `-` in `worktreeBranch`, then call `EnterWorktree(name: "<worktreeName>")`. This re-entry is needed because you are in the main working directory during verify mode, and Step 1's "inside a worktree" check requires it.
 6. Continue to the normal exit flow (step 1 onward) — user will be asked keep/remove for the worktree
+
+If `active: false`, empty file, or file does not exist → skip (no verify state to handle).
 
 ### 1. Verify in worktree
 
@@ -160,8 +167,10 @@ Switch to verify mode: checkout the worktree branch HEAD as detached HEAD on the
 
 ### 0. Verify state guard
 
-Check if `~/.claude/.worktree-verify-state` exists.
-If it does, report "既に確認モード中です。`/worktree resume` で開発に戻るか、`/worktree exit` で終了してください" and stop.
+Read `~/.claude/.worktree-verify-state`. If the file exists, parse as JSON and check `active` field.
+
+- `active: true` (or field missing for backward compatibility) → report "既に確認モード中です。`/worktree resume` で開発に戻るか、`/worktree exit` で終了してください" and stop.
+- `active: false`, empty file, or file does not exist → proceed.
 
 ### 1. Verify in worktree
 
@@ -232,6 +241,8 @@ git checkout <commitHash>
 
 This puts the main working directory at the exact commit from the worktree branch, in detached HEAD state.
 
+**Sandbox note**: Permission errors on `.claude/` or `.vscode/` files (e.g., "unable to unlink") can be safely ignored if `HEAD is now at` is confirmed in the output. These errors are caused by sandbox filesystem restrictions and do not affect the checkout result.
+
 ### 8. Save state file
 
 Write to `~/.claude/.worktree-verify-state`:
@@ -242,7 +253,8 @@ Write to `~/.claude/.worktree-verify-state`:
   "worktreeBranch": "<worktreeBranch>",
   "mainBranch": "<mainBranch>",
   "stashed": <true|false>,
-  "commitHash": "<commitHash>"
+  "commitHash": "<commitHash>",
+  "active": true
 }
 ```
 
@@ -264,8 +276,8 @@ Exit verify mode: restore the main working directory and re-enter the worktree.
 
 ### 1. Check state file
 
-Read `~/.claude/.worktree-verify-state`.
-If the file does not exist, report "確認モードではありません" and stop.
+Read `~/.claude/.worktree-verify-state`. If the file does not exist, is empty, or parses as JSON with `active: false`, report "確認モードではありません" and stop.
+If `active: true` (or field missing for backward compatibility), proceed with the state data.
 
 ### 2. Restore main branch
 
@@ -275,7 +287,7 @@ Check current HEAD state:
 git symbolic-ref HEAD 2>/dev/null
 ```
 
-- Command fails (detached HEAD) → run `git checkout <mainBranch>` to restore
+- Command fails (detached HEAD) → run `git checkout <mainBranch>` to restore. If checkout fails due to sandbox permission errors on `.claude/` files, use `git checkout -f <mainBranch>`. Permission errors on `.claude/` files can be ignored if `Switched to branch` is confirmed in output.
 - Command succeeds (already on a branch) → user switched manually, skip this step
 
 ### 3. Restore stashed changes
@@ -294,13 +306,13 @@ Check if the first entry message contains `worktree-verify-auto-stash`.
 
 If `stashed` is `false`, skip this step.
 
-### 4. Delete state file
+### 4. Deactivate state file
 
-Delete `~/.claude/.worktree-verify-state`.
+Use the Write tool to update `~/.claude/.worktree-verify-state` with `"active": false` (preserve all other fields). Do NOT use `rm` — sandbox may block file deletion.
 
 ### 5. Re-enter worktree
 
-`worktreeBranch` の `/` を `-` に置換して `worktreeName` を導出する。`EnterWorktree(name: "<worktreeName>")` を直接実行する。（既存の `/worktree <branch>` フローを再帰的に呼び出す必要はない。状態ファイルはStep 4で既に削除済みのため、Step 0のガードも通過する。）
+Derive `worktreeName` by replacing `/` with `-` in `worktreeBranch`. Call `EnterWorktree(name: "<worktreeName>")` directly. (No need to recurse into the `/worktree <branch>` flow — the state file was set to `active: false` in Step 4, so the Step 0 guard will pass.)
 
 ### 6. Notify
 
@@ -314,8 +326,10 @@ Report:
 
 ### 0. Verify state guard
 
-Check if `~/.claude/.worktree-verify-state` exists.
-If it does, report "確認モード中です。`/worktree resume` または `/worktree exit` を実行してください" and stop.
+Read `~/.claude/.worktree-verify-state`. If the file exists, parse as JSON and check `active` field.
+
+- `active: true` (or field missing for backward compatibility) → report "確認モード中です。`/worktree resume` または `/worktree exit` を実行してください" and stop.
+- `active: false`, empty file, or file does not exist → proceed.
 
 ### 1. Get worktree list
 
@@ -340,8 +354,10 @@ Filter to matching candidates.
 
 ### 0. Verify state guard
 
-Check if `~/.claude/.worktree-verify-state` exists.
-If it does, report "確認モード中です。`/worktree resume` または `/worktree exit` を実行してください" and stop.
+Read `~/.claude/.worktree-verify-state`. If the file exists, parse as JSON and check `active` field.
+
+- `active: true` (or field missing for backward compatibility) → report "確認モード中です。`/worktree resume` または `/worktree exit` を実行してください" and stop.
+- `active: false`, empty file, or file does not exist → proceed.
 
 ### 1. Get worktree list
 
