@@ -33,6 +33,7 @@ When active:
 This includes: direct code change requests, Plan Mode, or any task where the user has not explicitly requested superpowers.
 
 - Worktree → Use custom `worktree` skill (EnterWorktree/ExitWorktree)
+- Brainstorming/design → Use custom `brainstorm` skill
 - Plan template → Use `plan-template.md`
 - Plan review → Use `plan-review.md` (2-cycle self-review)
 - Plan storage → `agent-memory` only
@@ -42,3 +43,4 @@ This includes: direct code change requests, Plan Mode, or any task where the use
 - All rules/ guidelines apply regardless of which flow is active
 - Even if `superpowers:brainstorming` would auto-trigger, prefer custom skills unless the user explicitly requested superpowers
 - Worktree operations always use the custom `worktree` skill (EnterWorktree/ExitWorktree), regardless of flow
+- Brainstorming/design always uses the custom `brainstorm` skill, unless the user explicitly requested superpowers
