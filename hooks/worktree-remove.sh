@@ -56,8 +56,10 @@ fi
 # Clean up directory if still present
 if [ -d "$WORKTREE_PATH" ]; then
   rm -rf "$WORKTREE_PATH" 2>/dev/null || true
-  git -C "$REPO_ROOT" worktree prune 2>/dev/null || true
 fi
+
+# Always prune stale worktree metadata (directory may already be removed by ExitWorktree)
+git -C "$REPO_ROOT" worktree prune 2>/dev/null || true
 
 # --- Delete branch ---
 if [ -n "$BRANCH" ] && [ "$BRANCH" != "main" ] && [ "$BRANCH" != "master" ]; then
