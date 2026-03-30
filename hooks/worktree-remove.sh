@@ -50,20 +50,26 @@ fi
 
 # --- Remove worktree (force to handle untracked files like node_modules) ---
 if git -C "$REPO_ROOT" worktree list --porcelain | grep -q "worktree $WORKTREE_PATH"; then
-  git -C "$REPO_ROOT" worktree remove --force "$WORKTREE_PATH" 2>/dev/null || true
+  if ! git -C "$REPO_ROOT" worktree remove --force "$WORKTREE_PATH" 2>&1; then
+    echo "WARNING: git worktree remove --force failed for $WORKTREE_PATH" >&2
+  fi
 fi
 
 # Clean up directory if still present
 if [ -d "$WORKTREE_PATH" ]; then
-  rm -rf "$WORKTREE_PATH" 2>/dev/null || true
+  if ! rm -rf "$WORKTREE_PATH" 2>&1; then
+    echo "WARNING: rm -rf failed for $WORKTREE_PATH" >&2
+  fi
 fi
 
 # Always prune stale worktree metadata (directory may already be removed by ExitWorktree)
-git -C "$REPO_ROOT" worktree prune 2>/dev/null || true
+git -C "$REPO_ROOT" worktree prune 2>&1 || true
 
 # --- Delete branch ---
 if [ -n "$BRANCH" ] && [ "$BRANCH" != "main" ] && [ "$BRANCH" != "master" ]; then
-  git -C "$REPO_ROOT" branch -D "$BRANCH" 2>/dev/null || true
+  if ! git -C "$REPO_ROOT" branch -D "$BRANCH" 2>&1; then
+    echo "WARNING: branch -D failed for $BRANCH" >&2
+  fi
 fi
 
 exit 0
