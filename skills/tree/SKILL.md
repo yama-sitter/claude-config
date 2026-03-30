@@ -141,8 +141,8 @@ Read `.git/claude-tree-preview-state`. If the file exists, parse as JSON and che
 If `active: true` and (`repoRoot` matches current repo root from `git rev-parse --show-toplevel`, or `repoRoot` field is missing for backward compatibility):
 
 1. Read the state file
-2. Restore original branch: run `git rev-parse --abbrev-ref HEAD` — if output is exactly `HEAD` (detached HEAD), run `git checkout <mainBranch>`. If checkout fails due to sandbox permission errors on `.claude/` files, use `git checkout -f <mainBranch>`. Permission errors on `.claude/` files can be ignored if `Switched to branch` is confirmed in output. If output is a branch name (already on a branch), skip this step.
-3. Restore stash: if `stashed` is `true`, check `git stash list` first entry for `tree-preview-auto-stash` — if match, `git stash pop`
+2. Restore original branch: run `git rev-parse --abbrev-ref HEAD` — if output is exactly `HEAD` (detached HEAD), run `git checkout <mainBranch>`. If checkout fails due to sandbox permission errors, ask the user: "sandbox制限によりcheckoutに失敗しました。以下を実行してください: `! git checkout <mainBranch>`". If output is a branch name (already on a branch), skip this step.
+3. Restore stash: if `stashed` is `true`, check `git stash list` first entry for `tree-preview-auto-stash` — if match, `git stash pop`. If pop fails, ask the user: "stash popに失敗しました。以下を実行してください: `! git stash pop`".
 4. Deactivate the state file: use Write tool to update JSON with `"active": false` (preserve other fields)
 5. Re-enter worktree: Derive `worktreeName` by replacing `/` with `-` in `worktreeBranch`, then call `EnterWorktree(name: "<worktreeName>")`. This re-entry is needed because you are in the main working directory during preview mode, and Step 1's "inside a worktree" check requires it.
 6. Continue to the normal exit flow (step 1 onward) — user will be asked keep/remove for the worktree
@@ -320,7 +320,9 @@ Check current HEAD state:
 git rev-parse --abbrev-ref HEAD
 ```
 
-- Output is exactly `HEAD` (detached HEAD) → run `git checkout <mainBranch>` to restore. If checkout fails due to sandbox permission errors on `.claude/` files, use `git checkout -f <mainBranch>`. Permission errors on `.claude/` files can be ignored if `Switched to branch` is confirmed in output.
+- Output is exactly `HEAD` (detached HEAD) → run `git checkout <mainBranch>` to restore.
+  - **Success** (output contains `Switched to branch`) → proceed
+  - **Failure** (sandbox permission errors like "unable to unlink" on `.claude/` or `.vscode/` files) → ask the user to run manually: "sandbox制限によりcheckoutに失敗しました。以下を実行してください: `! git checkout <mainBranch>`". Wait for user confirmation before proceeding.
 - Output is a branch name (already on a branch) → user switched manually, skip this step
 
 ### 3. Restore stashed changes
@@ -334,7 +336,7 @@ git stash list
 Check if the first entry message contains `tree-preview-auto-stash`.
 
 - Match → `git stash pop`
-  - If pop fails with conflict → warn "stash popでコンフリクトが発生しました。手動で解決してください: `git stash pop`" and continue (do NOT stop — still need to clean up state and re-enter worktree)
+  - If pop fails (conflict or sandbox error) → ask the user to run manually: "stash popに失敗しました。以下を実行してください: `! git stash pop`". Continue after user confirmation (do NOT stop — still need to clean up state and re-enter worktree).
 - No match → notify "自動stashが見つかりません。`git stash list` を確認してください" and continue
 
 If `stashed` is `false`, skip this step.
