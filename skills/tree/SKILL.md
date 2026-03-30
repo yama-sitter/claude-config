@@ -39,32 +39,27 @@ WorktreeCreate hook automatically handles branch naming, dependency installation
 
 ## State Management
 
-Preview mode state is stored in `git config --local` under the `claude-tree` section. This avoids permission prompts because `Bash(git *)` is universally allowed.
+Preview mode state is stored in `.claude/tree-preview-state.json` using the Write tool. The `.claude/` directory is covered by the global `Write(**)` permission, so no approval prompts appear even in sandbox environments.
 
-**Keys:**
+**Format:**
 
-| Key | Description |
-|-----|-------------|
-| `claude-tree.preview-active` | `true` or `false` |
-| `claude-tree.preview-repo-root` | Main repo absolute path |
-| `claude-tree.preview-worktree-path` | Worktree absolute path |
-| `claude-tree.preview-worktree-branch` | Worktree branch name |
-| `claude-tree.preview-main-branch` | Branch before preview |
-| `claude-tree.preview-stashed` | `true` or `false` |
-| `claude-tree.preview-commit-hash` | Worktree HEAD commit hash |
+```json
+{
+  "active": true,
+  "repoRoot": "<absolute path>",
+  "worktreePath": "<absolute path>",
+  "worktreeBranch": "<branch name>",
+  "mainBranch": "<branch name>",
+  "stashed": false,
+  "commitHash": "<sha1>"
+}
+```
 
 **Operations:**
 
-```bash
-# Read a value
-git config --local --get claude-tree.preview-active
-
-# Write a value
-git config --local claude-tree.preview-active true
-
-# Remove all state
-git config --local --remove-section claude-tree 2>/dev/null
-```
+- **Read**: Use the Read tool on `.claude/tree-preview-state.json`. File not found = not in preview mode.
+- **Write**: Use the Write tool to create or overwrite the file.
+- **Clear**: Use the Write tool to set `"active": false` (preserve other fields for debugging), or delete the file.
 
 **Branch override file**: `.git/claude-worktree-branch-override` — passes slash-form branch names to the WorktreeCreate hook. Written via `Bash(printf)`, read and deleted by the hook.
 
@@ -72,18 +67,13 @@ git config --local --remove-section claude-tree 2>/dev/null
 
 ## Preview State Guard (shared logic)
 
-Many subcommands share this guard. Run:
+Many subcommands share this guard. Read `.claude/tree-preview-state.json` with the Read tool.
 
-```bash
-git config --local --get claude-tree.preview-active 2>/dev/null
-```
-
-- Output is `true`:
-  - Read `repoRoot`: `git config --local --get claude-tree.preview-repo-root 2>/dev/null`
+- File exists and `active` is `true`:
   - Get current repo root: `git rev-parse --show-toplevel`
-  - `repoRoot` matches current repo root (or `repoRoot` is empty for backward compatibility) → report "プレビューモード中です。先に `/tree restore` または `/tree exit` を実行してください" and stop.
+  - `repoRoot` matches current repo root (or `repoRoot` is missing) → report "プレビューモード中です。先に `/tree restore` または `/tree exit` を実行してください" and stop.
   - `repoRoot` does not match → report "別のリポジトリ（`<repoRoot>`）でプレビューモード中です" and stop.
-- Output is `false`, empty, or command fails → proceed.
+- File not found, empty, or `active` is `false` → proceed.
 
 ---
 
@@ -167,26 +157,15 @@ Look back in this session's conversation history for the most recent `EnterWorkt
 
 ### 0. Handle preview state
 
-```bash
-git config --local --get claude-tree.preview-active 2>/dev/null
-```
-
-If output is `true`:
-
-1. Read state values:
-   ```bash
-   git config --local --get claude-tree.preview-main-branch
-   git config --local --get claude-tree.preview-worktree-branch
-   git config --local --get claude-tree.preview-stashed
-   ```
+Read `.claude/tree-preview-state.json`. If the file exists and `active` is `true`:
 2. Discard sandbox artifacts: check `git status --porcelain` — if modified files exist (lines NOT starting with `??`), ask the user: "プレビューモードの副作用で差分が発生しています。`git restore .`で差分を破棄してよいですか？" If approved, run `git restore .`. If restore fails (sandbox error), ask: "`! git restore .` を実行してください".
 3. Restore original branch: run `git rev-parse --abbrev-ref HEAD` — if output is exactly `HEAD` (detached HEAD), run `git checkout <mainBranch>`. If checkout fails, ask: "`! git checkout <mainBranch>` を実行してください". If output is a branch name, skip.
 4. Restore stash: if `stashed` is `true`, check `git stash list` first entry for `tree-preview-auto-stash` — if match, `git stash pop`. If pop fails, ask: "`! git stash pop` を実行してください".
-5. Clear state: `git config --local --remove-section claude-tree 2>/dev/null`
+5. Clear state: Write `.claude/tree-preview-state.json` with `"active": false` (preserve other fields)
 6. Re-enter worktree: Derive `worktreeName` by replacing `/` with `-` in `worktreeBranch`, then call `EnterWorktree(name: "<worktreeName>")`.
 7. Continue to the normal exit flow (step 1 onward) — user will be asked keep/remove for the worktree
 
-If output is not `true` → skip (no preview state to handle).
+If file not found, or `active` is not `true` → skip (no preview state to handle).
 
 ### 1. Verify in worktree
 
@@ -310,14 +289,18 @@ This puts the main working directory at the exact commit from the worktree branc
 
 ### 8. Save state
 
-```bash
-git config --local claude-tree.preview-active true
-git config --local claude-tree.preview-repo-root "<repoRoot>"
-git config --local claude-tree.preview-worktree-path "<worktreePath>"
-git config --local claude-tree.preview-worktree-branch "<worktreeBranch>"
-git config --local claude-tree.preview-main-branch "<mainBranch>"
-git config --local claude-tree.preview-stashed <true|false>
-git config --local claude-tree.preview-commit-hash "<commitHash>"
+Write `.claude/tree-preview-state.json`:
+
+```json
+{
+  "active": true,
+  "repoRoot": "<repoRoot>",
+  "worktreePath": "<worktreePath>",
+  "worktreeBranch": "<worktreeBranch>",
+  "mainBranch": "<mainBranch>",
+  "stashed": <true|false>,
+  "commitHash": "<commitHash>"
+}
 ```
 
 **Important**: State is saved AFTER ExitWorktree and git checkout succeed, to avoid leaving orphaned state on failure.
@@ -338,19 +321,9 @@ Exit preview mode: restore the main working directory and re-enter the worktree.
 
 ### 1. Check state
 
-```bash
-git config --local --get claude-tree.preview-active 2>/dev/null
-```
+Read `.claude/tree-preview-state.json`. If file not found, or `active` is not `true`, report "プレビューモードではありません" and stop.
 
-If output is not `true`, report "プレビューモードではありません" and stop.
-
-Read state values:
-
-```bash
-git config --local --get claude-tree.preview-main-branch
-git config --local --get claude-tree.preview-worktree-branch
-git config --local --get claude-tree.preview-stashed
-```
+Extract `mainBranch`, `worktreeBranch`, `stashed` from the JSON.
 
 ### 2. Discard sandbox artifacts
 
@@ -394,19 +367,11 @@ If `stashed` is `false`, skip this step.
 
 ### 5. Clear state
 
-```bash
-git config --local --remove-section claude-tree 2>/dev/null
-```
+Write `.claude/tree-preview-state.json` with `"active": false` (preserve other fields).
 
 ### 6. Re-enter worktree
 
 Derive `worktreeName` by replacing `/` with `-` in `worktreeBranch`. Call `EnterWorktree(name: "<worktreeName>")` directly.
-
-### 7. Notify
-
-Report:
-
-> 開発モードに戻りました。worktree `<worktreeBranch>` で作業を再開できます。
 
 ---
 
