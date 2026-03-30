@@ -37,10 +37,53 @@ WorktreeCreate hook automatically handles branch naming, dependency installation
 - The current directory is within a Git repository
 - Not already inside a worktree (for enter commands)
 
-## File Paths
+## State Management
 
-- **Preview state file**: `<repo-root>/.git/claude-tree-preview-state` — tracks preview mode state. Read with the Read tool (file not found = not in preview mode).
-- **Branch override file**: `<repo-root>/.git/claude-worktree-branch-override` — passes slash-form branch names to the WorktreeCreate hook. Written by the skill, read and deleted by the hook.
+Preview mode state is stored in `git config --local` under the `claude-tree` section. This avoids permission prompts because `Bash(git *)` is universally allowed.
+
+**Keys:**
+
+| Key | Description |
+|-----|-------------|
+| `claude-tree.preview-active` | `true` or `false` |
+| `claude-tree.preview-repo-root` | Main repo absolute path |
+| `claude-tree.preview-worktree-path` | Worktree absolute path |
+| `claude-tree.preview-worktree-branch` | Worktree branch name |
+| `claude-tree.preview-main-branch` | Branch before preview |
+| `claude-tree.preview-stashed` | `true` or `false` |
+| `claude-tree.preview-commit-hash` | Worktree HEAD commit hash |
+
+**Operations:**
+
+```bash
+# Read a value
+git config --local --get claude-tree.preview-active
+
+# Write a value
+git config --local claude-tree.preview-active true
+
+# Remove all state
+git config --local --remove-section claude-tree 2>/dev/null
+```
+
+**Branch override file**: `.git/claude-worktree-branch-override` — passes slash-form branch names to the WorktreeCreate hook. Written via `Bash(printf)`, read and deleted by the hook.
+
+---
+
+## Preview State Guard (shared logic)
+
+Many subcommands share this guard. Run:
+
+```bash
+git config --local --get claude-tree.preview-active 2>/dev/null
+```
+
+- Output is `true`:
+  - Read `repoRoot`: `git config --local --get claude-tree.preview-repo-root 2>/dev/null`
+  - Get current repo root: `git rev-parse --show-toplevel`
+  - `repoRoot` matches current repo root (or `repoRoot` is empty for backward compatibility) → report "プレビューモード中です。先に `/tree restore` または `/tree exit` を実行してください" and stop.
+  - `repoRoot` does not match → report "別のリポジトリ（`<repoRoot>`）でプレビューモード中です" and stop.
+- Output is `false`, empty, or command fails → proceed.
 
 ---
 
@@ -48,13 +91,7 @@ WorktreeCreate hook automatically handles branch naming, dependency installation
 
 ### 0. Preview state guard
 
-Read `.git/claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
-
-Get the current repo root: `git rev-parse --show-toplevel`.
-
-- `active: true` and (`repoRoot` matches current repo root, or `repoRoot` field is missing for backward compatibility) → report "プレビューモード中です。先に `/tree restore` または `/tree exit` を実行してください" and stop.
-- `active: true` but `repoRoot` does not match current repo root → report "別のリポジトリ（`<repoRoot>`）でプレビューモード中です" and stop.
-- `active: false`, empty file, or file does not exist → proceed.
+Run the shared Preview State Guard (see above).
 
 ### 1. Process branch name
 
@@ -107,13 +144,7 @@ If any directory is missing dependencies or .env files, report to the user.
 
 ### 0. Preview state guard
 
-Read `.git/claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
-
-Get the current repo root: `git rev-parse --show-toplevel`.
-
-- `active: true` and (`repoRoot` matches current repo root, or `repoRoot` field is missing for backward compatibility) → report "プレビューモード中です。`/tree restore` または `/tree exit` を実行してください" and stop.
-- `active: true` but `repoRoot` does not match current repo root → report "別のリポジトリ（`<repoRoot>`）でプレビューモード中です" and stop.
-- `active: false`, empty file, or file does not exist → proceed.
+Run the shared Preview State Guard (see above).
 
 ### 1. Check session history
 
@@ -136,18 +167,26 @@ Look back in this session's conversation history for the most recent `EnterWorkt
 
 ### 0. Handle preview state
 
-Read `.git/claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
+```bash
+git config --local --get claude-tree.preview-active 2>/dev/null
+```
 
-If `active: true` and (`repoRoot` matches current repo root from `git rev-parse --show-toplevel`, or `repoRoot` field is missing for backward compatibility):
+If output is `true`:
 
-1. Read the state file
-2. Restore original branch: run `git rev-parse --abbrev-ref HEAD` — if output is exactly `HEAD` (detached HEAD), run `git checkout <mainBranch>`. If checkout fails due to sandbox permission errors, ask the user: "sandbox制限によりcheckoutに失敗しました。以下を実行してください: `! git checkout <mainBranch>`". If output is a branch name (already on a branch), skip this step.
-3. Restore stash: if `stashed` is `true`, check `git stash list` first entry for `tree-preview-auto-stash` — if match, `git stash pop`. If pop fails, ask the user: "stash popに失敗しました。以下を実行してください: `! git stash pop`".
-4. Deactivate the state file: use Write tool to update JSON with `"active": false` (preserve other fields)
-5. Re-enter worktree: Derive `worktreeName` by replacing `/` with `-` in `worktreeBranch`, then call `EnterWorktree(name: "<worktreeName>")`. This re-entry is needed because you are in the main working directory during preview mode, and Step 1's "inside a worktree" check requires it.
-6. Continue to the normal exit flow (step 1 onward) — user will be asked keep/remove for the worktree
+1. Read state values:
+   ```bash
+   git config --local --get claude-tree.preview-main-branch
+   git config --local --get claude-tree.preview-worktree-branch
+   git config --local --get claude-tree.preview-stashed
+   ```
+2. Discard sandbox artifacts: check `git status --porcelain` — if modified files exist (lines NOT starting with `??`), ask the user: "プレビューモードの副作用で差分が発生しています。`git restore .`で差分を破棄してよいですか？" If approved, run `git restore .`. If restore fails (sandbox error), ask: "`! git restore .` を実行してください".
+3. Restore original branch: run `git rev-parse --abbrev-ref HEAD` — if output is exactly `HEAD` (detached HEAD), run `git checkout <mainBranch>`. If checkout fails, ask: "`! git checkout <mainBranch>` を実行してください". If output is a branch name, skip.
+4. Restore stash: if `stashed` is `true`, check `git stash list` first entry for `tree-preview-auto-stash` — if match, `git stash pop`. If pop fails, ask: "`! git stash pop` を実行してください".
+5. Clear state: `git config --local --remove-section claude-tree 2>/dev/null`
+6. Re-enter worktree: Derive `worktreeName` by replacing `/` with `-` in `worktreeBranch`, then call `EnterWorktree(name: "<worktreeName>")`.
+7. Continue to the normal exit flow (step 1 onward) — user will be asked keep/remove for the worktree
 
-If `active: false`, empty file, or file does not exist → skip (no preview state to handle).
+If output is not `true` → skip (no preview state to handle).
 
 ### 1. Verify in worktree
 
@@ -189,13 +228,7 @@ Switch to preview mode: checkout the worktree branch HEAD as detached HEAD on th
 
 ### 0. Preview state guard
 
-Read `.git/claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
-
-Get the current repo root: `git rev-parse --show-toplevel` (note: in a worktree this returns the worktree root, not the main repo root — for guard purposes, compare against `repoRoot` which was saved from the main repo in a previous preview session).
-
-- `active: true` and (`repoRoot` field is missing for backward compatibility) → report "既にプレビューモード中です。`/tree restore` で開発に戻るか、`/tree exit` で終了してください" and stop.
-- `active: true` and `repoRoot` is present → report "既にプレビューモード中です（`<repoRoot>`）。`/tree restore` で開発に戻るか、`/tree exit` で終了してください" and stop.
-- `active: false`, empty file, or file does not exist → proceed.
+Run the shared Preview State Guard (see above).
 
 ### 1. Verify in worktree
 
@@ -273,25 +306,21 @@ git checkout <commitHash>
 
 This puts the main working directory at the exact commit from the worktree branch, in detached HEAD state.
 
-**Sandbox note**: Permission errors on `.claude/` or `.vscode/` files (e.g., "unable to unlink") can be safely ignored if `HEAD is now at` is confirmed in the output. These errors are caused by sandbox filesystem restrictions and do not affect the checkout result.
+**Sandbox note**: Permission errors on `.claude/` or `.vscode/` files (e.g., "unable to unlink") may appear. If `HEAD is now at` is confirmed in the output, the checkout succeeded. These files may show as "modified" in `git status` — this is a sandbox artifact, not a real change.
 
-### 8. Save state file
+### 8. Save state
 
-Write to `.git/claude-tree-preview-state`:
-
-```json
-{
-  "repoRoot": "<repoRoot>",
-  "worktreePath": "<worktreePath>",
-  "worktreeBranch": "<worktreeBranch>",
-  "mainBranch": "<mainBranch>",
-  "stashed": <true|false>,
-  "commitHash": "<commitHash>",
-  "active": true
-}
+```bash
+git config --local claude-tree.preview-active true
+git config --local claude-tree.preview-repo-root "<repoRoot>"
+git config --local claude-tree.preview-worktree-path "<worktreePath>"
+git config --local claude-tree.preview-worktree-branch "<worktreeBranch>"
+git config --local claude-tree.preview-main-branch "<mainBranch>"
+git config --local claude-tree.preview-stashed <true|false>
+git config --local claude-tree.preview-commit-hash "<commitHash>"
 ```
 
-**Important**: This file is written AFTER ExitWorktree and git checkout succeed, to avoid leaving orphaned state on failure.
+**Important**: State is saved AFTER ExitWorktree and git checkout succeed, to avoid leaving orphaned state on failure.
 
 ### 9. Notify
 
@@ -307,12 +336,34 @@ Report:
 
 Exit preview mode: restore the main working directory and re-enter the worktree.
 
-### 1. Check state file
+### 1. Check state
 
-Read `.git/claude-tree-preview-state`. If the file does not exist, is empty, or parses as JSON with `active: false`, report "プレビューモードではありません" and stop.
-If `active: true` (or field missing for backward compatibility), proceed with the state data.
+```bash
+git config --local --get claude-tree.preview-active 2>/dev/null
+```
 
-### 2. Restore original branch
+If output is not `true`, report "プレビューモードではありません" and stop.
+
+Read state values:
+
+```bash
+git config --local --get claude-tree.preview-main-branch
+git config --local --get claude-tree.preview-worktree-branch
+git config --local --get claude-tree.preview-stashed
+```
+
+### 2. Discard sandbox artifacts
+
+```bash
+git status --porcelain
+```
+
+If modified files exist (lines NOT starting with `??`), these are sandbox artifacts from the preview checkout. Ask the user: "プレビューモードの副作用で差分が発生しています（`.claude/`や`.vscode/`配下のファイル）。`git restore .`で差分を破棄してよいですか？"
+
+- Approved → run `git restore .`. If restore fails (sandbox error), ask: "`! git restore .` を実行してください". Wait for user confirmation.
+- Declined → proceed anyway (checkout may fail in next step)
+
+### 3. Restore original branch
 
 Check current HEAD state:
 
@@ -322,12 +373,12 @@ git rev-parse --abbrev-ref HEAD
 
 - Output is exactly `HEAD` (detached HEAD) → run `git checkout <mainBranch>` to restore.
   - **Success** (output contains `Switched to branch`) → proceed
-  - **Failure** (sandbox permission errors like "unable to unlink" on `.claude/` or `.vscode/` files) → ask the user to run manually: "sandbox制限によりcheckoutに失敗しました。以下を実行してください: `! git checkout <mainBranch>`". Wait for user confirmation before proceeding.
+  - **Failure** → ask the user: "sandbox制限によりcheckoutに失敗しました。以下を実行してください: `! git checkout <mainBranch>`". Wait for user confirmation.
 - Output is a branch name (already on a branch) → user switched manually, skip this step
 
-### 3. Restore stashed changes
+### 4. Restore stashed changes
 
-If `stashed` is `true` in the state file:
+If `stashed` is `true`:
 
 ```bash
 git stash list
@@ -336,20 +387,22 @@ git stash list
 Check if the first entry message contains `tree-preview-auto-stash`.
 
 - Match → `git stash pop`
-  - If pop fails (conflict or sandbox error) → ask the user to run manually: "stash popに失敗しました。以下を実行してください: `! git stash pop`". Continue after user confirmation (do NOT stop — still need to clean up state and re-enter worktree).
+  - If pop fails → ask: "`! git stash pop` を実行してください". Continue after user confirmation.
 - No match → notify "自動stashが見つかりません。`git stash list` を確認してください" and continue
 
 If `stashed` is `false`, skip this step.
 
-### 4. Deactivate state file
+### 5. Clear state
 
-Use the Write tool to update `.git/claude-tree-preview-state` with `"active": false` (preserve all other fields).
+```bash
+git config --local --remove-section claude-tree 2>/dev/null
+```
 
-### 5. Re-enter worktree
+### 6. Re-enter worktree
 
-Derive `worktreeName` by replacing `/` with `-` in `worktreeBranch`. Call `EnterWorktree(name: "<worktreeName>")` directly. (No need to recurse into the `/tree <branch>` flow — the state file was set to `active: false` in Step 4, so the Step 0 guard will pass.)
+Derive `worktreeName` by replacing `/` with `-` in `worktreeBranch`. Call `EnterWorktree(name: "<worktreeName>")` directly.
 
-### 6. Notify
+### 7. Notify
 
 Report:
 
@@ -361,13 +414,7 @@ Report:
 
 ### 0. Preview state guard
 
-Read `.git/claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
-
-Get the current repo root: `git rev-parse --show-toplevel`.
-
-- `active: true` and (`repoRoot` matches current repo root, or `repoRoot` field is missing for backward compatibility) → report "プレビューモード中です。`/tree restore` または `/tree exit` を実行してください" and stop.
-- `active: true` but `repoRoot` does not match current repo root → report "別のリポジトリ（`<repoRoot>`）でプレビューモード中です" and stop.
-- `active: false`, empty file, or file does not exist → proceed.
+Run the shared Preview State Guard (see above).
 
 ### 1. Get worktree list
 
@@ -392,13 +439,7 @@ Filter to matching candidates.
 
 ### 0. Preview state guard
 
-Read `.git/claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
-
-Get the current repo root: `git rev-parse --show-toplevel`.
-
-- `active: true` and (`repoRoot` matches current repo root, or `repoRoot` field is missing for backward compatibility) → report "プレビューモード中です。`/tree restore` または `/tree exit` を実行してください" and stop.
-- `active: true` but `repoRoot` does not match current repo root → report "別のリポジトリ（`<repoRoot>`）でプレビューモード中です" and stop.
-- `active: false`, empty file, or file does not exist → proceed.
+Run the shared Preview State Guard (see above).
 
 ### 1. Get worktree list
 
