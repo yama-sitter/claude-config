@@ -37,13 +37,18 @@ WorktreeCreate hook automatically handles branch naming, dependency installation
 - The current directory is within a Git repository
 - Not already inside a worktree (for enter commands)
 
+## File Paths
+
+- **Preview state file**: `<repo-root>/.git/claude-tree-preview-state` — tracks preview mode state. Read with the Read tool (file not found = not in preview mode).
+- **Branch override file**: `<repo-root>/.git/claude-worktree-branch-override` — passes slash-form branch names to the WorktreeCreate hook. Written by the skill, read and deleted by the hook.
+
 ---
 
 ## Subcommand: `/tree <branch>`
 
 ### 0. Preview state guard
 
-Read `$TMPDIR/.claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
+Read `.git/claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
 
 Get the current repo root: `git rev-parse --show-toplevel`.
 
@@ -74,7 +79,7 @@ Match by **either**:
 ### 3. Enter or create
 
 1. If `branch` contains `/`, always write override file (regardless of exists/not-exists):
-   `Bash: printf '%s\n' '<branch>' > "/private/tmp/claude/claude-501/.claude-worktree-branch-override"`
+   `Bash: printf '%s\n' '<branch>' > ".git/claude-worktree-branch-override"`
 2. **Exists** → `EnterWorktree(name: "<name>")`
 3. **Not exists** → `EnterWorktree(name: "<name>")`
 
@@ -102,7 +107,7 @@ If any directory is missing dependencies or .env files, report to the user.
 
 ### 0. Preview state guard
 
-Read `$TMPDIR/.claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
+Read `.git/claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
 
 Get the current repo root: `git rev-parse --show-toplevel`.
 
@@ -131,7 +136,7 @@ Look back in this session's conversation history for the most recent `EnterWorkt
 
 ### 0. Handle preview state
 
-Read `$TMPDIR/.claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
+Read `.git/claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
 
 If `active: true` and (`repoRoot` matches current repo root from `git rev-parse --show-toplevel`, or `repoRoot` field is missing for backward compatibility):
 
@@ -184,7 +189,7 @@ Switch to preview mode: checkout the worktree branch HEAD as detached HEAD on th
 
 ### 0. Preview state guard
 
-Read `$TMPDIR/.claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
+Read `.git/claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
 
 Get the current repo root: `git rev-parse --show-toplevel` (note: in a worktree this returns the worktree root, not the main repo root — for guard purposes, compare against `repoRoot` which was saved from the main repo in a previous preview session).
 
@@ -272,7 +277,7 @@ This puts the main working directory at the exact commit from the worktree branc
 
 ### 8. Save state file
 
-Write to `$TMPDIR/.claude-tree-preview-state`:
+Write to `.git/claude-tree-preview-state`:
 
 ```json
 {
@@ -304,7 +309,7 @@ Exit preview mode: restore the main working directory and re-enter the worktree.
 
 ### 1. Check state file
 
-Read `$TMPDIR/.claude-tree-preview-state`. If the file does not exist, is empty, or parses as JSON with `active: false`, report "プレビューモードではありません" and stop.
+Read `.git/claude-tree-preview-state`. If the file does not exist, is empty, or parses as JSON with `active: false`, report "プレビューモードではありません" and stop.
 If `active: true` (or field missing for backward compatibility), proceed with the state data.
 
 ### 2. Restore original branch
@@ -336,7 +341,7 @@ If `stashed` is `false`, skip this step.
 
 ### 4. Deactivate state file
 
-Use the Write tool to update `$TMPDIR/.claude-tree-preview-state` with `"active": false` (preserve all other fields).
+Use the Write tool to update `.git/claude-tree-preview-state` with `"active": false` (preserve all other fields).
 
 ### 5. Re-enter worktree
 
@@ -354,7 +359,7 @@ Report:
 
 ### 0. Preview state guard
 
-Read `$TMPDIR/.claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
+Read `.git/claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
 
 Get the current repo root: `git rev-parse --show-toplevel`.
 
@@ -385,7 +390,7 @@ Filter to matching candidates.
 
 ### 0. Preview state guard
 
-Read `$TMPDIR/.claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
+Read `.git/claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
 
 Get the current repo root: `git rev-parse --show-toplevel`.
 

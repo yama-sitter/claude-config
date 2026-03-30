@@ -10,16 +10,16 @@ INPUT=$(cat)
 NAME=$(echo "$INPUT" | jq -r '.name // empty')
 [ -z "$NAME" ] && exit 1
 
-# 一時ファイルから元のブランチ名を取得（スキルが書き出す）
-BRANCH_OVERRIDE_FILE="/private/tmp/claude/claude-501/.claude-worktree-branch-override"
+REPO_ROOT="${CLAUDE_PROJECT_DIR:-.}"
+
+# .git配下からブランチ名オーバーライドを取得（スキルが書き出す）
+BRANCH_OVERRIDE_FILE="$REPO_ROOT/.git/claude-worktree-branch-override"
 if [ -f "$BRANCH_OVERRIDE_FILE" ]; then
   BRANCH=$(cat "$BRANCH_OVERRIDE_FILE")
   rm -f "$BRANCH_OVERRIDE_FILE"
 else
   BRANCH="$NAME"
 fi
-
-REPO_ROOT="${CLAUDE_PROJECT_DIR:-.}"
 
 # --- worktreeパスを算出（gwq命名規則: ~/Sources/<host>/<owner>/<repo>=<name>） ---
 REMOTE_URL=$(git -C "$REPO_ROOT" remote get-url origin 2>/dev/null || echo "")
