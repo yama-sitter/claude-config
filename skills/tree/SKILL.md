@@ -1,5 +1,5 @@
 ---
-name: worktree
+name: tree
 description: |
   Create and manage worktrees using EnterWorktree/ExitWorktree.
   Use for "create worktree", "worktreeを作って", "review this PR in worktree", etc.
@@ -12,23 +12,23 @@ user-invocable: true
 args: "[subcommand] [args]"
 ---
 
-# Worktree Skill
+# Tree Skill
 
 Create and manage worktrees using Claude Code's built-in EnterWorktree/ExitWorktree tools.
 WorktreeCreate hook automatically handles branch naming, dependency installation, and .env copying.
 
 ## Subcommands
 
-| Command                    | Description                                                                 |
-| -------------------------- | --------------------------------------------------------------------------- |
-| `/worktree <branch>`       | Enter the worktree for `<branch>`. Create if not exists (with confirmation) |
-| `/worktree current`        | Re-enter the last worktree used in this session                             |
-| `/worktree exit`           | Exit the current worktree (keep/remove confirmation)                        |
-| `/worktree verify`         | Enter verify mode: checkout worktree HEAD as detached HEAD on main          |
-| `/worktree resume`         | Exit verify mode: return to worktree for development                        |
-| `/worktree search <query>` | Search worktrees by natural language query                                  |
-| `/worktree search`         | List all worktrees and select interactively                                 |
-| `/worktree` (no args)      | Same as `/worktree search`                                                  |
+| Command                 | Description                                                                 |
+| ----------------------- | --------------------------------------------------------------------------- |
+| `/tree <branch>`        | Enter the worktree for `<branch>`. Create if not exists (with confirmation) |
+| `/tree recent`          | Re-enter the last worktree used in this session                             |
+| `/tree exit`            | Exit the current worktree (keep/remove confirmation)                        |
+| `/tree preview`         | Enter preview mode: checkout worktree HEAD as detached HEAD on main         |
+| `/tree restore`         | Exit preview mode: return to worktree for development                       |
+| `/tree search <query>`  | Search worktrees by natural language query                                  |
+| `/tree search`          | List all worktrees and select interactively                                 |
+| `/tree` (no args)       | Same as `/tree search`                                                      |
 
 ---
 
@@ -39,16 +39,16 @@ WorktreeCreate hook automatically handles branch naming, dependency installation
 
 ---
 
-## Subcommand: `/worktree <branch>`
+## Subcommand: `/tree <branch>`
 
-### 0. Verify state guard
+### 0. Preview state guard
 
-Read `$TMPDIR/.claude-worktree-verify-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
+Read `$TMPDIR/.claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
 
 Get the current repo root: `git rev-parse --show-toplevel`.
 
-- `active: true` and (`repoRoot` matches current repo root, or `repoRoot` field is missing for backward compatibility) → report "確認モード中です。先に `/worktree resume` または `/worktree exit` を実行してください" and stop.
-- `active: true` but `repoRoot` does not match current repo root → report "別のリポジトリ（`<repoRoot>`）で確認モード中です" and stop.
+- `active: true` and (`repoRoot` matches current repo root, or `repoRoot` field is missing for backward compatibility) → report "プレビューモード中です。先に `/tree restore` または `/tree exit` を実行してください" and stop.
+- `active: true` but `repoRoot` does not match current repo root → report "別のリポジトリ（`<repoRoot>`）でプレビューモード中です" and stop.
 - `active: false`, empty file, or file does not exist → proceed.
 
 ### 1. Process branch name
@@ -98,16 +98,16 @@ If any directory is missing dependencies or .env files, report to the user.
 
 ---
 
-## Subcommand: `/worktree current`
+## Subcommand: `/tree recent`
 
-### 0. Verify state guard
+### 0. Preview state guard
 
-Read `$TMPDIR/.claude-worktree-verify-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
+Read `$TMPDIR/.claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
 
 Get the current repo root: `git rev-parse --show-toplevel`.
 
-- `active: true` and (`repoRoot` matches current repo root, or `repoRoot` field is missing for backward compatibility) → report "確認モード中です。`/worktree resume` または `/worktree exit` を実行してください" and stop.
-- `active: true` but `repoRoot` does not match current repo root → report "別のリポジトリ（`<repoRoot>`）で確認モード中です" and stop.
+- `active: true` and (`repoRoot` matches current repo root, or `repoRoot` field is missing for backward compatibility) → report "プレビューモード中です。`/tree restore` または `/tree exit` を実行してください" and stop.
+- `active: true` but `repoRoot` does not match current repo root → report "別のリポジトリ（`<repoRoot>`）でプレビューモード中です" and stop.
 - `active: false`, empty file, or file does not exist → proceed.
 
 ### 1. Check session history
@@ -123,26 +123,26 @@ Look back in this session's conversation history for the most recent `EnterWorkt
   ```
   - 1 worktree → Enter it
   - Multiple → AskUserQuestion to select
-  - None → Report "このセッションでworktreeを使っていません。`/worktree <branch>` で作成できます。"
+  - None → Report "このセッションでworktreeを使っていません。`/tree <branch>` で作成できます。"
 
 ---
 
-## Subcommand: `/worktree exit`
+## Subcommand: `/tree exit`
 
-### 0. Handle verify state
+### 0. Handle preview state
 
-Read `$TMPDIR/.claude-worktree-verify-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
+Read `$TMPDIR/.claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
 
 If `active: true` and (`repoRoot` matches current repo root from `git rev-parse --show-toplevel`, or `repoRoot` field is missing for backward compatibility):
 
 1. Read the state file
-2. Restore main branch: run `git rev-parse --abbrev-ref HEAD` — if output is exactly `HEAD` (detached HEAD), run `git checkout <mainBranch>`. If checkout fails due to sandbox permission errors on `.claude/` files, use `git checkout -f <mainBranch>`. Permission errors on `.claude/` files can be ignored if `Switched to branch` is confirmed in output. If output is a branch name (already on a branch), skip this step.
-3. Restore stash: if `stashed` is `true`, check `git stash list` first entry for `worktree-verify-auto-stash` — if match, `git stash pop`
+2. Restore original branch: run `git rev-parse --abbrev-ref HEAD` — if output is exactly `HEAD` (detached HEAD), run `git checkout <mainBranch>`. If checkout fails due to sandbox permission errors on `.claude/` files, use `git checkout -f <mainBranch>`. Permission errors on `.claude/` files can be ignored if `Switched to branch` is confirmed in output. If output is a branch name (already on a branch), skip this step.
+3. Restore stash: if `stashed` is `true`, check `git stash list` first entry for `tree-preview-auto-stash` — if match, `git stash pop`
 4. Deactivate the state file: use Write tool to update JSON with `"active": false` (preserve other fields)
-5. Re-enter worktree: Derive `worktreeName` by replacing `/` with `-` in `worktreeBranch`, then call `EnterWorktree(name: "<worktreeName>")`. This re-entry is needed because you are in the main working directory during verify mode, and Step 1's "inside a worktree" check requires it.
+5. Re-enter worktree: Derive `worktreeName` by replacing `/` with `-` in `worktreeBranch`, then call `EnterWorktree(name: "<worktreeName>")`. This re-entry is needed because you are in the main working directory during preview mode, and Step 1's "inside a worktree" check requires it.
 6. Continue to the normal exit flow (step 1 onward) — user will be asked keep/remove for the worktree
 
-If `active: false`, empty file, or file does not exist → skip (no verify state to handle).
+If `active: false`, empty file, or file does not exist → skip (no preview state to handle).
 
 ### 1. Verify in worktree
 
@@ -178,18 +178,18 @@ AskUserQuestion:
 
 ---
 
-## Subcommand: `/worktree verify`
+## Subcommand: `/tree preview`
 
-Switch to verify mode: checkout the worktree branch HEAD as detached HEAD on the main working directory, so you can run services and test changes without worktree environment setup.
+Switch to preview mode: checkout the worktree branch HEAD as detached HEAD on the main working directory, so you can run services and test changes without worktree environment setup.
 
-### 0. Verify state guard
+### 0. Preview state guard
 
-Read `$TMPDIR/.claude-worktree-verify-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
+Read `$TMPDIR/.claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
 
-Get the current repo root: `git rev-parse --show-toplevel` (note: in a worktree this returns the worktree root, not the main repo root — for guard purposes, compare against `repoRoot` which was saved from the main repo in a previous verify session).
+Get the current repo root: `git rev-parse --show-toplevel` (note: in a worktree this returns the worktree root, not the main repo root — for guard purposes, compare against `repoRoot` which was saved from the main repo in a previous preview session).
 
-- `active: true` and (`repoRoot` field is missing for backward compatibility) → report "既に確認モード中です。`/worktree resume` で開発に戻るか、`/worktree exit` で終了してください" and stop.
-- `active: true` and `repoRoot` is present → report "既に確認モード中です（`<repoRoot>`）。`/worktree resume` で開発に戻るか、`/worktree exit` で終了してください" and stop.
+- `active: true` and (`repoRoot` field is missing for backward compatibility) → report "既にプレビューモード中です。`/tree restore` で開発に戻るか、`/tree exit` で終了してください" and stop.
+- `active: true` and `repoRoot` is present → report "既にプレビューモード中です（`<repoRoot>`）。`/tree restore` で開発に戻るか、`/tree exit` で終了してください" and stop.
 - `active: false`, empty file, or file does not exist → proceed.
 
 ### 1. Verify in worktree
@@ -210,8 +210,8 @@ git status --porcelain
 ```
 
 - Output is empty → proceed
-- Output contains lines NOT starting with `??` (staged/modified changes exist) → report "未コミットの変更があります。先にコミットしてから `/worktree verify` を実行してください" and stop
-- Output contains only `??` lines (untracked files only) → warn "untracked filesがあります。verify中は反映されませんが続行します" and proceed
+- Output contains lines NOT starting with `??` (staged/modified changes exist) → report "未コミットの変更があります。先にコミットしてから `/tree preview` を実行してください" and stop
+- Output contains only `??` lines (untracked files only) → warn "untracked filesがあります。preview中は反映されませんが続行します" and proceed
 
 ### 3. Collect worktree info
 
@@ -255,7 +255,7 @@ Save as `mainBranch` and `repoRoot`.
 git status --porcelain
 ```
 
-- Output contains lines NOT starting with `??` (staged/modified changes exist) → run `git stash push -m "worktree-verify-auto-stash"` and set `stashed = true`
+- Output contains lines NOT starting with `??` (staged/modified changes exist) → run `git stash push -m "tree-preview-auto-stash"` and set `stashed = true`
 - Output is empty, or contains only `??` lines (untracked files only) → set `stashed = false`
 
 Note: untracked files don't affect checkout, so stash は不要。
@@ -272,7 +272,7 @@ This puts the main working directory at the exact commit from the worktree branc
 
 ### 8. Save state file
 
-Write to `$TMPDIR/.claude-worktree-verify-state`:
+Write to `$TMPDIR/.claude-tree-preview-state`:
 
 ```json
 {
@@ -292,22 +292,22 @@ Write to `$TMPDIR/.claude-worktree-verify-state`:
 
 Report:
 
-> 確認モードに移行しました。メインの作業ディレクトリが `<worktreeBranch>` のコミット `<commitHash short>` を指しています。
+> プレビューモードに移行しました。メインの作業ディレクトリが `<worktreeBranch>` のコミット `<commitHash short>` を指しています。
 > サービスを起動して動作確認してください。
-> 完了後、`/worktree resume` で開発に戻れます。
+> 完了後、`/tree restore` で開発に戻れます。
 
 ---
 
-## Subcommand: `/worktree resume`
+## Subcommand: `/tree restore`
 
-Exit verify mode: restore the main working directory and re-enter the worktree.
+Exit preview mode: restore the main working directory and re-enter the worktree.
 
 ### 1. Check state file
 
-Read `$TMPDIR/.claude-worktree-verify-state`. If the file does not exist, is empty, or parses as JSON with `active: false`, report "確認モードではありません" and stop.
+Read `$TMPDIR/.claude-tree-preview-state`. If the file does not exist, is empty, or parses as JSON with `active: false`, report "プレビューモードではありません" and stop.
 If `active: true` (or field missing for backward compatibility), proceed with the state data.
 
-### 2. Restore main branch
+### 2. Restore original branch
 
 Check current HEAD state:
 
@@ -326,7 +326,7 @@ If `stashed` is `true` in the state file:
 git stash list
 ```
 
-Check if the first entry message contains `worktree-verify-auto-stash`.
+Check if the first entry message contains `tree-preview-auto-stash`.
 
 - Match → `git stash pop`
   - If pop fails with conflict → warn "stash popでコンフリクトが発生しました。手動で解決してください: `git stash pop`" and continue (do NOT stop — still need to clean up state and re-enter worktree)
@@ -336,11 +336,11 @@ If `stashed` is `false`, skip this step.
 
 ### 4. Deactivate state file
 
-Use the Write tool to update `$TMPDIR/.claude-worktree-verify-state` with `"active": false` (preserve all other fields).
+Use the Write tool to update `$TMPDIR/.claude-tree-preview-state` with `"active": false` (preserve all other fields).
 
 ### 5. Re-enter worktree
 
-Derive `worktreeName` by replacing `/` with `-` in `worktreeBranch`. Call `EnterWorktree(name: "<worktreeName>")` directly. (No need to recurse into the `/worktree <branch>` flow — the state file was set to `active: false` in Step 4, so the Step 0 guard will pass.)
+Derive `worktreeName` by replacing `/` with `-` in `worktreeBranch`. Call `EnterWorktree(name: "<worktreeName>")` directly. (No need to recurse into the `/tree <branch>` flow — the state file was set to `active: false` in Step 4, so the Step 0 guard will pass.)
 
 ### 6. Notify
 
@@ -350,16 +350,16 @@ Report:
 
 ---
 
-## Subcommand: `/worktree search <query>`
+## Subcommand: `/tree search <query>`
 
-### 0. Verify state guard
+### 0. Preview state guard
 
-Read `$TMPDIR/.claude-worktree-verify-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
+Read `$TMPDIR/.claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
 
 Get the current repo root: `git rev-parse --show-toplevel`.
 
-- `active: true` and (`repoRoot` matches current repo root, or `repoRoot` field is missing for backward compatibility) → report "確認モード中です。`/worktree resume` または `/worktree exit` を実行してください" and stop.
-- `active: true` but `repoRoot` does not match current repo root → report "別のリポジトリ（`<repoRoot>`）で確認モード中です" and stop.
+- `active: true` and (`repoRoot` matches current repo root, or `repoRoot` field is missing for backward compatibility) → report "プレビューモード中です。`/tree restore` または `/tree exit` を実行してください" and stop.
+- `active: true` but `repoRoot` does not match current repo root → report "別のリポジトリ（`<repoRoot>`）でプレビューモード中です" and stop.
 - `active: false`, empty file, or file does not exist → proceed.
 
 ### 1. Get worktree list
@@ -381,16 +381,16 @@ Filter to matching candidates.
 
 ---
 
-## Subcommand: `/worktree search` (no query) / `/worktree` (no args)
+## Subcommand: `/tree search` (no query) / `/tree` (no args)
 
-### 0. Verify state guard
+### 0. Preview state guard
 
-Read `$TMPDIR/.claude-worktree-verify-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
+Read `$TMPDIR/.claude-tree-preview-state`. If the file exists, parse as JSON and check `active` and `repoRoot` fields.
 
 Get the current repo root: `git rev-parse --show-toplevel`.
 
-- `active: true` and (`repoRoot` matches current repo root, or `repoRoot` field is missing for backward compatibility) → report "確認モード中です。`/worktree resume` または `/worktree exit` を実行してください" and stop.
-- `active: true` but `repoRoot` does not match current repo root → report "別のリポジトリ（`<repoRoot>`）で確認モード中です" and stop.
+- `active: true` and (`repoRoot` matches current repo root, or `repoRoot` field is missing for backward compatibility) → report "プレビューモード中です。`/tree restore` または `/tree exit` を実行してください" and stop.
+- `active: true` but `repoRoot` does not match current repo root → report "別のリポジトリ（`<repoRoot>`）でプレビューモード中です" and stop.
 - `active: false`, empty file, or file does not exist → proceed.
 
 ### 1. Get worktree list
@@ -413,5 +413,5 @@ List all worktrees (excluding main) with AskUserQuestion.
 
 - **Branch naming**: Slash format `<type>/<summary>` (e.g., `feature/login_bug`) is supported. The worktree name (directory) uses hyphen form `<type>-<summary>`, while the git branch preserves the original slash form.
 - **WorktreeCreate hook**: Automatically handles branch creation (no `worktree-` prefix), dependency installation, and .env copying.
-- **Do NOT call ExitWorktree proactively** — only via `/worktree exit` or explicit user request.
+- **Do NOT call ExitWorktree proactively** — only via `/tree exit` or explicit user request.
 - **Fallback**: If WorktreeCreate hook is not configured, suggest `! pnpm install --frozen-lockfile && cp <repo-root>/.env* .` after entering.

@@ -1,8 +1,8 @@
-# Worktree Guidelines
+# Tree Guidelines
 
 ## When
 
-Apply these rules when working inside a worktree (created by EnterWorktree or `claude -w`).
+Apply these rules when working inside a worktree (created by EnterWorktree, `/tree`, or `claude -w`).
 
 ## Pre-Work Checklist
 
