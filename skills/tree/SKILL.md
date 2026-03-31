@@ -65,18 +65,6 @@ Preview mode state is stored in `.claude/tree-preview-state.json` using the Writ
 
 ---
 
-## Preview State Guard (shared logic)
-
-Many subcommands share this guard. Read `.claude/tree-preview-state.json` with the Read tool.
-
-- File exists and `active` is `true`:
-  - Get current repo root: `git rev-parse --show-toplevel`
-  - `repoRoot` matches current repo root (or `repoRoot` is missing) → report "プレビューモード中です。先に `/tree restore` または `/tree exit` を実行してください" and stop.
-  - `repoRoot` does not match → report "別のリポジトリ（`<repoRoot>`）でプレビューモード中です" and stop.
-- File not found, empty, or `active` is `false` → proceed.
-
----
-
 ## Subcommand: `/tree <branch>`
 
 ### 1. Process branch name
@@ -197,9 +185,9 @@ AskUserQuestion:
 
 Switch to preview mode: checkout the worktree branch HEAD as detached HEAD on the main working directory, so you can run services and test changes without worktree environment setup.
 
-### 0. Preview state guard
+### 0. Double-preview guard
 
-Run the shared Preview State Guard (see above).
+Read `.claude/tree-preview-state.json`. If `active` is `true`, report "既にプレビューモード中です。`/tree restore` で開発に戻るか、`/tree exit` で終了してください" and stop. Otherwise proceed.
 
 ### 1. Verify in worktree
 
