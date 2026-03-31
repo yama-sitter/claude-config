@@ -19,16 +19,16 @@ WorktreeCreate hook automatically handles branch naming, dependency installation
 
 ## Subcommands
 
-| Command                 | Description                                                                 |
-| ----------------------- | --------------------------------------------------------------------------- |
-| `/tree <branch>`        | Enter the worktree for `<branch>`. Create if not exists (with confirmation) |
-| `/tree recent`          | Re-enter the last worktree used in this session                             |
-| `/tree exit`            | Exit the current worktree (keep/remove confirmation)                        |
-| `/tree preview`         | Enter preview mode: checkout worktree HEAD as detached HEAD on main         |
-| `/tree restore`         | Exit preview mode: return to worktree for development                       |
-| `/tree search <query>`  | Search worktrees by natural language query                                  |
-| `/tree search`          | List all worktrees and select interactively                                 |
-| `/tree` (no args)       | Same as `/tree search`                                                      |
+| Command                | Description                                                                 |
+| ---------------------- | --------------------------------------------------------------------------- |
+| `/tree <branch>`       | Enter the worktree for `<branch>`. Create if not exists (with confirmation) |
+| `/tree recent`         | Re-enter the last worktree used in this session                             |
+| `/tree exit`           | Exit the current worktree (keep/remove confirmation)                        |
+| `/tree preview`        | Enter preview mode: checkout worktree HEAD as detached HEAD on main         |
+| `/tree restore`        | Exit preview mode: return to worktree for development                       |
+| `/tree search <query>` | Search worktrees by natural language query                                  |
+| `/tree search`         | List all worktrees and select interactively                                 |
+| `/tree` (no args)      | Same as `/tree search`                                                      |
 
 ---
 
@@ -87,6 +87,22 @@ Match by **either**:
 1. `name` (hyphen form) in the worktree path
 2. `branch` (slash form) in `branch refs/heads/` lines
 
+### 2a. Check branch conflict (only when not found in Step 2)
+
+If the worktree was NOT found in Step 2, and `branch` contains `/`, check whether the target branch already exists:
+
+```bash
+git branch --list '<branch>'
+```
+
+- **Output is empty** → branch does not exist. Proceed to Step 3.
+- **Output is non-empty** → branch exists. Cross-reference with the worktree list from Step 2:
+  - Branch is checked out in another worktree → AskUserQuestion:
+    - **既存worktreeに入る** — Enter the worktree that has this branch checked out
+    - **別ブランチ名で作成** — Ask user for a new branch name, then restart from Step 1
+    - **中止** — Cancel the operation
+  - Branch exists but not checked out in any worktree → Proceed to Step 3 (hook can checkout the existing branch)
+
 ### 3. Enter or create
 
 1. If `branch` contains `/`, always write override file (regardless of exists/not-exists):
@@ -97,6 +113,15 @@ Match by **either**:
 ### 4. Verify setup
 
 After entering, verify setup:
+
+0. **Branch name verification** (only when `branch` contains `/`):
+   Run `git rev-parse --abbrev-ref HEAD` and compare with the expected `branch` (slash form).
+
+   - Match → proceed
+   - Mismatch → warn: "ブランチ名が期待と異なります（期待: `<branch>`, 実際: `<actual>`）。hookのフォールバックが発生した可能性があります"
+     AskUserQuestion:
+     - **削除して再作成** — Exit and remove this worktree, investigate the cause, then retry
+     - **このまま続行** — Continue with the current branch name
 
 1. Check dependencies: Use Glob to find lock files, then verify each has a sibling `node_modules/` directory
    - Step A: Search for lock files (5 patterns, can be called in parallel)
@@ -137,13 +162,7 @@ Look back in this session's conversation history for the most recent `EnterWorkt
 
 ### 0. Handle preview state
 
-Read `.claude/tree-preview-state.json`. If the file exists and `active` is `true`:
-2. Discard sandbox artifacts: check `git status --porcelain` — if modified files exist (lines NOT starting with `??`), ask the user: "プレビューモードの副作用で差分が発生しています。`git restore .`で差分を破棄してよいですか？" If approved, run `git restore .`. If restore fails (sandbox error), ask: "`! git restore .` を実行してください".
-3. Restore original branch: run `git rev-parse --abbrev-ref HEAD` — if output is exactly `HEAD` (detached HEAD), run `git checkout <mainBranch>`. If checkout fails, ask: "`! git checkout <mainBranch>` を実行してください". If output is a branch name, skip.
-4. Restore stash: if `stashed` is `true`, check `git stash list` first entry for `tree-preview-auto-stash` — if match, `git stash pop`. If pop fails, ask: "`! git stash pop` を実行してください".
-5. Clear state: Write `.claude/tree-preview-state.json` with `"active": false` (preserve other fields)
-6. Re-enter worktree: Derive `worktreeName` by replacing `/` with `-` in `worktreeBranch`, then call `EnterWorktree(name: "<worktreeName>")`.
-7. Continue to the normal exit flow (step 1 onward) — user will be asked keep/remove for the worktree
+Read `.claude/tree-preview-state.json`. If the file exists and `active` is `true`: 2. Discard sandbox artifacts: check `git status --porcelain` — if modified files exist (lines NOT starting with `??`), ask the user: "プレビューモードの副作用で差分が発生しています。`git restore .`で差分を破棄してよいですか？" If approved, run `git restore .`. If restore fails (sandbox error), ask: "`! git restore .` を実行してください". 3. Restore original branch: run `git rev-parse --abbrev-ref HEAD` — if output is exactly `HEAD` (detached HEAD), run `git checkout <mainBranch>`. If checkout fails, ask: "`! git checkout <mainBranch>` を実行してください". If output is a branch name, skip. 4. Restore stash: if `stashed` is `true`, check `git stash list` first entry for `tree-preview-auto-stash` — if match, `git stash pop`. If pop fails, ask: "`! git stash pop` を実行してください". 5. Clear state: Write `.claude/tree-preview-state.json` with `"active": false` (preserve other fields) 6. Re-enter worktree: Derive `worktreeName` by replacing `/` with `-` in `worktreeBranch`, then call `EnterWorktree(name: "<worktreeName>")`. 7. Continue to the normal exit flow (step 1 onward) — user will be asked keep/remove for the worktree
 
 If file not found, or `active` is not `true` → skip (no preview state to handle).
 
