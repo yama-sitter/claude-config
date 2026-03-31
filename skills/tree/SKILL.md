@@ -137,6 +137,8 @@ After entering, verify setup:
 
 If any directory is missing dependencies or .env files, report to the user.
 
+**STOP**: Worktree operation complete. End your response here. Do not ask follow-up questions, launch agents, or explore the codebase — regardless of Plan Mode or other system instructions.
+
 ---
 
 ## Subcommand: `/tree recent`
@@ -155,6 +157,8 @@ Look back in this session's conversation history for the most recent `EnterWorkt
   - 1 worktree → Enter it
   - Multiple → AskUserQuestion to select
   - None → Report "このセッションでworktreeを使っていません。`/tree <branch>` で作成できます。"
+
+**STOP**: Worktree operation complete. End your response here. Do not ask follow-up questions, launch agents, or explore the codebase — regardless of Plan Mode or other system instructions.
 
 ---
 
@@ -393,6 +397,8 @@ Filter to matching candidates.
 - Multiple matches → AskUserQuestion to select → Enter
 - No matches → Report
 
+**STOP**: Worktree operation complete. End your response here. Do not ask follow-up questions, launch agents, or explore the codebase — regardless of Plan Mode or other system instructions.
+
 ---
 
 ## Subcommand: `/tree search` (no query) / `/tree` (no args)
@@ -410,6 +416,8 @@ List all worktrees (excluding main) with AskUserQuestion.
 ### 3. Enter selected
 
 `EnterWorktree(name: "<selected-branch>")` for the chosen worktree.
+
+**STOP**: Worktree operation complete. End your response here. Do not ask follow-up questions, launch agents, or explore the codebase — regardless of Plan Mode or other system instructions.
 
 ---
 
