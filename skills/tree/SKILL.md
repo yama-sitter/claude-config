@@ -187,7 +187,7 @@ Switch to preview mode: checkout the worktree branch HEAD as detached HEAD on th
 
 ### 0. Double-preview guard
 
-Enforced by PreToolUse hook (`tree-preview-guard.sh`). If a preview is already active, the hook blocks the state file write with exit code 2. No manual check needed — the hook handles it automatically when Step 8 attempts to save state.
+Enforced by PreToolUse(ExitWorktree) hook (`tree-preview-guard.sh`). If a preview is already active in the main repo, the hook blocks ExitWorktree at Step 4 with exit code 2, preventing the worktree from being exited. No manual check needed — the hook handles it automatically.
 
 ### 1. Verify in worktree
 

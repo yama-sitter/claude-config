@@ -147,7 +147,7 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Write",
+        "matcher": "ExitWorktree",
         "hooks": [
           {
             "type": "command",
