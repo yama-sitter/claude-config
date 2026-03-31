@@ -79,10 +79,6 @@ Many subcommands share this guard. Read `.claude/tree-preview-state.json` with t
 
 ## Subcommand: `/tree <branch>`
 
-### 0. Preview state guard
-
-Run the shared Preview State Guard (see above).
-
 ### 1. Process branch name
 
 - If the name does **not** contain `/` → `name = branch = input` (no change needed)
@@ -131,10 +127,6 @@ If any directory is missing dependencies or .env files, report to the user.
 ---
 
 ## Subcommand: `/tree recent`
-
-### 0. Preview state guard
-
-Run the shared Preview State Guard (see above).
 
 ### 1. Check session history
 
@@ -377,10 +369,6 @@ Derive `worktreeName` by replacing `/` with `-` in `worktreeBranch`. Call `Enter
 
 ## Subcommand: `/tree search <query>`
 
-### 0. Preview state guard
-
-Run the shared Preview State Guard (see above).
-
 ### 1. Get worktree list
 
 ```bash
@@ -401,10 +389,6 @@ Filter to matching candidates.
 ---
 
 ## Subcommand: `/tree search` (no query) / `/tree` (no args)
-
-### 0. Preview state guard
-
-Run the shared Preview State Guard (see above).
 
 ### 1. Get worktree list
 
