@@ -3,7 +3,11 @@ summary: "Shusseuo Model — an LLM thinking framework that nurtures everyday di
 created: 2026-03-19
 updated: 2026-03-19
 tags: [Shusseuo Model, Insight, Framework, LLM, Thinking Model]
-related: [memories/centou/2026-03-19_shusse-uo-model-ab-test/ab-test-results.md, memories/centou/2026-03-19_shusse-uo-model-ab-test/blind-evaluation-results.md]
+related:
+  [
+    memories/centou/2026-03-19_shusse-uo-model-ab-test/ab-test-results.md,
+    memories/centou/2026-03-19_shusse-uo-model-ab-test/blind-evaluation-results.md,
+  ]
 ---
 
 # Anti-Pattern Collection
@@ -33,6 +37,7 @@ related: [memories/centou/2026-03-19_shusse-uo-model-ab-test/ab-test-results.md,
 - Subject too broad ("modern people," "Gen Z")
 - Skipping the self-assessment on the 3-axis ratings (Intensity / Hiddenness / Driving Force)
 - All 3-axis ratings being the same value (e.g., all "High"). If there's no differentiation, the hypotheses may be too similar in framing
+- N=1 over-generalization: Generalizing from a single person's statement to an entire category (e.g., "Regional welfare facility managers feel…" from one interview). If Evidence Ratio shows M > N, the hypothesis is inference-heavy and must be stress-tested before being treated as a candidate
 
 ## STEP 5: Persuasion
 
@@ -45,12 +50,12 @@ related: [memories/centou/2026-03-19_shusse-uo-model-ab-test/ab-test-results.md,
 
 # Term Definitions
 
-| Term | Definition |
-|---|---|
-| **Insight** | A hidden true motive that drives people to act — a desire or motivation that the person themselves cannot consciously articulate |
-| **Findings** | Discoveries that resemble insights but do not "drive people to act." Interesting but not actionable |
-| **Prediction Error** | The feeling of "I expected X but got Y." The source of dissonance |
-| **Conventional Wisdom** | Assumptions considered "obvious" in a given domain. Subject to change with time and context |
+| Term                    | Definition                                                                                                                       |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **Insight**             | A hidden true motive that drives people to act — a desire or motivation that the person themselves cannot consciously articulate |
+| **Findings**            | Discoveries that resemble insights but do not "drive people to act." Interesting but not actionable                              |
+| **Prediction Error**    | The feeling of "I expected X but got Y." The source of dissonance                                                                |
+| **Conventional Wisdom** | Assumptions considered "obvious" in a given domain. Subject to change with time and context                                      |
 
 ---
 
