@@ -7,13 +7,14 @@
 #
 # /tree exit のフローでは、Handle preview stateで先にstateを解消してから
 # ExitWorktreeを呼ぶため、このhookには引っかからない。
-
-set -euo pipefail
+#
+# 注意: set -euo pipefail を使わない。途中でクラッシュすると exit 2 に到達できず
+# ブロックが効かない（exit 2 以外は警告のみで実行続行される）。
 
 # メインリポジトリのルートを取得（worktree内からはgit-common-dirで辿れる）
-GIT_COMMON=$(git rev-parse --git-common-dir 2>/dev/null || echo "")
+GIT_COMMON=$(git rev-parse --git-common-dir 2>/dev/null) || exit 0
 [ -n "$GIT_COMMON" ] || exit 0
-MAIN_ROOT=$(cd "$GIT_COMMON/.." && pwd)
+MAIN_ROOT=$(cd "$GIT_COMMON/.." 2>/dev/null && pwd) || exit 0
 
 # stateファイル確認
 STATE_FILE="$MAIN_ROOT/.claude/tree-preview-state.json"
@@ -22,5 +23,5 @@ grep -q '"active": true' "$STATE_FILE" || exit 0
 
 # preview中 → ブロック
 BRANCH=$(jq -r '.worktreeBranch // "不明"' "$STATE_FILE" 2>/dev/null || echo "不明")
-echo "BLOCKED: 既にプレビューモード中です（ブランチ: $BRANCH）。先に別のプロセスで /tree restore または /tree exit を実行してください。"
+echo "BLOCKED: 既にプレビューモード中です（ブランチ: $BRANCH）。先に別のプロセスで /tree restore または /tree exit を実行してから、再度 /tree preview を実行してください。このスキルの実行を中止し、ユーザーにこのメッセージを伝えてください。"
 exit 2
