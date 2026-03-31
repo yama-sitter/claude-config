@@ -23,5 +23,5 @@ grep -q '"active": true' "$STATE_FILE" || exit 0
 
 # preview中 → ブロック
 BRANCH=$(jq -r '.worktreeBranch // "不明"' "$STATE_FILE" 2>/dev/null || echo "不明")
-echo "BLOCKED: 既にプレビューモード中です（ブランチ: $BRANCH）。先に別のプロセスで /tree restore または /tree exit を実行してから、再度 /tree preview を実行してください。このスキルの実行を中止し、ユーザーにこのメッセージを伝えてください。"
+echo "BLOCKED: 既にプレビューモード中です（ブランチ: $BRANCH）。先に別のプロセスで /tree restore または /tree exit を実行してから、再度 /tree preview を実行してください。状態ファイル(tree-preview-state.json)を手動でクリアしてはいけません — 別セッションが管理している可能性があります。このスキルの実行を中止し、ユーザーにこのメッセージを伝えてください。" >&2
 exit 2

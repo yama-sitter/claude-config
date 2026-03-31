@@ -212,6 +212,14 @@ Switch to preview mode: checkout the worktree branch HEAD as detached HEAD on th
 
 Enforced by PreToolUse(ExitWorktree) hook (`tree-preview-guard.sh`). If a preview is already active in the main repo, the hook blocks ExitWorktree at Step 4 with exit code 2, preventing the worktree from being exited. No manual check needed — the hook handles it automatically.
 
+**IMPORTANT — When the hook blocks ExitWorktree:**
+
+- NEVER clear or overwrite `tree-preview-state.json` to bypass the block. The state file is shared across all Claude Code sessions. If the hook detected `active: true`, another session is likely in preview mode.
+- NEVER retry ExitWorktree after manually clearing the state — this defeats the purpose of the guard.
+- ALWAYS report the block to the user and stop the `/tree preview` flow. The user must resolve the conflict by running `/tree restore` or `/tree exit` in the other session first.
+- If `tree-preview-state.json` is externally modified back to `active: true` after you cleared it (e.g., detected via system-reminder), this confirms another process is actively managing the file. Do not attempt to override it.
+- Exception: Only clear the state file if the user explicitly instructs you to do so (e.g., "clear the preview state" or "force clear").
+
 ### 1. Verify in worktree
 
 Check if currently inside a worktree:
