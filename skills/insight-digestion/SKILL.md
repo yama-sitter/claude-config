@@ -1,7 +1,7 @@
 ---
 name: insight-digestion
 description: |
-  Extract Jobs-to-be-Done from customer behavior facts, interview logs, or feedback data.
+  Extract structural demand insights from customer behavior facts, interview logs, or feedback data.
   Use when the user provides raw customer data and wants to understand the underlying demand structure before designing solutions.
   Do not use when the user already has a clear hypothesis and wants to design experiments.
   Do not use when the user wants to brainstorm or evaluate solutions.
@@ -10,7 +10,7 @@ user-invocable: true
 
 # Insight Digestion
 
-Digest raw customer data into a structured Job-to-be-Done by climbing the Ladder of Inference one rung at a time.
+Digest raw customer data into structural demand insights by climbing the Ladder of Inference one rung at a time.
 
 ## Prerequisites
 
@@ -18,6 +18,25 @@ Digest raw customer data into a structured Job-to-be-Done by climbing the Ladder
 - This skill produces demand-side analysis only — output feeds into experiment design
 
 ## Workflow
+
+### 0. Research Question Alignment
+
+Clarify the research question and define the filter criteria for Step 3.
+
+1. Confirm the user's research question (e.g., "Why do customers switch?", "What drives 2nd usage?")
+2. Based on the question's nature, define:
+   - **Moment label**: The type of moment Step 3 will search for
+   - **Detection signals**: The specific behavioral signals to look for in Step 3
+
+| Question Type | Moment Label | Example Detection Signals |
+|---|---|---|
+| Switch / Acquisition | Struggling moments | Workarounds, resignation, switching behavior, unmet expectations |
+| Retention / Loyalty | Expectation-reality gaps | Positive surprises, habitual rituals, moments of delight, disappointment after high expectations |
+| Churn / Cancellation | Departure triggers | Accumulating friction, broken promises, competitive pull, last-straw events |
+
+The table above is a reference. For questions that don't fit these types, define a custom moment label and detection signals collaboratively with the user.
+
+**→ Present the chosen moment label and detection signals to the user. Confirm before proceeding.**
 
 ### 1. Extract Facts
 
@@ -40,20 +59,15 @@ For each significant fact, define the situation across three dimensions:
 - **Social**: Who else was involved, what roles or relationships were at play
 - **Emotional**: What frustration, anxiety, or desire was present
 
-### 3. Identify Struggling Moments
+### 3. Identify Key Moments
 
-From the situations, identify moments where existing solutions fail. Look for:
+From the situations, identify moments matching the **moment label** defined in Step 0. Use the **detection signals** from Step 0 as your filter criteria.
 
-- Workarounds the customer has invented
-- Complaints or resignation ("I just gave up and...")
-- Switching behavior between competing solutions
-- Unmet expectations explicitly stated
-
-**→ Present the struggling moments. Confirm with the user which ones to pursue.**
+**→ Present the identified moments. Confirm with the user which ones to pursue.**
 
 ### 4. Analyze Demand Forces
 
-For each selected struggling moment, map the Four Forces of demand:
+For each selected moment from Step 3, map the Four Forces of demand:
 
 - **Push**: Dissatisfaction with current solution driving change
 - **Pull**: Attraction toward the desired new behavior or outcome
@@ -66,7 +80,7 @@ Write a Job Statement in canonical form:
 
 > When [situation], I want to [motivation], so that [expected progress].
 
-The statement must trace back to specific facts from Step 1 and struggling moments from Step 3.
+The statement must trace back to specific facts from Step 1 and key moments from Step 3.
 
 ## Strict Rules
 
@@ -81,5 +95,5 @@ The statement must trace back to specific facts from Step 1 and struggling momen
 This skill is complete when all three conditions are met:
 
 - A Job Statement exists that the user confirms as accurate
-- The statement is traceable to at least one specific fact and one struggling moment
+- The statement is traceable to at least one specific fact and one key moment from Step 3
 - The user is ready to proceed to experiment design, or explicitly stops
