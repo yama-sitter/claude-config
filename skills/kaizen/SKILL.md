@@ -245,15 +245,12 @@ Commit kaizen changes to the claude-config repository.
    - Untracked (new files): `cd <path> && git ls-files --others --exclude-standard`
 2. If no changes detected, display "コミット対象の変更がありません" and stop
 3. Generate commit message:
-   - If Phase 3 improvement record exists in conversation → generate from it
-   - If no record in conversation → generate from diff output
-   - Follow `rules/git-guidelines.md` conventions
-4. Commit:
-   - Use the Bash tool with `dangerouslyDisableSandbox: true` (sandbox blocks `.git/index.lock` creation when claude-config is not the primary working directory):
-     ```
-     Bash(command: "cd <path> && git add <changed files>", dangerouslyDisableSandbox: true)
-     Bash(command: "cd <path> && git commit -m \"<message>\"", dangerouslyDisableSandbox: true)
-     ```
+   - Follow the Commit Messages format defined in `rules/git-guidelines.md`
+   - Source: Phase 3 improvement record if in conversation, otherwise diff output
+   - NEVER invent a custom format (e.g., `kaizen(scope): ...` is prohibited)
+4. Commit — **CRITICAL: every Bash call MUST include `dangerouslyDisableSandbox: true`** (sandbox blocks `.git/index.lock` creation when claude-config is not the primary working directory):
+   - `git add`: `Bash(command: "cd <path> && git add <files>", dangerouslyDisableSandbox: true)`
+   - `git commit`: `Bash(command: "cd <path> && git commit -m '<message>'", dangerouslyDisableSandbox: true)`
 5. If the commit fails, present the equivalent `!` command for the user to execute
 
 ## Completion
