@@ -36,7 +36,7 @@ Clarify the research question and define the filter criteria for Step 3.
 
 The table above is a reference. For questions that don't fit these types, define a custom moment label and detection signals collaboratively with the user.
 
-**→ Present the chosen moment label and detection signals to the user. Confirm before proceeding.**
+**→ Self-review the alignment between research question and chosen signals, then present for user approval.**
 
 ### 1. Extract Facts
 
@@ -47,9 +47,18 @@ Output as a table:
 | #   | Who | What they did / said (verbatim) | Context (when, where) |
 | --- | --- | ------------------------------- | --------------------- |
 
-For lengthy source material, process in chunks and present facts incrementally.
+**For lengthy source material** (requiring multiple Read calls):
 
-**→ Present the table to the user. Confirm completeness before proceeding.**
+1. Launch an extraction subagent to read the source and produce the fact table
+2. Launch a review subagent to independently re-read the source and identify missing facts
+3. Merge the results and perform self-review against the source before presenting
+
+**For short source material** (single Read call):
+
+1. Extract facts directly
+2. Perform self-review by re-reading the source before presenting
+
+**→ Self-review against the source material for completeness, then present the table for user approval.**
 
 ### 2. Map Situations
 
@@ -57,23 +66,15 @@ For each significant fact, define the situation across three dimensions:
 
 - **Physical**: Where and when it happened, what tools or products were involved
 - **Social**: Who else was involved, what roles or relationships were at play
-- **Emotional**: What frustration, anxiety, or desire was present
-  - ALWAYS cite the source fact number (e.g., "based on #12") for each emotional description
-  - If no verbatim quote or observable behavior supports the emotion, write "Not evident from data"
+- **Emotional**: What emotion did the interviewee express in their own words (from Step 1 verbatims)? If no emotion word appears in the verbatim, describe the observable tone or behavior only (e.g., "described the situation matter-of-factly")
 
-After completing the situation map, perform a coverage check:
-
-1. List all fact numbers from Step 1
-2. Mark which facts are included in Step 2 and which are excluded
-3. For each excluded fact, state the reason for exclusion in one line
-
-**→ Present the situation map and coverage check to the user. Confirm before proceeding.**
+**→ Self-review each Emotional cell: verify every emotion word traces back to a specific verbatim in Step 1. Remove or downgrade any label that exceeds the interviewee's own vocabulary. Then present the situation map for user approval.**
 
 ### 3. Identify Key Moments
 
 From the situations, identify moments matching the **moment label** defined in Step 0. Use the **detection signals** from Step 0 as your filter criteria.
 
-**→ Present the identified moments. Confirm with the user which ones to pursue.**
+**→ Self-review the identified moments against the situation map for consistency, then present for user approval on which to pursue.**
 
 ### 4. Analyze Demand Forces
 
@@ -98,8 +99,9 @@ The statement must trace back to specific facts from Step 1 and key moments from
 - Do not skip from facts (Step 1) to job definition (Step 5)
 - Do not proceed past a confirmation gate (→) without user approval
 - Do not treat customer opinions or stated preferences as behavioral facts
-- Do not attribute emotions, motivations, or internal states unless directly supported by a verbatim quote or observable behavior from Step 1
 - Do not score, rank, or prioritize — that belongs to experiment design
+- NEVER ask the user to verify completeness — always perform self-review against the source material before presenting results at any confirmation gate
+- NEVER assign emotion labels stronger than the interviewee's own words — always trace back to Step 1 verbatims (e.g., "悩ましい" must not become "frustration"; "抵抗感" must not become "fear")
 
 ## Completion
 
