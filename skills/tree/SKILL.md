@@ -187,7 +187,15 @@ Switch to preview mode: checkout the worktree branch HEAD as detached HEAD on th
 
 ### 0. Double-preview guard
 
-Read `.claude/tree-preview-state.json`. If `active` is `true`, report "既にプレビューモード中です。`/tree restore` で開発に戻るか、`/tree exit` で終了してください" and stop. Otherwise proceed.
+Read `.claude/tree-preview-state.json`. If `active` is `true`:
+
+**STOP — DO NOT PROCEED. DO NOT attempt to resolve, clean up, or override the existing preview.**
+
+Report to the user: "既にプレビューモード中です（ブランチ: `<worktreeBranch>`）。先に別のプロセスで `/tree restore` または `/tree exit` を実行してから、再度 `/tree preview` を実行してください。"
+
+End the skill execution here. Do not continue to Step 1 or any subsequent step.
+
+If file not found or `active` is `false` → proceed.
 
 ### 1. Verify in worktree
 
