@@ -212,31 +212,120 @@ Extract the common **situation** across cases — the circumstances that created
 
 **Single-case behavior**: When only one case exists, skip the Comparator. Run Narrator + Critic only, and output a single-case context description. Cross-case synthesis happens when additional cases are added.
 
-<!-- TODO: Steps 4-5 below are from the original design and need redesign to properly connect with the new Step 3 output. They remain here for reference but should be updated in a future iteration. -->
-
 ### 4. Analyze Demand Forces
 
-For each **Moment** selected in Step 3, map the Four Forces of demand:
+Map the common contexts from Step 3 onto Four Forces to construct an integrated narrative of the Switch dynamics. This is the first step where **interpretation** (fact-grounded inference) is permitted.
 
-- **Push**: Dissatisfaction with current solution driving change
-- **Pull**: Attraction toward the desired new behavior or outcome
-- **Anxiety**: Fear or uncertainty about switching
-- **Habit**: Attachment to the current way of doing things
+**Input**:
 
-### 5. Define the Job and Summarize Findings
+- Primary: Step 3 output (A/B/C + discrepancy notes) — the common patterns are the analysis target
+- Supporting: Fact Table — for evidence strength judgment only, not for discovering new Forces
 
-Write a Job Statement in canonical form:
+**Process**: Execute directly in the main conversation (no subagents). Forces analysis involves interpretation and should be built through dialogue with the user.
 
-> When [situation], I want to [motivation], so that [expected progress].
+**Steps**:
 
-The statement must trace back to specific facts from Step 1, key Moments from Step 3, and the Forces analysis conclusions from Step 4 that informed each clause.
+1. **Compose Hire-time Forces diagram**: Map Step 3 A/B items to Push/Pull/Anxiety/Habit. Cite Fact numbers as evidence for each Force.
+2. **Write integrated narrative**: Describe the Forces as one story — how they interacted to produce the Switch. Not a list of individual Forces, but their interplay (e.g., "Strong Push from channel failure, combined with low Anxiety from minimal expectations, enabled a rapid trial").
+3. **Judge relative strength**: Determine whether the Switch was Push-dominant or Pull-dominant, using three axes:
+   - Scale of action (immediate response vs. deliberation period)
+   - Urgency of expression (verbatim quotes indicating urgency or calm)
+   - Behavioral magnitude (how much the person changed their operations)
+4. **Describe Re-hire Forces change**: How did Forces shift from first Hire to Re-hire? If data is thin (common for Re-hire), state the constraint explicitly.
 
-Then summarize the analysis findings:
+**Output format**:
 
-- **Job Statement** with traceability (which facts and moments support each clause)
-- **RQ answer**: How does this case answer the research question?
-- **Hypothesis alignment**: Where does the data align with or diverge from the initial hypothesis? What patterns were discovered that the hypothesis did not predict?
-- **Trend references**: How do the Trends identified in Step 3 (gradual patterns not analyzed with Forces) relate to the overall demand picture?
+> ### Hire-time Forces
+>
+> | Force   | Content | Evidence  | Strength             |
+> | ------- | ------- | --------- | -------------------- |
+> | Push    | ...     | A#, Fact# | Strong/Moderate/Weak |
+> | Pull    | ...     | A#, Fact# | ...                  |
+> | Anxiety | ...     | B#, Fact# | ...                  |
+> | Habit   | ...     | B#, Fact# | ...                  |
+>
+> **Integrated narrative**: [1 paragraph describing Force interplay] > **Dominant Force**: [Push-dominant / Pull-dominant / Balanced + rationale]
+>
+> ### Re-hire Forces change
+>
+> [How Forces shifted from first Hire to Re-hire. Note data constraints.]
+
+**→ Present for user approval.**
+
+### 5. Define the Job (Hypothesis)
+
+Synthesize the common context (Step 3) and Forces analysis (Step 4) into a Job Statement. This is a **hypothesis** — it requires validation before acting on it.
+
+**Input**:
+
+- Step 3 A (When clause material)
+- Step 4 integrated narrative + Push/Pull (primary source for motivation)
+- Step 1 Facts (for evidence verification)
+
+**Steps**:
+
+1. **When clause**: Integrate Step 3 A common contexts into 1-2 sentences describing the shared situation
+2. **Motivation (I want to)**: Derive from Step 4's Push/Pull integrated narrative at the common-pattern level. Push inversion = what they want to escape. Pull direction = what they want to achieve.
+3. **Expected progress (so that)**: Derive from Step 4's narrative + Fact-based goal statements
+4. **Traceability**: Document which Facts, Step 3 items, and Step 4 Forces inform each clause
+5. **Hypothesis constraints**: State explicitly that this Job is a hypothesis. List conditions for validity and what needs verification.
+
+**Output format**:
+
+> ### Job Statement (Hypothesis)
+>
+> > When [situation],
+> > I want to [motivation],
+> > so that [expected progress].
+>
+> ### Traceability
+>
+> | Clause    | Evidence                 |
+> | --------- | ------------------------ |
+> | When      | Step 3 A#, A#, ...       |
+> | I want to | Step 4 Push/Pull + Facts |
+> | So that   | Step 4 narrative + Facts |
+>
+> ### Hypothesis constraints
+>
+> - [Conditions, verification needs]
+
+**→ Present for user approval. Verify that each clause has factual grounding and appropriate abstraction level.**
+
+### 6. Answer RQ + Findings
+
+Synthesize Steps 3-5 into a structured answer to the Research Question and present analysis findings.
+
+**Input**: Step 3 (A/B/C) + Step 4 (Forces) + Step 5 (Job) + Step 0 (RQ)
+
+**Process**: Execute directly in the main conversation (all Step outputs are already in the conversation context).
+
+**Output**:
+
+> ### RQ Answer
+>
+> **RQ**: [from Step 0] > **Answer**: [1 paragraph integrating the factual causal chain (Step 3), Force dynamics (Step 4), and Job hypothesis (Step 5)]
+>
+> ### Hypothesis alignment
+>
+> - Aligned: [...]
+> - Diverged: [...]
+> - Unpredicted patterns: [...]
+>
+> ### Cross-case differences
+>
+> [Case-specific dynamics not explained by common patterns]
+>
+> ### Unresolved questions
+>
+> - [List of questions for further investigation]
+>
+> ### Input for next actions
+>
+> - Job hypothesis to validate: [from Step 5]
+> - Recommended validation approaches: [...]
+
+**→ Present for user approval. Determine whether analysis is complete or additional investigation is needed.**
 
 ## Strict Rules
 
@@ -246,13 +335,18 @@ Then summarize the analysis findings:
 - Do not treat customer opinions or stated preferences as behavioral facts
 - Do not score, rank, or prioritize — that belongs to experiment design
 - NEVER ask the user to verify completeness — always perform self-review against the source material before presenting results at any confirmation gate
-- Do not infer emotions, motivations, or states of mind not directly evidenced by verbatim quotes or observable behavior — applies to Steps 0 through 3. Step 4 (Forces analysis) permits fact-grounded inference as part of demand analysis
+- Inference permissions follow the epistemological ladder:
+  - Steps 0-3: No inference. Observable behavior and verbatim quotes only.
+  - Step 4: Fact-grounded interpretation permitted (Forces analysis — inferring demand dynamics from observed contexts).
+  - Step 5: Hypothesis synthesis permitted (Job definition — combining interpreted Forces with factual contexts).
+  - Step 6: Integration only — synthesize Steps 3-5 outputs. Do not introduce new inferences not already established in Steps 4-5.
 
 ## Completion
 
 This skill is complete when all conditions are met:
 
-- A Job Statement exists that the user confirms as accurate
-- The statement is traceable to at least one specific fact and one key moment from Step 3
-- Findings (RQ answer, hypothesis alignment) have been presented
-- The user is ready to proceed to experiment design, or explicitly stops
+- A Job Statement (hypothesis) exists that the user confirms
+- The statement is traceable to specific facts, common contexts (Step 3), and Forces (Step 4)
+- RQ answer and Findings have been presented (Step 6)
+- Input for next actions has been provided
+- The user confirms analysis is complete, or directs additional investigation
