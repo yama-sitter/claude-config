@@ -61,61 +61,167 @@ Output as a table:
 
 **→ Self-review against the source material for completeness, then present the table for user approval.**
 
-### 2. Reconstruct Timeline
+### 2. Organize Facts and Identify Background
 
-Arrange facts from Step 1 chronologically, then group them into episodes — clusters of facts that belong together based on:
+Arrange facts from Step 1 chronologically. Separate **Background** (ongoing structural conditions not tied to a specific moment) from **Events** (facts tied to specific time points).
 
-- **Temporal proximity**: Facts from the same time period
-- **Causal chain**: "A led to B" relationships between facts
-- **Narrative structure**: Facts the interviewee told as one continuous flow
+**Temporal origin test** for each Background candidate: "Did this condition exist **before** the Hire decision?"
 
-Facts that describe ongoing structural conditions (not tied to a specific moment) go into a **Background** section.
+- Yes → Background (e.g., "Zero applicants from Hello Work for months" = pre-Hire structural condition)
+- No → Events (e.g., "Qualified workers are reliable" = post-Hire recognition)
+- Uncertain → Apply: "Could a third party observe this condition before the person used the product?" Yes = Background, No = Events
 
-Output format per episode:
+Output format:
 
-> S[n]: [Episode name]
-> Period: [When]
+> **Background**
 > Facts: [Fact numbers]
-> What happened: [Factual summary using verbatim quotes where possible. No inference.]
+> Summary: [Structural conditions — the person's business environment, ongoing constraints, resource limitations]
+>
+> **Chronological Events** > [Fact numbers in time order with brief period labels]
 
-Every fact from Step 1 must belong to at least one episode.
-
-For large fact sets (30+ facts): Launch a subagent to reconstruct the timeline, then self-review for completeness.
-
-**Note on semi-structured interviews**: Narrative breaks may reflect interviewer questions rather than the interviewee's own episodic grouping. Use all three clustering criteria, not just narrative structure.
+For large fact sets (30+ facts): Launch a subagent, then self-review for completeness.
 
 **→ Self-review two things, then present for user approval:**
 
-1. **Coverage**: Every fact from Step 1 belongs to at least one episode
-2. **Data sufficiency**: Each RQ component (defined in Step 0) has at least one episode with specific, concrete data (not just general patterns). Report any component where data is thin or absent.
+1. **Coverage**: Every fact from Step 1 is placed in either Background or Chronological Events
+2. **Data sufficiency**: Each RQ component (defined in Step 0) has specific, concrete data. Report any component where data is thin or absent.
 
-If data sufficiency issues are found, present the user with options: (a) return to data collection (e.g., additional probing in interviews), (b) continue analysis with the constraint explicitly noted, or (c) stop.
+If data sufficiency issues are found, present the user with options: (a) return to data collection, (b) continue with the constraint noted, or (c) stop.
 
-### 3. Identify Key Moments and Their Situations
+### 3. Extract Common Context
 
-Scan the episodes from Step 2 for moments matching the **moment label** defined in Step 0. Use the **detection signals** as filter criteria.
+Extract the common **situation** across cases — the circumstances that created demand for the Hire decision. This step uses three specialized subagents.
 
-For each identified moment, describe its **situation** — the context the person was in when this moment occurred:
+**"Situation" in JTBD** means the conditions in the person's business/life — NOT the product experience. A situation describes _why demand arose_, not _what happened after using the product_.
 
-- **What state was the person in?** (reference specific episodes and background from Step 2)
-- **What was the specific trigger?** (the event or realization that made this moment significant)
+#### 3a. Narrator (launch one per case, in parallel)
 
-The situation description must trace back to specific facts and episodes. It serves as raw material for the Job Statement's "When [situation]" clause (finalized in Step 5 after Four Forces analysis).
+**Input**: The case's Fact Table (Step 1) + Background (Step 2)
 
-For each moment, indicate its **RQ relevance** — how directly it relates to the research question. This helps the user decide which moments to pursue in Step 4.
+**Prompt essence**:
 
-**→ Self-review that each moment's situation is grounded in facts (not inferred), then present for user approval on which moments to pursue in Step 4.**
+> You are a JTBD researcher. From the Fact Table below, describe the **situation** this person was in when they decided to Hire a new solution.
+>
+> "Situation" means conditions in the person's business/life — NOT the product experience (what happened after using it).
+>
+> Write two narratives:
+>
+> 1. **Hire-time situation**: What situation was this person in when they first Hired?
+> 2. **Re-hire situation**: What had changed by the time they used it again (or continued using it)?
+>
+> Each narrative must include:
+>
+> - **Background constraints**: Structural limitations of their business/environment
+> - **Struggling moment**: When their current approach stopped working
+> - **Why now**: Why they acted at this point (not earlier, not later)
+>
+> Rules:
+>
+> - Do NOT include product experience (what happened after using the product)
+> - Cite Fact numbers for traceability
+> - No inference of emotions or motivations not evidenced by quotes or observable behavior
+
+**Output**: Two narratives per case (Hire-time + Re-hire), with Fact citations.
+
+#### 3b. Comparator (launch one)
+
+**Input**: All Narrator outputs + all Fact Tables
+
+**Prompt essence**:
+
+> You are a JTBD researcher. Compare the situation narratives across cases and extract common patterns.
+>
+> Steps:
+>
+> 1. Read all narratives. Discover **dimensions** for comparison (do NOT use a fixed list — derive dimensions from what the narratives contain)
+> 2. For each dimension, describe each case's situation and write a tentative **common pattern**
+> 3. Produce separate tables for Hire-time and Re-hire situations
+>
+> Common pattern rules:
+>
+> - Each pattern must be traceable to specific Facts in both cases
+> - Do not over-abstract — "any business that needs staff" is too vague
+> - Note where one case's fit is weaker than the other's
+>
+> **Second pass**: After completing the table, check for missed dimensions using these prompts:
+>
+> - Decision-making structure (who decided, with what authority?)
+> - Information acquisition path (how did they learn about this solution?)
+> - Task characteristics (what kind of work needs to be done?)
+> - Geographic / physical constraints
+> - Relationship with alternative / competing solutions
+>
+> Add any newly discovered dimensions to the table.
+
+**Output**: Cross-case comparison table: `| Dimension | Case A | Case B | Common pattern (tentative) | Notes |`
+
+#### 3c. Critic (launch one)
+
+**Input**: Comparator output + original Fact Tables (NOT the Narrator outputs) + JTBD theoretical frame
+
+**Prompt essence**:
+
+> You are a critical reviewer with deep JTBD expertise. Validate the Comparator's common patterns.
+>
+> **IMPORTANT: Do NOT take the Comparator's output at face value.** Go back to the original Fact Tables independently and form your own view before reviewing.
+>
+> Apply three types of critique:
+>
+> 1. **Conceptual accuracy**: Is each pattern a description of a _situation_ (conditions the person was in), or is it actually a _fact/event_ (something that happened) or _product experience_ (what happened after using the product)?
+>    - NG: "Filled in 5 minutes" → product experience, not a situation
+>    - OK: "Traditional recruitment channels produced zero applicants for months" → situation
+> 2. **Theoretical consistency**: Does each pattern describe a condition that _created demand_ for a new solution? Or is it merely a characteristic of the business that doesn't drive the Hire decision?
+> 3. **Category assignment**: Classify each pattern as:
+>    - **A (Situation)**: Objective conditions observable by a third party before the Hire decision
+>    - **B (Stance)**: The person's attitude/approach arising FROM a situation in category A. Always note which A-item it derives from
+>    - **C (Post-experience change)**: Recognition shifts that occurred AFTER using the product. Not a Hire-time situation
+>    - Test: "Could a third party observe this before the Hire?" → Yes = A, No = B or C
+> 4. **Redundancy**: Are any patterns listed independently that are actually sub-dimensions of another? Recommend merging or subordinating.
+> 5. **Temporal placement**: Are any Hire-time patterns that were actually recognized only after using the product? Apply: "Did this condition exist before the Hire decision?"
+> 6. **Evidence strength**: Is each case's evidence based on recorded behavior/quotes, or merely a stated attitude? Flag weak evidence in Discrepancies.
+> 7. **Pattern nature**: Is each entry a "common pattern" (shared across cases) or a "difference description" (contrasting cases)? Differences belong in Discrepancies, not as standalone patterns.
+>
+> Additionally: identify any common patterns the Comparator missed, based on your independent reading of the Facts.
+>
+> Output: For each pattern → Approve / Revise (with suggestion) / Reject (with reason) + A/B/C classification.
+> Do NOT write the final version yourself — provide critique and suggestions only.
+
+**Output**: Validation report with verdicts, classification, and additional proposals.
+
+#### 3d. Integration (main conversation)
+
+1. Reflect the Critic's feedback: apply revisions, remove rejected patterns, add proposed patterns
+2. Apply A/B/C classification
+3. Compose the final table and present to the user
+
+**Final output format**:
+
+> ### A. Hire-time Situation (material for Job Statement "When" clause)
+>
+> | # | Common context | Case A evidence | Case B evidence | Discrepancies |
+>
+> ### B. Stances arising from the situation (material for Forces analysis)
+>
+> | # | Stance | Derived from (A#) | Case A evidence | Case B evidence |
+>
+> ### C. Post-experience changes (material for Re-hire / retention analysis)
+>
+> | # | Change | Case A | Case B |
+
+**→ Present the final table for user approval. Confirm: Are the A/B/C classifications appropriate? Is the abstraction level right? Are any common contexts missing?**
+
+**Single-case behavior**: When only one case exists, skip the Comparator. Run Narrator + Critic only, and output a single-case context description. Cross-case synthesis happens when additional cases are added.
+
+<!-- TODO: Steps 4-5 below are from the original design and need redesign to properly connect with the new Step 3 output. They remain here for reference but should be updated in a future iteration. -->
 
 ### 4. Analyze Demand Forces
 
-For each selected moment from Step 3, map the Four Forces of demand:
+For each **Moment** selected in Step 3, map the Four Forces of demand:
 
 - **Push**: Dissatisfaction with current solution driving change
 - **Pull**: Attraction toward the desired new behavior or outcome
 - **Anxiety**: Fear or uncertainty about switching
 - **Habit**: Attachment to the current way of doing things
-
-Four Forces applies to moments involving a switch or decision. For moments that are ongoing friction or gradual processes, note that Forces analysis may not fit and describe what happened instead.
 
 ### 5. Define the Job and Summarize Findings
 
@@ -123,13 +229,14 @@ Write a Job Statement in canonical form:
 
 > When [situation], I want to [motivation], so that [expected progress].
 
-The statement must trace back to specific facts from Step 1 and key moments from Step 3.
+The statement must trace back to specific facts from Step 1, key Moments from Step 3, and the Forces analysis conclusions from Step 4 that informed each clause.
 
 Then summarize the analysis findings:
 
 - **Job Statement** with traceability (which facts and moments support each clause)
 - **RQ answer**: How does this case answer the research question?
 - **Hypothesis alignment**: Where does the data align with or diverge from the initial hypothesis? What patterns were discovered that the hypothesis did not predict?
+- **Trend references**: How do the Trends identified in Step 3 (gradual patterns not analyzed with Forces) relate to the overall demand picture?
 
 ## Strict Rules
 
