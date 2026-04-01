@@ -60,21 +60,43 @@ Output as a table:
 
 **→ Self-review against the source material for completeness, then present the table for user approval.**
 
-### 2. Map Situations
+### 2. Reconstruct Timeline
 
-For each significant fact, define the situation across three dimensions:
+Arrange facts from Step 1 chronologically, then group them into episodes — clusters of facts that belong together based on:
 
-- **Physical**: Where and when it happened, what tools or products were involved
-- **Social**: Who else was involved, what roles or relationships were at play
-- **Emotional**: What emotion did the interviewee express in their own words (from Step 1 verbatims)? If no emotion word appears in the verbatim, describe the observable tone or behavior only (e.g., "described the situation matter-of-factly")
+- **Temporal proximity**: Facts from the same time period
+- **Causal chain**: "A led to B" relationships between facts
+- **Narrative structure**: Facts the interviewee told as one continuous flow
 
-**→ Self-review each Emotional cell: verify every emotion word traces back to a specific verbatim in Step 1. Remove or downgrade any label that exceeds the interviewee's own vocabulary. Then present the situation map for user approval.**
+Facts that describe ongoing structural conditions (not tied to a specific moment) go into a **Background** section.
 
-### 3. Identify Key Moments
+Output format per episode:
 
-From the situations, identify moments matching the **moment label** defined in Step 0. Use the **detection signals** from Step 0 as your filter criteria.
+> S[n]: [Episode name]
+> Period: [When]
+> Facts: [Fact numbers]
+> What happened: [Factual summary using verbatim quotes where possible. No inference.]
 
-**→ Self-review the identified moments against the situation map for consistency, then present for user approval on which to pursue.**
+Every fact from Step 1 must belong to at least one episode.
+
+For large fact sets (30+ facts): Launch a subagent to reconstruct the timeline, then self-review for completeness.
+
+**Note on semi-structured interviews**: Narrative breaks may reflect interviewer questions rather than the interviewee's own episodic grouping. Use all three clustering criteria, not just narrative structure.
+
+**→ Self-review that every fact is covered, then present for user approval.**
+
+### 3. Identify Key Moments and Their Situations
+
+Scan the episodes from Step 2 for moments matching the **moment label** defined in Step 0. Use the **detection signals** as filter criteria.
+
+For each identified moment, describe its **situation** — the context the person was in when this moment occurred:
+
+- **What state was the person in?** (reference specific episodes and background from Step 2)
+- **What was the specific trigger?** (the event or realization that made this moment significant)
+
+The situation description must trace back to specific facts and episodes. It serves as raw material for the Job Statement's "When [situation]" clause (finalized in Step 5 after Four Forces analysis).
+
+**→ Self-review that each moment's situation is grounded in facts (not inferred), then present for user approval on which moments to pursue.**
 
 ### 4. Analyze Demand Forces
 
@@ -101,7 +123,7 @@ The statement must trace back to specific facts from Step 1 and key moments from
 - Do not treat customer opinions or stated preferences as behavioral facts
 - Do not score, rank, or prioritize — that belongs to experiment design
 - NEVER ask the user to verify completeness — always perform self-review against the source material before presenting results at any confirmation gate
-- NEVER assign emotion labels stronger than the interviewee's own words — always trace back to Step 1 verbatims (e.g., "悩ましい" must not become "frustration"; "抵抗感" must not become "fear")
+- Do not infer emotions, motivations, or states of mind not directly evidenced by verbatim quotes or observable behavior — applies to Steps 0 through 3. Step 4 (Forces analysis) permits fact-grounded inference as part of demand analysis
 
 ## Completion
 
