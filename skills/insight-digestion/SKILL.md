@@ -27,6 +27,7 @@ Clarify the research question and define the filter criteria for Step 3.
 2. Based on the question's nature, define:
    - **Moment label**: The type of moment Step 3 will search for
    - **Detection signals**: The specific behavioral signals to look for in Step 3
+   - **RQ components**: The key elements the RQ requires data for (e.g., "situation before first use", "expectation-reality gap", "2nd use trigger situation")
 
 | Question Type        | Moment Label             | Example Detection Signals                                                                        |
 | -------------------- | ------------------------ | ------------------------------------------------------------------------------------------------ |
@@ -83,7 +84,12 @@ For large fact sets (30+ facts): Launch a subagent to reconstruct the timeline, 
 
 **Note on semi-structured interviews**: Narrative breaks may reflect interviewer questions rather than the interviewee's own episodic grouping. Use all three clustering criteria, not just narrative structure.
 
-**→ Self-review that every fact is covered, then present for user approval.**
+**→ Self-review two things, then present for user approval:**
+
+1. **Coverage**: Every fact from Step 1 belongs to at least one episode
+2. **Data sufficiency**: Each RQ component (defined in Step 0) has at least one episode with specific, concrete data (not just general patterns). Report any component where data is thin or absent.
+
+If data sufficiency issues are found, present the user with options: (a) return to data collection (e.g., additional probing in interviews), (b) continue analysis with the constraint explicitly noted, or (c) stop.
 
 ### 3. Identify Key Moments and Their Situations
 
@@ -96,7 +102,9 @@ For each identified moment, describe its **situation** — the context the perso
 
 The situation description must trace back to specific facts and episodes. It serves as raw material for the Job Statement's "When [situation]" clause (finalized in Step 5 after Four Forces analysis).
 
-**→ Self-review that each moment's situation is grounded in facts (not inferred), then present for user approval on which moments to pursue.**
+For each moment, indicate its **RQ relevance** — how directly it relates to the research question. This helps the user decide which moments to pursue in Step 4.
+
+**→ Self-review that each moment's situation is grounded in facts (not inferred), then present for user approval on which moments to pursue in Step 4.**
 
 ### 4. Analyze Demand Forces
 
@@ -107,13 +115,21 @@ For each selected moment from Step 3, map the Four Forces of demand:
 - **Anxiety**: Fear or uncertainty about switching
 - **Habit**: Attachment to the current way of doing things
 
-### 5. Define the Job
+Four Forces applies to moments involving a switch or decision. For moments that are ongoing friction or gradual processes, note that Forces analysis may not fit and describe what happened instead.
+
+### 5. Define the Job and Summarize Findings
 
 Write a Job Statement in canonical form:
 
 > When [situation], I want to [motivation], so that [expected progress].
 
 The statement must trace back to specific facts from Step 1 and key moments from Step 3.
+
+Then summarize the analysis findings:
+
+- **Job Statement** with traceability (which facts and moments support each clause)
+- **RQ answer**: How does this case answer the research question?
+- **Hypothesis alignment**: Where does the data align with or diverge from the initial hypothesis? What patterns were discovered that the hypothesis did not predict?
 
 ## Strict Rules
 
@@ -127,8 +143,9 @@ The statement must trace back to specific facts from Step 1 and key moments from
 
 ## Completion
 
-This skill is complete when all three conditions are met:
+This skill is complete when all conditions are met:
 
 - A Job Statement exists that the user confirms as accurate
 - The statement is traceable to at least one specific fact and one key moment from Step 3
+- Findings (RQ answer, hypothesis alignment) have been presented
 - The user is ready to proceed to experiment design, or explicitly stops
