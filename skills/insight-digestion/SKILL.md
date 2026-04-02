@@ -287,59 +287,91 @@ Forces are about an individual person's decision dynamics — analyze each perso
 
 **→ Present for user approval.**
 
-### 5. Define the Job (Hypothesis)
+### 5. Define Jobs (Hypotheses)
 
-Synthesize the common context (Step 3) and Forces analysis (Step 4) into Job Statement(s). Each Job is a **hypothesis** — it requires validation before acting on it.
-
-**RQ is a hypothesis, not a constraint.** If Steps 3-4 reveal findings that contradict or fall outside the RQ's framing, propose RQ revision rather than discarding the findings. Job Statements are not subordinate to the RQ — qualitative research can uncover Jobs that no RQ anticipated.
+Synthesize the common context (Step 3) and Forces analysis (Step 4) into Job Statements. These are **hypotheses** — they require validation before acting on them. Step 4 may reveal multiple distinct demand structures; this step preserves that diversity.
 
 **Input**:
 
-- Step 3 A/B/C (situation, stance, post-experience changes)
-- Step 4 cross-case comparison: common Forces dynamics
-- Step 4 per-case narratives (case-specific evidence and nuance)
-- Step 1 Facts (verbatim quotes and case-specific anomalies)
+- Step 4b Cross-case comparison: Dominant Force per phase (Hire-time / Re-hire)
+- Step 4a Per-case Forces: case-specific strong Push/Pull forces
+- Step 3 A (When clause material), B (Stance), C (Post-experience)
+- Step 1 Facts (for evidence verification)
 
-**Steps**:
+#### 5a. Job candidate enumeration
 
-1. **Job candidate enumeration (two tracks)**
+List candidate Jobs using the following axes (in priority order):
 
-   - **Common pattern track**: Integrate Step 3 A (When material) + Step 4 common dynamics → synthesize When/I want to/So that. This is the standard JTBD synthesis.
-   - **Case-specific track**: (1) Extract Pull/Anxiety forces unique to each case from Step 4 per-case narratives. (2) Revisit Step 1 for striking verbatim quotes that don't fit the common patterns. (3) Reverse-construct: "What Job does this unique finding imply?" Each case-specific finding can generate a Job candidate.
-   - **Multiple candidates are explicitly expected.** Do not collapse into a single Job. Aim for 3-7 candidates spanning both tracks.
+1. **Hire-time vs Re-hire split**: If Step 4b shows different Dominant Forces for Hire-time and Re-hire, treat them as separate Job candidates by default
+2. **Case-specific strong Forces**: A Push/Pull force appearing strongly in only 1-2 cases is an Emerging Job candidate — list it separately
+3. **Step 3 B/C signals**: If Stance (B) or Post-experience (C) patterns suggest an independent motivation structure not captured by Dominant Forces, add as a candidate
 
-2. **Observability check**: For each Job candidate, describe: "If this Job exists, how would it be observable in behavioral logs / product data?" If the observation method is trivially obvious (e.g., "they post a job listing"), flag the candidate as potentially banal. Non-obvious observation patterns (e.g., "posting frequency increases after the first successful fill, even when there's no staffing gap") suggest a non-banal Job.
+Output: numbered list of Job candidates with the source evidence (Step 4b Dominant Force line, specific Fact#s, Step 3 item#s).
 
-3. **Job Statement(s) definition**: Define Job Statement(s) from candidates that pass the observability check. Banality-flagged candidates may be included but must be deprioritized below non-banal ones. Use When/I want to/So that format for each.
+#### 5b. Consolidation / separation decision
 
-4. **Traceability**: For each Job Statement, document which Facts, Step 3 items, and Step 4 Forces inform each clause.
+For each candidate pair, apply these criteria:
 
-5. **Hypothesis constraints**: For each Job, state explicitly that it is a hypothesis. List conditions for validity and what needs verification.
+- **Separate** if Dominant Forces differ (even when the When clause overlaps — different motivation structures = different Jobs)
+- **Merge** if candidates share both Dominant Force and motivation direction — state the merge rationale explicitly
+- **Emerging label**: Jobs supported by only 1-2 cases receive the `[Emerging]` label and must include evidence strength (e.g., "1 case, 2 Facts")
+
+If only one Job remains after consolidation, state why consolidation is justified.
+
+Output: final Job list with separation/merge rationale.
+
+#### 5c. Job Statements
+
+For each Job from 5b, construct a statement:
+
+1. **When clause**: Integrate Step 3 A common contexts into 1-2 sentences describing the shared situation
+2. **Motivation (I want to)**: Derive from Step 4's Push/Pull integrated narrative. Push inversion = what they want to escape. Pull direction = what they want to achieve.
+3. **Expected progress (so that)**: Derive from Step 4's narrative + Fact-based goal statements
+4. **Traceability**: Document which Facts, Step 3 items, and Step 4 Forces inform each clause
+5. **Hypothesis constraints**: State explicitly that this Job is a hypothesis. List conditions for validity and what needs verification.
 
 **Output format**:
 
 > ### Job Statements (Hypotheses)
 >
-> #### Job N: [descriptive name]
+> #### Job 1: [short label]
 >
 > > When [situation],
 > > I want to [motivation],
 > > so that [expected progress].
 >
-> Observability: [How this Job would manifest in behavioral data]
-> Evidence: [Key Facts and Step references]
-> Case coverage: [Which cases support this Job — all/specific]
-> Constraints: [Verification needs]
+> | Clause    | Evidence                 |
+> | --------- | ------------------------ |
+> | When      | Step 3 A#, A#, ...       |
+> | I want to | Step 4 Push/Pull + Facts |
+> | So that   | Step 4 narrative + Facts |
 >
-> [Repeat for each Job]
+> Hypothesis constraints: [Conditions, verification needs]
+>
+> #### Job 2: [short label] `[Emerging]`
+>
+> > When [situation],
+> > I want to [motivation],
+> > so that [expected progress].
+>
+> | Clause    | Evidence                 |
+> | --------- | ------------------------ |
+> | When      | Step 3 A#, A#, ...       |
+> | I want to | Step 4 Push/Pull + Facts |
+> | So that   | Step 4 narrative + Facts |
+>
+> Hypothesis constraints: [Conditions, verification needs]
+> Evidence strength: [N cases, M Facts]
+>
+> _(Repeat for additional Jobs. Omit Job 2 block if only one Job exists.)_
 
-**→ Present for user approval. Confirm: Are the Jobs non-banal? Is the abstraction level appropriate? Are case-specific discoveries preserved?**
+**→ Present for user approval. Verify that each clause has factual grounding and appropriate abstraction level.**
 
 ### 6. Answer RQ + Findings
 
 Synthesize Steps 3-5 into a structured answer to the Research Question and present analysis findings.
 
-**Input**: Step 3 (A/B/C) + Step 4 (Forces) + Step 5 (Job) + Step 0 (RQ)
+**Input**: Step 3 (A/B/C) + Step 4 (Forces) + Step 5 (Jobs) + Step 0 (RQ)
 
 **Process**: Execute directly in the main conversation (all Step outputs are already in the conversation context).
 
@@ -347,7 +379,7 @@ Synthesize Steps 3-5 into a structured answer to the Research Question and prese
 
 > ### RQ Answer
 >
-> **RQ**: [from Step 0] > **Answer**: [1 paragraph integrating the factual causal chain (Step 3), Force dynamics (Step 4), and Job hypothesis (Step 5)]
+> **RQ**: [from Step 0] > **Answer**: [1 paragraph integrating the factual causal chain (Step 3), Force dynamics (Step 4), and Job hypotheses (Step 5)]
 >
 > ### Hypothesis alignment
 >
@@ -365,7 +397,7 @@ Synthesize Steps 3-5 into a structured answer to the Research Question and prese
 >
 > ### Input for next actions
 >
-> - Job hypothesis to validate: [from Step 5]
+> - Job hypotheses to validate: [from Step 5]
 > - Recommended validation approaches: [...]
 
 **→ Present for user approval. Determine whether analysis is complete or additional investigation is needed.**
