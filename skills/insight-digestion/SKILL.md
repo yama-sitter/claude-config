@@ -27,7 +27,7 @@ Clarify the research question and define the filter criteria for Step 3.
 2. Based on the question's nature, define:
    - **注目する瞬間**: Step 3で探すモーメントの種類
    - **探すべき行動シグナル**: Step 3で注目する具体的な行動の兆候
-   - **RQの構成要素**: RQがデータを必要とする要素（例: 「初回利用前の状況」「期待と現実のギャップ」「2回目利用のトリガー状況」）
+   - **RQの構成要素**: RQがデータを必要とする要素（例: 「Hire前の状況」「期待と現実のギャップ」「Re-hireのトリガー状況」）
 
 | 問いの種類           | 注目する瞬間         | 探すべき行動シグナル                                             |
 | -------------------- | -------------------- | ---------------------------------------------------------------- |
@@ -196,7 +196,7 @@ Extract the common **situation** across cases — the circumstances that created
 
 **Final output format**:
 
-> ### A. 初回利用時の状況（「いつ」「どんな時に」の材料）
+> ### A. Hire時の状況（「いつ」「どんな時に」の材料）
 >
 > | # | 共通コンテキスト | Case A 根拠 | Case B 根拠 | ケース間の差異 |
 >
@@ -204,7 +204,7 @@ Extract the common **situation** across cases — the circumstances that created
 >
 > | # | 態度・構え | 由来する状況 (A#) | Case A 根拠 | Case B 根拠 |
 >
-> ### C. 利用後に起きた認識の変化（継続利用分析の材料）
+> ### C. 利用後に起きた認識の変化（Re-hire/定着分析の材料）
 >
 > | # | 変化 | Case A | Case B |
 
@@ -233,12 +233,12 @@ Forces are about an individual person's decision dynamics — analyze each perso
 
    Per-case output:
 
-   > **Case [X] 初回利用の力学**
+   > **Case [X] Hire時の力学**
    > | 力 | 内容 | 根拠 (Fact#) | 強さ |
    > Push（現状への不満・圧力）/ Pull（新しい選択肢の魅力）/ Anxiety（新しい選択肢への不安）/ Habit（現状維持の慣性） rows
    > **ナラティブ**: [How Forces interacted for this person]
    >
-   > **Case [X] 継続利用の力学**
+   > **Case [X] Re-hire時の力学**
    > | 力 | 内容 | 根拠 (Fact#) | 強さ |
    > Push / Pull / Anxiety / Habit rows
    > **ナラティブ**: [How Forces shifted from Hire to Re-hire. Note data constraints if thin.]
@@ -267,18 +267,18 @@ Forces are about an individual person's decision dynamics — analyze each perso
 
 > ### ケースごとの力学 (4a)
 >
-> [Case A: 初回利用の力学 + ナラティブ + 継続利用の力学 + ナラティブ] > [Case B: 同上]
+> [Case A: Hire時の力学 + ナラティブ + Re-hire時の力学 + ナラティブ] > [Case B: 同上]
 >
 > ### ケース横断比較 (4b)
 >
 > _Note: Classification reconciliation（分類の照合）は内部処理として実施し、ユーザーには統合結果のみ提示する_
 >
-> #### 初回利用
+> #### Hire時
 >
 > | 力 | 共通の力学 | Case A の特徴 | Case B の特徴 |
 > **最も強い力**: [Per case and overall]
 >
-> #### 継続利用
+> #### Re-hire時
 >
 > | 力 | 共通の力学 | Case A の特徴 | Case B の特徴 |
 > [Note data constraints.]
@@ -403,7 +403,7 @@ Synthesize Steps 3-5 into a structured answer to the Research Question and prese
 ## Output Language Rules
 
 - ユーザーに見せる出力（テーブル見出し、セクションタイトル、ラベル）は日本語で記述する
-- Hire（＝サービスを使い始める決断）/ Re-hire（＝2回目以降の利用決断）は初出時に注釈し、以降は「初回利用」「継続利用」を使用
+- Hire（＝解決策を"雇う"決断）/ Re-hire（＝同じ解決策をもう一度"雇う"決断）は初出時に注釈し、以降もHire/Re-hireをそのまま使用
 - JTBD専門用語（Push, Pull, Anxiety, Habit, Forces, Job）は初出時に日本語訳を併記し、以降は略称を使用可
 - Strength（強さ）は日本語で表記: 強/中/弱
 - Job Statement構文（When / I want to / so that）は英語+日本語の併記形式を使用
