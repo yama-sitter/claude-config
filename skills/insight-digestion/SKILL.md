@@ -25,15 +25,15 @@ Clarify the research question and define the filter criteria for Step 3.
 
 1. Confirm the user's research question (e.g., "Why do customers switch?", "What drives 2nd usage?")
 2. Based on the question's nature, define:
-   - **Moment label**: The type of moment Step 3 will search for
-   - **Detection signals**: The specific behavioral signals to look for in Step 3
-   - **RQ components**: The key elements the RQ requires data for (e.g., "situation before first use", "expectation-reality gap", "2nd use trigger situation")
+   - **注目する瞬間**: Step 3で探すモーメントの種類
+   - **探すべき行動シグナル**: Step 3で注目する具体的な行動の兆候
+   - **RQの構成要素**: RQがデータを必要とする要素（例: 「初回利用前の状況」「期待と現実のギャップ」「2回目利用のトリガー状況」）
 
-| Question Type        | Moment Label             | Example Detection Signals                                                                        |
-| -------------------- | ------------------------ | ------------------------------------------------------------------------------------------------ |
-| Switch / Acquisition | Struggling moments       | Workarounds, resignation, switching behavior, unmet expectations                                 |
-| Retention / Loyalty  | Expectation-reality gaps | Positive surprises, habitual rituals, moments of delight, disappointment after high expectations |
-| Churn / Cancellation | Departure triggers       | Accumulating friction, broken promises, competitive pull, last-straw events                      |
+| 問いの種類           | 注目する瞬間         | 探すべき行動シグナル                                             |
+| -------------------- | -------------------- | ---------------------------------------------------------------- |
+| Switch / Acquisition | 行き詰まりの瞬間     | 回避策、諦め、乗り換え行動、満たされない期待                     |
+| Retention / Loyalty  | 期待と現実のギャップ | ポジティブな驚き、習慣化した儀式、喜びの瞬間、高い期待の後の失望 |
+| Churn / Cancellation | 離脱のきっかけ       | 蓄積する摩擦、裏切られた約束、競合への引力、最後の一押し         |
 
 The table above is a reference. For questions that don't fit these types, define a custom moment label and detection signals collaboratively with the user.
 
@@ -45,8 +45,8 @@ List observable behaviors and verbatim quotes. Separate what happened from why i
 
 Output as a table:
 
-| #   | Who | What they did / said (verbatim) | Context (when, where) |
-| --- | --- | ------------------------------- | --------------------- |
+| #   | 誰が | 何をした・何を言った（逐語） | 状況（いつ、どこで） |
+| --- | ---- | ---------------------------- | -------------------- |
 
 **For lengthy source material** (requiring multiple Read calls):
 
@@ -73,18 +73,18 @@ Arrange facts from Step 1 chronologically. Separate **Background** (ongoing stru
 
 Output format:
 
-> **Background**
-> Facts: [Fact numbers]
-> Summary: [Structural conditions — the person's business environment, ongoing constraints, resource limitations]
+> **前提条件**（サービス利用を決める前から存在していた構造的条件）
+> ファクト: [Fact numbers]
+> 要約: [構造的条件 — 事業環境、継続的な制約、リソースの限界]
 >
-> **Chronological Events** > [Fact numbers in time order with brief period labels]
+> **時系列の出来事** > [Fact numbers in time order with brief period labels]
 
 For large fact sets (30+ facts): Launch a subagent, then self-review for completeness.
 
 **→ Self-review two things, then present for user approval:**
 
-1. **Coverage**: Every fact from Step 1 is placed in either Background or Chronological Events
-2. **Data sufficiency**: Each RQ component (defined in Step 0) has specific, concrete data. Report any component where data is thin or absent.
+1. **網羅性**: Step 1の全ファクトが「前提条件」または「時系列の出来事」のいずれかに配置されていること
+2. **データの充足性**: RQの各構成要素（Step 0で定義）に具体的なデータがあること。データが薄い・欠けている構成要素があれば報告する
 
 If data sufficiency issues are found, present the user with options: (a) return to data collection, (b) continue with the constraint noted, or (c) stop.
 
@@ -196,17 +196,17 @@ Extract the common **situation** across cases — the circumstances that created
 
 **Final output format**:
 
-> ### A. Hire-time Situation (material for Job Statement "When" clause)
+> ### A. 初回利用時の状況（「いつ」「どんな時に」の材料）
 >
-> | # | Common context | Case A evidence | Case B evidence | Discrepancies |
+> | # | 共通コンテキスト | Case A 根拠 | Case B 根拠 | ケース間の差異 |
 >
-> ### B. Stances arising from the situation (material for Forces analysis)
+> ### B. 状況から生じた態度・構え（動機分析の材料）
 >
-> | # | Stance | Derived from (A#) | Case A evidence | Case B evidence |
+> | # | 態度・構え | 由来する状況 (A#) | Case A 根拠 | Case B 根拠 |
 >
-> ### C. Post-experience changes (material for Re-hire / retention analysis)
+> ### C. 利用後に起きた認識の変化（継続利用分析の材料）
 >
-> | # | Change | Case A | Case B |
+> | # | 変化 | Case A | Case B |
 
 **→ Present the final table for user approval. Confirm: Are the A/B/C classifications appropriate? Is the abstraction level right? Are any common contexts missing?**
 
@@ -233,15 +233,15 @@ Forces are about an individual person's decision dynamics — analyze each perso
 
    Per-case output:
 
-   > **Case [X] Hire-time Forces**
-   > | Force | Content | Evidence (Fact#) | Strength |
-   > Push / Pull / Anxiety / Habit rows
-   > **Narrative**: [How Forces interacted for this person]
+   > **Case [X] 初回利用の力学**
+   > | 力 | 内容 | 根拠 (Fact#) | 強さ |
+   > Push（現状への不満・圧力）/ Pull（新しい選択肢の魅力）/ Anxiety（新しい選択肢への不安）/ Habit（現状維持の慣性） rows
+   > **ナラティブ**: [How Forces interacted for this person]
    >
-   > **Case [X] Re-hire Forces**
-   > | Force | Content | Evidence (Fact#) | Strength |
+   > **Case [X] 継続利用の力学**
+   > | 力 | 内容 | 根拠 (Fact#) | 強さ |
    > Push / Pull / Anxiety / Habit rows
-   > **Narrative**: [How Forces shifted from Hire to Re-hire. Note data constraints if thin.]
+   > **ナラティブ**: [How Forces shifted from Hire to Re-hire. Note data constraints if thin.]
 
 2. **Cross-case comparison (4b)**: Execute in the main conversation (dialogue with user). Place per-case Forces side by side.
 
@@ -265,24 +265,22 @@ Forces are about an individual person's decision dynamics — analyze each perso
 
 **Output format**:
 
-> ### Per-case Forces (4a)
+> ### ケースごとの力学 (4a)
 >
-> [Case A: Hire-time Forces diagram + narrative + Re-hire Forces diagram + narrative] > [Case B: Hire-time Forces diagram + narrative + Re-hire Forces diagram + narrative]
+> [Case A: 初回利用の力学 + ナラティブ + 継続利用の力学 + ナラティブ] > [Case B: 同上]
 >
-> ### Cross-case comparison (4b)
+> ### ケース横断比較 (4b)
 >
-> #### Classification reconciliation
+> _Note: Classification reconciliation（分類の照合）は内部処理として実施し、ユーザーには統合結果のみ提示する_
 >
-> | Fact# | Step 3 category | 4a Force | Match? | Resolution |
+> #### 初回利用
 >
-> #### Hire-time
+> | 力 | 共通の力学 | Case A の特徴 | Case B の特徴 |
+> **最も強い力**: [Per case and overall]
 >
-> | Force | Common dynamics | Case A specifics | Case B specifics |
-> **Dominant Force**: [Per case and overall]
+> #### 継続利用
 >
-> #### Re-hire
->
-> | Force | Common dynamics | Case A specifics | Case B specifics |
+> | 力 | 共通の力学 | Case A の特徴 | Case B の特徴 |
 > [Note data constraints.]
 
 **→ Present for user approval.**
@@ -332,36 +330,36 @@ For each Job from 5b, construct a statement:
 
 **Output format**:
 
-> ### Job Statements (Hypotheses)
+> ### ジョブ仮説
 >
-> #### Job 1: [short label]
+> #### ジョブ1: [短いラベル]
 >
-> > When [situation],
-> > I want to [motivation],
-> > so that [expected progress].
+> > **When（どんな時に）** [situation],
+> > **I want to（～したい）** [motivation],
+> > **so that（そうすれば）** [expected progress].
 >
-> | Clause    | Evidence                 |
+> | 句        | 根拠                     |
 > | --------- | ------------------------ |
 > | When      | Step 3 A#, A#, ...       |
 > | I want to | Step 4 Push/Pull + Facts |
 > | So that   | Step 4 narrative + Facts |
 >
-> Hypothesis constraints: [Conditions, verification needs]
+> この仮説の限界・前提: [Conditions, verification needs]
 >
-> #### Job 2: [short label] `[Emerging]`
+> #### ジョブ2: [短いラベル] `[萌芽的]`
 >
-> > When [situation],
-> > I want to [motivation],
-> > so that [expected progress].
+> > **When（どんな時に）** [situation],
+> > **I want to（～したい）** [motivation],
+> > **so that（そうすれば）** [expected progress].
 >
-> | Clause    | Evidence                 |
+> | 句        | 根拠                     |
 > | --------- | ------------------------ |
 > | When      | Step 3 A#, A#, ...       |
 > | I want to | Step 4 Push/Pull + Facts |
 > | So that   | Step 4 narrative + Facts |
 >
-> Hypothesis constraints: [Conditions, verification needs]
-> Evidence strength: [N cases, M Facts]
+> この仮説の限界・前提: [Conditions, verification needs]
+> エビデンスの強さ: [N cases, M Facts]
 >
 > _(Repeat for additional Jobs. Omit Job 2 block if only one Job exists.)_
 
@@ -377,30 +375,40 @@ Synthesize Steps 3-5 into a structured answer to the Research Question and prese
 
 **Output**:
 
-> ### RQ Answer
+> ### RQ回答
 >
-> **RQ**: [from Step 0] > **Answer**: [1 paragraph integrating the factual causal chain (Step 3), Force dynamics (Step 4), and Job hypotheses (Step 5)]
+> **RQ**: [from Step 0] > **回答**: [1 paragraph integrating the factual causal chain (Step 3), Force dynamics (Step 4), and Job hypotheses (Step 5)]
 >
-> ### Hypothesis alignment
+> ### 仮説との照合
 >
-> - Aligned: [...]
-> - Diverged: [...]
-> - Unpredicted patterns: [...]
+> - 一致した点: [...]
+> - ずれた点: [...]
+> - 予想外の発見: [...]
 >
-> ### Cross-case differences
+> ### ケース間の違い
 >
 > [Case-specific dynamics not explained by common patterns]
 >
-> ### Unresolved questions
+> ### 未解決の問い
 >
 > - [List of questions for further investigation]
 >
-> ### Input for next actions
+> ### 次のアクションへの入力
 >
-> - Job hypotheses to validate: [from Step 5]
-> - Recommended validation approaches: [...]
+> - 検証すべきジョブ仮説: [from Step 5]
+> - 推奨する検証アプローチ: [...]
 
 **→ Present for user approval. Determine whether analysis is complete or additional investigation is needed.**
+
+## Output Language Rules
+
+- ユーザーに見せる出力（テーブル見出し、セクションタイトル、ラベル）は日本語で記述する
+- Hire（＝サービスを使い始める決断）/ Re-hire（＝2回目以降の利用決断）は初出時に注釈し、以降は「初回利用」「継続利用」を使用
+- JTBD専門用語（Push, Pull, Anxiety, Habit, Forces, Job）は初出時に日本語訳を併記し、以降は略称を使用可
+- Strength（強さ）は日本語で表記: 強/中/弱
+- Job Statement構文（When / I want to / so that）は英語+日本語の併記形式を使用
+- サブエージェントへのプロンプト内では英語の専門用語をそのまま使用してよい（分析精度のため）
+- 日本語に置き換えると原義が失われる定着用語（エビデンス等）は英語のまま残す
 
 ## Strict Rules
 
