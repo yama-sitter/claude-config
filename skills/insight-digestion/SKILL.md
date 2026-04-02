@@ -212,78 +212,73 @@ Extract the common **situation** across cases — the circumstances that created
 
 **Single-case behavior**: When only one case exists, skip the Comparator. Run Narrator + Critic only, and output a single-case context description. Cross-case synthesis happens when additional cases are added.
 
-<!-- Future consideration: Steps 3 and 4 follow different abstraction paths — Step 3 abstracts situations first (bottom-up → common), while Step 4 analyzes dynamics individually then compares (individual → compare). Theoretically, individual Forces analysis could reveal common situations (Step 4 → Step 3 order). Re-evaluate ordering as case count grows. -->
-
 ### 4. Analyze Demand Forces
 
-Analyze the Switch dynamics for each case individually, then compare across cases. This is the first step where **interpretation** (fact-grounded inference) is permitted.
-
-Forces are about an individual person's decision dynamics — analyze each person's Switch story before looking for patterns.
+Derive Switch dynamics directly from Step 3's common contexts. This is the first step where **interpretation** (fact-grounded inference) is permitted.
 
 **Input**:
 
-- Per case: Fact Table (Step 1) + Background (Step 2)
-- For comparison: Step 3 common contexts (A/B/C) — used as comparison axes, not as the analysis target
+- Primary: Step 3 A/B/C tables (common contexts, stances, post-experience changes)
+- Secondary: Per-case Fact Tables (Step 1) + Backgrounds (Step 2) — for evidence verification and strength assessment
 
 **Steps**:
 
-1. **Per-case Forces diagrams (4a)**: For each case, map the person's Hire decision onto Push/Pull/Anxiety/Habit using their Fact Table. Write a short narrative per case describing how the Forces interacted for this person's Switch.
+1. **Common Forces derivation (4a)**: Launch one subagent. Map Step 3's common contexts directly onto Push/Pull/Anxiety/Habit for both Hire-time and Re-hire. Write a narrative describing the Forces transition from Hire to Re-hire.
 
-   **Process**: Launch one subagent per case in parallel. Each subagent receives only its own case's Fact Table + Background, ensuring no cross-case anchoring. The subagent produces a Forces diagram + narrative.
+   **Process**: The subagent receives Step 3's A/B/C tables as primary input, plus all cases' Fact Tables as evidence pool. It derives Forces at the common-pattern level, citing Fact numbers from multiple cases for each Force.
+
+   Mapping guidance:
+
+   - Step 3 A (Situation) → Push and/or Pull素材 (direction depends on content)
+   - Step 3 B (Stance) → Anxiety adjustment mechanisms / Habit disruption factors
+   - Step 3 C (Post-experience) → Re-hire Forces transformation factors
+
+   Output:
+
+   > **Hire-time Common Forces**
+   > | Force | Content | Step 3 source | Evidence (Fact#) | Strength |
+   > Push / Pull / Anxiety / Habit rows
+   >
+   > **Re-hire Common Forces**
+   > | Force | Content | Step 3 source | Evidence (Fact#) | Strength |
+   > Push / Pull / Anxiety / Habit rows
+   >
+   > **Forces Transition Narrative**: [How Forces shifted from Hire to Re-hire at the common-pattern level. Which Forces changed, which persisted, and why.]
+
+2. **Case divergence verification (4b)**: Launch one subagent per case in parallel. Each verifies whether the common Forces hold for its case and identifies divergences.
+
+   Each subagent receives: 4a's common Forces + its own case's Fact Table + Background.
 
    Per-case output:
 
-   > **Case [X] Hire-time Forces**
-   > | Force | Content | Evidence (Fact#) | Strength |
-   > Push / Pull / Anxiety / Habit rows
-   > **Narrative**: [How Forces interacted for this person]
+   > | Common Force | Holds? | Case-specific strength | Divergence notes |
    >
-   > **Case [X] Re-hire Forces**
-   > | Force | Content | Evidence (Fact#) | Strength |
-   > Push / Pull / Anxiety / Habit rows
-   > **Narrative**: [How Forces shifted from Hire to Re-hire. Note data constraints if thin.]
+   > **Case-specific Forces not captured by commons**: [Any Forces unique to this case, with Fact# evidence]
 
-2. **Cross-case comparison (4b)**: Execute in the main conversation (dialogue with user). Place per-case Forces side by side.
-
-   First, reconcile 4a's Force classifications with Step 3's A/B/C categories:
-
-   - For each Fact# cited in 4a, check whether it appears in Step 3's A/B/C tables
-   - If the Force classification (Push/Pull/Anxiety/Habit) conflicts with the Step 3 category (A=situation, B=stance), flag it
-   - Resolve mismatches by returning to the original Fact in Step 1, and record the resolution
-   - Proceed to comparison analysis only after reconciliation is complete
-
-   Then, use Step 3's common contexts (A/B) as comparison axes to identify:
-
-   - **Common Forces dynamics**: Where both cases show the same Force pattern
-   - **Divergent dynamics**: Where the same common context produced different Force behaviors
-
-   Judge relative strength using three axes:
-
-   - Scale of action (immediate response vs. deliberation period)
-   - Urgency of expression (verbatim quotes indicating urgency or calm)
-   - Behavioral magnitude (how much the person changed their operations)
+3. **Integration (main conversation)**: Merge 4a and 4b results. Present common Forces with case divergences annotated.
 
 **Output format**:
 
-> ### Per-case Forces (4a)
->
-> [Case A: Hire-time Forces diagram + narrative + Re-hire Forces diagram + narrative] > [Case B: Hire-time Forces diagram + narrative + Re-hire Forces diagram + narrative]
->
-> ### Cross-case comparison (4b)
->
-> #### Classification reconciliation
->
-> | Fact# | Step 3 category | 4a Force | Match? | Resolution |
+> ### Common Forces (4a)
 >
 > #### Hire-time
 >
-> | Force | Common dynamics | Case A specifics | Case B specifics |
-> **Dominant Force**: [Per case and overall]
+> | Force | Content | Step 3 source | Evidence (Fact#) | Strength |
+> **Dominant Force**: [Overall assessment]
 >
 > #### Re-hire
 >
-> | Force | Common dynamics | Case A specifics | Case B specifics |
-> [Note data constraints.]
+> | Force | Content | Step 3 source | Evidence (Fact#) | Strength |
+> **Dominant Force**: [Overall assessment]
+>
+> #### Forces Transition
+>
+> [Narrative: Hire → Re-hire shift]
+>
+> ### Case Divergences (4b)
+>
+> | Common Force | Case A | Case B | ... |
+> [Strength differences and case-specific Forces]
 
 **→ Present for user approval.**
 
@@ -294,15 +289,15 @@ Synthesize the common context (Step 3) and Forces analysis (Step 4) into a Job S
 **Input**:
 
 - Step 3 A (When clause material)
-- Step 4 cross-case comparison: common Forces dynamics (motivation source)
-- Step 4 per-case narratives (case-specific evidence and nuance)
+- Step 4 common Forces: Hire-time and Re-hire dynamics (motivation source)
+- Step 4 case divergences (case-specific strength differences and unique Forces)
 - Step 1 Facts (for evidence verification)
 
 **Steps**:
 
 1. **When clause**: Integrate Step 3 A common contexts into 1-2 sentences describing the shared situation
-2. **Motivation (I want to)**: Derive from Step 4's Push/Pull integrated narrative at the common-pattern level. Push inversion = what they want to escape. Pull direction = what they want to achieve.
-3. **Expected progress (so that)**: Derive from Step 4's narrative + Fact-based goal statements
+2. **Motivation (I want to)**: Derive from Step 4's common Push/Pull Forces. Push inversion = what they want to escape. Pull direction = what they want to achieve. Note case divergences where relevant.
+3. **Expected progress (so that)**: Derive from Step 4's Forces transition narrative + Fact-based goal statements
 4. **Traceability**: Document which Facts, Step 3 items, and Step 4 Forces inform each clause
 5. **Hypothesis constraints**: State explicitly that this Job is a hypothesis. List conditions for validity and what needs verification.
 
