@@ -212,43 +212,79 @@ Extract the common **situation** across cases — the circumstances that created
 
 **Single-case behavior**: When only one case exists, skip the Comparator. Run Narrator + Critic only, and output a single-case context description. Cross-case synthesis happens when additional cases are added.
 
+<!-- Future consideration: Steps 3 and 4 follow different abstraction paths — Step 3 abstracts situations first (bottom-up → common), while Step 4 analyzes dynamics individually then compares (individual → compare). Theoretically, individual Forces analysis could reveal common situations (Step 4 → Step 3 order). Re-evaluate ordering as case count grows. -->
+
 ### 4. Analyze Demand Forces
 
-Map the common contexts from Step 3 onto Four Forces to construct an integrated narrative of the Switch dynamics. This is the first step where **interpretation** (fact-grounded inference) is permitted.
+Analyze the Switch dynamics for each case individually, then compare across cases. This is the first step where **interpretation** (fact-grounded inference) is permitted.
+
+Forces are about an individual person's decision dynamics — analyze each person's Switch story before looking for patterns.
 
 **Input**:
 
-- Primary: Step 3 output (A/B/C + discrepancy notes) — the common patterns are the analysis target
-- Supporting: Fact Table — for evidence strength judgment only, not for discovering new Forces
-
-**Process**: Execute directly in the main conversation (no subagents). Forces analysis involves interpretation and should be built through dialogue with the user.
+- Per case: Fact Table (Step 1) + Background (Step 2)
+- For comparison: Step 3 common contexts (A/B/C) — used as comparison axes, not as the analysis target
 
 **Steps**:
 
-1. **Compose Hire-time Forces diagram**: Map Step 3 A/B items to Push/Pull/Anxiety/Habit. Cite Fact numbers as evidence for each Force.
-2. **Write integrated narrative**: Describe the Forces as one story — how they interacted to produce the Switch. Not a list of individual Forces, but their interplay (e.g., "Strong Push from channel failure, combined with low Anxiety from minimal expectations, enabled a rapid trial").
-3. **Judge relative strength**: Determine whether the Switch was Push-dominant or Pull-dominant, using three axes:
+1. **Per-case Forces diagrams (4a)**: For each case, map the person's Hire decision onto Push/Pull/Anxiety/Habit using their Fact Table. Write a short narrative per case describing how the Forces interacted for this person's Switch.
+
+   **Process**: Launch one subagent per case in parallel. Each subagent receives only its own case's Fact Table + Background, ensuring no cross-case anchoring. The subagent produces a Forces diagram + narrative.
+
+   **Self-verification after classification**: For each Force item, check:
+
+   - **Pull verification**: "Is this attraction toward the new solution itself, or rhetoric justifying the adoption (e.g., 'being a pioneer', cost comparisons)?" Justification rhetoric is not Pull — record it in the evidence/notes column instead.
+   - **Indirect Push detection**: Even without explicit dissatisfaction statements, behavioral patterns (welcoming negative events, immediate action, advance preparation) can be evidence of accumulated Push. Ask: "What level of dissatisfaction would produce this reaction?"
+   - **Multi-Force facts**: When a single Fact relates to multiple Forces, state which Force is dominant with rationale. Record the non-dominant association in evidence/notes.
+
+   Per-case output:
+
+   > **Case [X] Hire-time Forces**
+   > | Force | Content | Evidence (Fact#) | Strength |
+   > Push / Pull / Anxiety / Habit rows
+   > **Narrative**: [How Forces interacted for this person]
+   >
+   > **Case [X] Re-hire Forces**
+   > | Force | Content | Evidence (Fact#) | Strength |
+   > Push / Pull / Anxiety / Habit rows
+   > **Narrative**: [How Forces shifted from Hire to Re-hire. Note data constraints if thin.]
+
+2. **Cross-case comparison (4b)**: Execute in the main conversation (dialogue with user).
+
+   Before comparing, verify each case's Forces diagram:
+
+   - Is each Pull genuinely about attraction to the new solution (not adoption justification rhetoric)?
+   - Does each Push strength judgment account for indirect behavioral evidence, not just explicit complaints?
+   - Are there contextual facts incorrectly included as Force content that should be in evidence/notes instead?
+
+   Place per-case Forces side by side. Use Step 3's common contexts (A/B) as comparison axes to identify:
+
+   - **Common Forces dynamics**: Where both cases show the same Force pattern
+   - **Divergent dynamics**: Where the same common context produced different Force behaviors
+
+   Judge relative strength using three axes:
+
    - Scale of action (immediate response vs. deliberation period)
    - Urgency of expression (verbatim quotes indicating urgency or calm)
    - Behavioral magnitude (how much the person changed their operations)
-4. **Describe Re-hire Forces change**: How did Forces shift from first Hire to Re-hire? If data is thin (common for Re-hire), state the constraint explicitly.
 
 **Output format**:
 
-> ### Hire-time Forces
+> ### Per-case Forces (4a)
 >
-> | Force   | Content | Evidence  | Strength             |
-> | ------- | ------- | --------- | -------------------- |
-> | Push    | ...     | A#, Fact# | Strong/Moderate/Weak |
-> | Pull    | ...     | A#, Fact# | ...                  |
-> | Anxiety | ...     | B#, Fact# | ...                  |
-> | Habit   | ...     | B#, Fact# | ...                  |
+> [Case A: Hire-time Forces diagram + narrative + Re-hire Forces diagram + narrative] > [Case B: Hire-time Forces diagram + narrative + Re-hire Forces diagram + narrative]
 >
-> **Integrated narrative**: [1 paragraph describing Force interplay] > **Dominant Force**: [Push-dominant / Pull-dominant / Balanced + rationale]
+> ### Cross-case comparison (4b)
 >
-> ### Re-hire Forces change
+> #### Hire-time
 >
-> [How Forces shifted from first Hire to Re-hire. Note data constraints.]
+> | Force | Common dynamics | Case A specifics | Case B specifics |
+> **Dominant Force**: [Per case and overall]
+>
+> #### Re-hire
+>
+> | Force | Common dynamics | Case A specifics | Case B specifics |
+> [Note data constraints.]
 
 **→ Present for user approval.**
 
@@ -259,7 +295,8 @@ Synthesize the common context (Step 3) and Forces analysis (Step 4) into a Job S
 **Input**:
 
 - Step 3 A (When clause material)
-- Step 4 integrated narrative + Push/Pull (primary source for motivation)
+- Step 4 cross-case comparison: common Forces dynamics (motivation source)
+- Step 4 per-case narratives (case-specific evidence and nuance)
 - Step 1 Facts (for evidence verification)
 
 **Steps**:
