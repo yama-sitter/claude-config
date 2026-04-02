@@ -48,6 +48,8 @@ Output as a table:
 | #   | 誰が | 何をした・何を言った（逐語） | 状況（いつ、どこで） |
 | --- | ---- | ---------------------------- | -------------------- |
 
+Identifier format: `F-{Case}{Number}` (e.g., F-A1, F-B1, F-C1). F = Fact, A/B/C = case identifier.
+
 **For lengthy source material** (requiring multiple Read calls):
 
 1. Launch an extraction subagent to read the source and produce the fact table
@@ -74,10 +76,10 @@ Arrange facts from Step 1 chronologically. Separate **Background** (ongoing stru
 Output format:
 
 > **前提条件**（サービス利用を決める前から存在していた構造的条件）
-> ファクト: [Fact numbers]
+> ファクト: [F-XX, ...]
 > 要約: [構造的条件 — 事業環境、継続的な制約、リソースの限界]
 >
-> **時系列の出来事** > [Fact numbers in time order with brief period labels]
+> **時系列の出来事** > [F-XX in time order with brief period labels]
 
 For large fact sets (30+ facts): Launch a subagent, then self-review for completeness.
 
@@ -118,7 +120,7 @@ Extract the common **situation** across cases — the circumstances that created
 > Rules:
 >
 > - Do NOT include product experience (what happened after using the product)
-> - Cite Fact numbers for traceability
+> - Cite Fact identifiers (F-XX) for traceability
 > - No inference of emotions or motivations not evidenced by quotes or observable behavior
 
 **Output**: Two narratives per case (Hire-time + Re-hire), with Fact citations.
@@ -139,7 +141,7 @@ Extract the common **situation** across cases — the circumstances that created
 >
 > Common pattern rules:
 >
-> - Each pattern must be traceable to specific Facts in both cases
+> - Each pattern must be traceable to specific Facts (F-XX) in both cases
 > - Do not over-abstract — "any business that needs staff" is too vague
 > - Note where one case's fit is weaker than the other's
 >
@@ -183,7 +185,7 @@ Extract the common **situation** across cases — the circumstances that created
 >
 > Additionally: identify any common patterns the Comparator missed, based on your independent reading of the Facts.
 >
-> Output: For each pattern → Approve / Revise (with suggestion) / Reject (with reason) + A/B/C classification.
+> Output: For each pattern → Approve / Revise (with suggestion) / Reject (with reason) + Ctx-A/Ctx-B/Ctx-C classification.
 > Do NOT write the final version yourself — provide critique and suggestions only.
 
 **Output**: Validation report with verdicts, classification, and additional proposals.
@@ -198,15 +200,15 @@ Extract the common **situation** across cases — the circumstances that created
 
 > ### A. Hire時の状況（「いつ」「どんな時に」の材料）
 >
-> | # | 共通コンテキスト | Case A 根拠 | Case B 根拠 | ケース間の差異 |
+> | Ctx-A# | 共通コンテキスト | Case A 根拠 (F-XX) | Case B 根拠 (F-XX) | ケース間の差異 |
 >
 > ### B. 状況から生じた態度・構え（動機分析の材料）
 >
-> | # | 態度・構え | 由来する状況 (A#) | Case A 根拠 | Case B 根拠 |
+> | Ctx-B# | 態度・構え | 由来する状況 (Ctx-A#) | Case A 根拠 (F-XX) | Case B 根拠 (F-XX) |
 >
 > ### C. 利用後に起きた認識の変化（Re-hire/定着分析の材料）
 >
-> | # | 変化 | Case A | Case B |
+> | Ctx-C# | 変化 | Case A (F-XX) | Case B (F-XX) |
 
 **→ Present the final table for user approval. Confirm: Are the A/B/C classifications appropriate? Is the abstraction level right? Are any common contexts missing?**
 
@@ -234,25 +236,34 @@ Forces are about an individual person's decision dynamics — analyze each perso
    Per-case output:
 
    > **Case [X] Hire時の力学**
-   > | 力 | 内容 | 根拠 (Fact#) | 強さ |
+   > | 力 | 内容 | 根拠 (F-XX) | 強さ |
    > Push（現状への不満・圧力）/ Pull（新しい選択肢の魅力）/ Anxiety（新しい選択肢への不安）/ Habit（現状維持の慣性） rows
    > **ナラティブ**: [How Forces interacted for this person]
    >
    > **Case [X] Re-hire時の力学**
-   > | 力 | 内容 | 根拠 (Fact#) | 強さ |
+   > | 力 | 内容 | 根拠 (F-XX) | 強さ |
    > Push / Pull / Anxiety / Habit rows
    > **ナラティブ**: [How Forces shifted from Hire to Re-hire. Note data constraints if thin.]
 
 2. **Cross-case comparison (4b)**: Execute in the main conversation (dialogue with user). Place per-case Forces side by side.
 
-   First, reconcile 4a's Force classifications with Step 3's A/B/C categories:
+   First, reconcile 4a's Force classifications with Step 3's Ctx-A/Ctx-B/Ctx-C categories:
 
-   - For each Fact# cited in 4a, check whether it appears in Step 3's A/B/C tables
-   - If the Force classification (Push/Pull/Anxiety/Habit) conflicts with the Step 3 category (A=situation, B=stance), flag it
+   - For each F-XX cited in 4a, check whether it appears in Step 3's Ctx-A/Ctx-B/Ctx-C tables
+   - If the Force classification (Push/Pull/Anxiety/Habit) conflicts with the Step 3 category (Ctx-A=situation, Ctx-B=stance), flag it
    - Resolve mismatches by returning to the original Fact in Step 1, and record the resolution
    - Proceed to comparison analysis only after reconciliation is complete
 
-   Then, use Step 3's common contexts (A/B) as comparison axes to identify:
+   Then, verify common context backing and assign Common Force identifiers:
+
+   - For each "Common dynamics" entry, check whether it is backed by Step 3 common context items (Ctx-A/Ctx-B)
+   - **Backed**: Record as common Force with identifier (CF-Push1, CF-Pull1, CF-Anxiety1, CF-Habit1, etc.)
+   - **Unbacked but observed in multiple cases**: Present to the user as a candidate for Step 3 addition. If user accepts, assign Ctx number and add to Step 3 table inline. If not, record as "emerging common Force" (ECF-\*) and separate from main Common dynamics table
+   - **Single-case only**: Retain in 4a only; do not include in 4b Common dynamics
+
+   If new Ctx items are added via feedback, update the Step 3 table inline (no need to re-run Step 3 subagents or re-pass the Step 3 confirmation gate).
+
+   Use Step 3's common contexts (Ctx-A/Ctx-B) as comparison axes to identify:
 
    - **Common Forces dynamics**: Where both cases show the same Force pattern
    - **Divergent dynamics**: Where the same common context produced different Force behaviors
@@ -275,12 +286,12 @@ Forces are about an individual person's decision dynamics — analyze each perso
 >
 > #### Hire時
 >
-> | 力 | 共通の力学 | Case A の特徴 | Case B の特徴 |
+> | CF-# | 力 | 共通の力学 | Case A の特徴 | Case B の特徴 |
 > **最も強い力**: [Per case and overall]
 >
 > #### Re-hire時
 >
-> | 力 | 共通の力学 | Case A の特徴 | Case B の特徴 |
+> | CF-# | 力 | 共通の力学 | Case A の特徴 | Case B の特徴 |
 > [Note data constraints.]
 
 **→ Present for user approval.**
@@ -291,10 +302,9 @@ Synthesize the common context (Step 3) and Forces analysis (Step 4) into Job Sta
 
 **Input**:
 
-- Step 4b Cross-case comparison: Dominant Force per phase (Hire-time / Re-hire)
-- Step 4a Per-case Forces: case-specific strong Push/Pull forces
-- Step 3 A (When clause material), B (Stance), C (Post-experience)
-- Step 1 Facts (for evidence verification)
+- Step 4b Cross-case comparison: Dominant Force per phase (CF-\*)
+- Step 4a Per-case Forces: case-specific strong Push/Pull forces → emerging Job candidates only
+- Step 3 A (Ctx-A*), B (Ctx-B*), C (Ctx-C\*)
 
 #### 5a. Job candidate enumeration
 
@@ -304,7 +314,7 @@ List candidate Jobs using the following axes (in priority order):
 2. **Case-specific strong Forces**: A Push/Pull force appearing strongly in only 1-2 cases is an Emerging Job candidate — list it separately
 3. **Step 3 B/C signals**: If Stance (B) or Post-experience (C) patterns suggest an independent motivation structure not captured by Dominant Forces, add as a candidate
 
-Output: numbered list of Job candidates with the source evidence (Step 4b Dominant Force line, specific Fact#s, Step 3 item#s).
+Output: numbered list of Job candidates with the source evidence (CF-_ Dominant Force, Ctx-_ items). Emerging candidates may additionally cite per-case Forces (4a) with F-XX references.
 
 #### 5b. Consolidation / separation decision
 
@@ -312,7 +322,7 @@ For each candidate pair, apply these criteria:
 
 - **Separate** if Dominant Forces differ (even when the When clause overlaps — different motivation structures = different Jobs)
 - **Merge** if candidates share both Dominant Force and motivation direction — state the merge rationale explicitly
-- **Emerging label**: Jobs supported by only 1-2 cases receive the `[Emerging]` label and must include evidence strength (e.g., "1 case, 2 Facts")
+- **Emerging label**: Jobs supported by only 1-2 cases receive the `[Emerging]` label and must include evidence strength (e.g., "1 case, 2 Facts"). Emerging Jobs may cite per-case Forces (4a) as basis
 
 If only one Job remains after consolidation, state why consolidation is justified.
 
@@ -322,11 +332,17 @@ Output: final Job list with separation/merge rationale.
 
 For each Job from 5b, construct a statement:
 
-1. **When clause**: Integrate Step 3 A common contexts into 1-2 sentences describing the shared situation
-2. **Motivation (I want to)**: Derive from Step 4's Push/Pull integrated narrative. Push inversion = what they want to escape. Pull direction = what they want to achieve.
-3. **Expected progress (so that)**: Derive from Step 4's narrative + Fact-based goal statements
-4. **Traceability**: Document which Facts, Step 3 items, and Step 4 Forces inform each clause
+1. **When clause**: Integrate Step 3 A common contexts (Ctx-A\*) into 1-2 sentences describing the shared situation
+2. **Motivation (I want to)**: Derive from Step 4b's Common Push/Pull (CF-\*). Push inversion = what they want to escape. Pull direction = what they want to achieve.
+3. **Expected progress (so that)**: Derive from Step 4b's Common narrative (CF-\*)
+4. **Traceability**: Document which Step 3 items (Ctx-_) and Step 4b Common Forces (CF-_) inform each clause. Facts (F-XX) appear in the separate 出典 column only.
 5. **Hypothesis constraints**: State explicitly that this Job is a hypothesis. List conditions for validity and what needs verification.
+
+**Traceability rules**:
+
+- A clause with an empty 根拠 column is prohibited — every clause must be grounded in cross-case abstractions
+- The 出典 column is optional — it provides supporting evidence from individual Facts
+- Emerging Jobs only: per-case Forces (4a) and emerging common Forces (ECF-\*) may appear in the 根拠 column. The `[萌芽的]` label is required.
 
 **Output format**:
 
@@ -338,11 +354,11 @@ For each Job from 5b, construct a statement:
 > > **I want to（～したい）** [motivation],
 > > **so that（そうすれば）** [expected progress].
 >
-> | 句        | 根拠                     |
-> | --------- | ------------------------ |
-> | When      | Step 3 A#, A#, ...       |
-> | I want to | Step 4 Push/Pull + Facts |
-> | So that   | Step 4 narrative + Facts |
+> | 句        | 根拠（共通抽象）          | 出典（Facts）          |
+> | --------- | ------------------------- | ---------------------- |
+> | When      | Ctx-A1, Ctx-A2, ...       | F-A2, F-B4, F-C6 他    |
+> | I want to | CF-Push1 + Ctx-B1, Ctx-B2 | F-A16, F-B16, F-C8 他  |
+> | So that   | CF-Pull1 + Ctx-C1         | F-A29, F-B22, F-C28 他 |
 >
 > この仮説の限界・前提: [Conditions, verification needs]
 >
@@ -352,11 +368,11 @@ For each Job from 5b, construct a statement:
 > > **I want to（～したい）** [motivation],
 > > **so that（そうすれば）** [expected progress].
 >
-> | 句        | 根拠                     |
-> | --------- | ------------------------ |
-> | When      | Step 3 A#, A#, ...       |
-> | I want to | Step 4 Push/Pull + Facts |
-> | So that   | Step 4 narrative + Facts |
+> | 句        | 根拠（共通抽象）       | 出典（Facts）  |
+> | --------- | ---------------------- | -------------- |
+> | When      | Ctx-A1, ...            | F-B7, F-B8 他  |
+> | I want to | CF-Pull1 / 4a per-case | F-B3, F-B42 他 |
+> | So that   | ECF-\* / 4a per-case   | F-B37 他       |
 >
 > この仮説の限界・前提: [Conditions, verification needs]
 > エビデンスの強さ: [N cases, M Facts]
@@ -369,7 +385,7 @@ For each Job from 5b, construct a statement:
 
 Synthesize Steps 3-5 into a structured answer to the Research Question and present analysis findings.
 
-**Input**: Step 3 (A/B/C) + Step 4 (Forces) + Step 5 (Jobs) + Step 0 (RQ)
+**Input**: Step 3 (Ctx-A/Ctx-B/Ctx-C) + Step 4 (CF-\*) + Step 5 (Jobs) + Step 0 (RQ)
 
 **Process**: Execute directly in the main conversation (all Step outputs are already in the conversation context).
 
@@ -402,13 +418,13 @@ Synthesize Steps 3-5 into a structured answer to the Research Question and prese
 
 ## Output Language Rules
 
-- ユーザーに見せる出力（テーブル見出し、セクションタイトル、ラベル）は日本語で記述する
-- Hire（＝解決策を"雇う"決断）/ Re-hire（＝同じ解決策をもう一度"雇う"決断）は初出時に注釈し、以降もHire/Re-hireをそのまま使用
-- JTBD専門用語（Push, Pull, Anxiety, Habit, Forces, Job）は初出時に日本語訳を併記し、以降は略称を使用可
-- Strength（強さ）は日本語で表記: 強/中/弱
-- Job Statement構文（When / I want to / so that）は英語+日本語の併記形式を使用
-- サブエージェントへのプロンプト内では英語の専門用語をそのまま使用してよい（分析精度のため）
-- 日本語に置き換えると原義が失われる定着用語（エビデンス等）は英語のまま残す
+- All user-facing output (table headers, section titles, labels) must be written in Japanese
+- Annotate Hire (= the decision to "hire" a solution) and Re-hire (= the decision to "hire" the same solution again) on first use; use Hire/Re-hire as-is thereafter
+- JTBD terminology (Push, Pull, Anxiety, Habit, Forces, Job) must include a Japanese translation on first use; abbreviations may be used thereafter
+- Strength levels must be written in Japanese: 強/中/弱
+- Job Statement syntax (When / I want to / so that) must use a bilingual English + Japanese format
+- English terminology may be used as-is in subagent prompts for analysis accuracy
+- Established loanwords whose original meaning would be lost in Japanese translation (e.g., エビデンス) should remain in English
 
 ## Strict Rules
 
@@ -421,7 +437,7 @@ Synthesize Steps 3-5 into a structured answer to the Research Question and prese
 - Inference permissions follow the epistemological ladder:
   - Steps 0-3: No inference. Observable behavior and verbatim quotes only.
   - Step 4: Fact-grounded interpretation permitted (Forces analysis — inferring demand dynamics from observed contexts).
-  - Step 5: Hypothesis synthesis permitted (Job definition — combining interpreted Forces with factual contexts).
+  - Step 5: Hypothesis synthesis permitted (Job definition — combining Common Forces (CF-_) with common contexts (Ctx-_)).
   - Step 6: Integration only — synthesize Steps 3-5 outputs. Do not introduce new inferences not already established in Steps 4-5.
 
 ## Completion
@@ -429,7 +445,7 @@ Synthesize Steps 3-5 into a structured answer to the Research Question and prese
 This skill is complete when all conditions are met:
 
 - A Job Statement (hypothesis) exists that the user confirms
-- The statement is traceable to specific facts, common contexts (Step 3), and Forces (Step 4)
+- The statement is traceable to common contexts (Ctx-_) and Common Forces (CF-_), with Facts (F-\*) as supporting evidence
 - RQ answer and Findings have been presented (Step 6)
 - Input for next actions has been provided
 - The user confirms analysis is complete, or directs additional investigation
