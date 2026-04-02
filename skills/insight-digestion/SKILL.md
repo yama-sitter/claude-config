@@ -231,12 +231,6 @@ Forces are about an individual person's decision dynamics — analyze each perso
 
    **Process**: Launch one subagent per case in parallel. Each subagent receives only its own case's Fact Table + Background, ensuring no cross-case anchoring. The subagent produces a Forces diagram + narrative.
 
-   **Self-verification after classification**: For each Force item, check:
-
-   - **Pull verification**: "Is this attraction toward the new solution itself, or rhetoric justifying the adoption (e.g., 'being a pioneer', cost comparisons)?" Justification rhetoric is not Pull — record it in the evidence/notes column instead.
-   - **Indirect Push detection**: Even without explicit dissatisfaction statements, behavioral patterns (welcoming negative events, immediate action, advance preparation) can be evidence of accumulated Push. Ask: "What level of dissatisfaction would produce this reaction?"
-   - **Multi-Force facts**: When a single Fact relates to multiple Forces, state which Force is dominant with rationale. Record the non-dominant association in evidence/notes.
-
    Per-case output:
 
    > **Case [X] Hire-time Forces**
@@ -249,15 +243,16 @@ Forces are about an individual person's decision dynamics — analyze each perso
    > Push / Pull / Anxiety / Habit rows
    > **Narrative**: [How Forces shifted from Hire to Re-hire. Note data constraints if thin.]
 
-2. **Cross-case comparison (4b)**: Execute in the main conversation (dialogue with user).
+2. **Cross-case comparison (4b)**: Execute in the main conversation (dialogue with user). Place per-case Forces side by side.
 
-   Before comparing, verify each case's Forces diagram:
+   First, reconcile 4a's Force classifications with Step 3's A/B/C categories:
 
-   - Is each Pull genuinely about attraction to the new solution (not adoption justification rhetoric)?
-   - Does each Push strength judgment account for indirect behavioral evidence, not just explicit complaints?
-   - Are there contextual facts incorrectly included as Force content that should be in evidence/notes instead?
+   - For each Fact# cited in 4a, check whether it appears in Step 3's A/B/C tables
+   - If the Force classification (Push/Pull/Anxiety/Habit) conflicts with the Step 3 category (A=situation, B=stance), flag it
+   - Resolve mismatches by returning to the original Fact in Step 1, and record the resolution
+   - Proceed to comparison analysis only after reconciliation is complete
 
-   Place per-case Forces side by side. Use Step 3's common contexts (A/B) as comparison axes to identify:
+   Then, use Step 3's common contexts (A/B) as comparison axes to identify:
 
    - **Common Forces dynamics**: Where both cases show the same Force pattern
    - **Divergent dynamics**: Where the same common context produced different Force behaviors
@@ -275,6 +270,10 @@ Forces are about an individual person's decision dynamics — analyze each perso
 > [Case A: Hire-time Forces diagram + narrative + Re-hire Forces diagram + narrative] > [Case B: Hire-time Forces diagram + narrative + Re-hire Forces diagram + narrative]
 >
 > ### Cross-case comparison (4b)
+>
+> #### Classification reconciliation
+>
+> | Fact# | Step 3 category | 4a Force | Match? | Resolution |
 >
 > #### Hire-time
 >
