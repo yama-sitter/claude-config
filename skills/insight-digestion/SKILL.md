@@ -19,29 +19,19 @@ Digest raw customer data into structural demand insights by climbing the Ladder 
 
 ## Workflow
 
-### 0. Scope Alignment
+### 0. Analysis Setup
 
-Define the analysis scope. A Research Question (RQ) is optional — when provided, it sharpens the analysis focus; when absent, a default scope applies.
+Confirm the prerequisites for the analysis.
 
-1. Ask whether the user has a specific research question. If yes, confirm it. If no, proceed with the default scope.
-2. **When RQ is provided**: Based on the question's nature, define:
-   - **注目する瞬間**: Step 3で探すモーメントの種類
-   - **探すべき行動シグナル**: Step 3で注目する具体的な行動の兆候
-   - **RQの構成要素**: RQがデータを必要とする要素
-3. **When no RQ**: Apply default scope — analyze both Hire and Re-hire phases comprehensively.
-   - **注目する瞬間**: Hire時の行き詰まり + Re-hire時の期待と現実のギャップ
-   - **探すべき行動シグナル**: Switch/Acquisition + Retention/Loyalty の両方
-   - **スコープの構成要素**: Hire前の状況、初回体験のギャップ、Re-hire時の状況変化（Step 2 のデータ充足性チェックで使用）
+1. **分析対象の素材**: What source material to analyze (interview transcripts, feedback logs, etc.)
+2. **ケース一覧**: Who are the cases? (Name, business type, role)
+3. **分析の焦点**: What decision (Hire) are we analyzing, and from what angle?
+   - Examples: "初回利用→継続利用の流れ", "チャーンの経緯", "新規獲得の経路"
+   - This determines the Narrator's narrative structure in Step 3 (e.g., Hire-time + Re-hire narratives for retention analysis)
+   - Note: The current skill is optimized for Hire → Re-hire (初回利用→継続利用) analysis. Other focus types (churn, acquisition) require Narrator prompt adjustments.
+4. **注目したい観点**（任意）: Any specific aspects the user wants to explore
 
-| 問いの種類           | 注目する瞬間         | 探すべき行動シグナル                                             |
-| -------------------- | -------------------- | ---------------------------------------------------------------- |
-| Switch / Acquisition | 行き詰まりの瞬間     | 回避策、諦め、乗り換え行動、満たされない期待                     |
-| Retention / Loyalty  | 期待と現実のギャップ | ポジティブな驚き、習慣化した儀式、喜びの瞬間、高い期待の後の失望 |
-| Churn / Cancellation | 離脱のきっかけ       | 蓄積する摩擦、裏切られた約束、競合への引力、最後の一押し         |
-
-The table above is a reference. For questions that don't fit these types, define a custom moment label and detection signals collaboratively with the user.
-
-**→ Self-review the alignment between scope definition and chosen signals, then present for user approval.**
+**→ Confirm the setup with the user before proceeding.**
 
 ### 1. Extract Facts
 
@@ -90,7 +80,7 @@ For large fact sets (30+ facts): Launch a subagent, then self-review for complet
 **→ Self-review two things, then present for user approval:**
 
 1. **網羅性**: Step 1の全ファクトが「前提条件」または「時系列の出来事」のいずれかに配置されていること
-2. **データの充足性**: 分析スコープの各構成要素（Step 0で定義）に具体的なデータがあること。データが薄い・欠けている構成要素があれば報告する
+2. **データの充足性**: 分析の焦点（Step 0で定義）に対して十分なデータがあること。焦点の方向に対してデータが薄い・欠けている領域があれば報告する
 
 If data sufficiency issues are found, present the user with options: (a) return to data collection, (b) continue with the constraint noted, or (c) stop.
 
@@ -385,44 +375,7 @@ Present surviving candidates in the following format:
 >
 > _(Repeat for each surviving candidate.)_
 
-**→ Present candidates for user discussion. The user selects, combines, or modifies candidates to define the final Job Statement(s). Once confirmed, proceed to Step 6 (if RQ was defined in Step 0).**
-
-### 6. Answer RQ + Findings
-
-**This step is executed only when a Research Question was defined in Step 0.** If no RQ was defined, Step 5 (Job Statements) is the final output.
-
-Synthesize Steps 3-5 into a structured answer to the Research Question and present analysis findings.
-
-**Input**: Step 3 (Ctx-A/Ctx-B/Ctx-C) + Step 4 (CF-\*) + Step 5 (Jobs) + Step 0 (RQ)
-
-**Process**: Execute directly in the main conversation (all Step outputs are already in the conversation context).
-
-**Output**:
-
-> ### RQ回答
->
-> **RQ**: [from Step 0] > **回答**: [1 paragraph integrating the factual causal chain (Step 3), Force dynamics (Step 4), and Job hypotheses (Step 5)]
->
-> ### 仮説との照合
->
-> - 一致した点: [...]
-> - ずれた点: [...]
-> - 予想外の発見: [...]
->
-> ### ケース間の違い
->
-> [Case-specific dynamics not explained by common patterns]
->
-> ### 未解決の問い
->
-> - [List of questions for further investigation]
->
-> ### 次のアクションへの入力
->
-> - 検証すべきジョブ仮説: [from Step 5]
-> - 推奨する検証アプローチ: [...]
-
-**→ Present for user approval. Determine whether analysis is complete or additional investigation is needed.**
+**→ Present candidates for user discussion. The user selects, combines, or modifies candidates to define the final Job Statement(s).**
 
 ## Output Language Rules
 
@@ -446,7 +399,6 @@ Synthesize Steps 3-5 into a structured answer to the Research Question and prese
   - Steps 0-3: No inference. Observable behavior and verbatim quotes only.
   - Step 4: Fact-grounded interpretation permitted (Forces analysis — inferring demand dynamics from observed contexts).
   - Step 5: Hypothesis synthesis permitted (Job definition — generating candidate Job Statements through multiple analytical lenses (Belief Chain, Synthesis Model), filtering for quality, and presenting as discussion material for user selection).
-  - Step 6: Integration only — synthesize Steps 3-5 outputs. Do not introduce new inferences not already established in Steps 4-5.
 
 ## Completion
 
@@ -455,5 +407,4 @@ This skill is complete when all conditions are met:
 - Job Statement candidates have been generated through multiple lenses, quality-filtered, and presented to the user
 - The user has selected, combined, or modified candidates to define the final Job Statement(s)
 - The final statement is traceable to common contexts (Ctx-_) and Common Forces (CF-_), with Facts (F-\*) as supporting evidence
-- If RQ was defined in Step 0: RQ answer and Findings have been presented (Step 6), and input for next actions has been provided
 - The user confirms analysis is complete, or directs additional investigation
