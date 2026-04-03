@@ -1,16 +1,16 @@
 ---
-name: insight-digestion
+name: job-discovery
 description: |
-  Extract structural demand insights from customer behavior facts, interview logs, or feedback data.
-  Use when the user provides raw customer data and wants to understand the underlying demand structure before designing solutions.
+  Discover Jobs-to-be-Done from customer behavior facts, interview logs, or feedback data.
+  Use when the user provides raw customer data and wants to discover the underlying demand structure and generate Job hypotheses.
   Do not use when the user already has a clear hypothesis and wants to design experiments.
   Do not use when the user wants to brainstorm or evaluate solutions.
 user-invocable: true
 ---
 
-# Insight Digestion
+# Job Discovery
 
-Digest raw customer data into structural demand insights by climbing the Ladder of Inference one rung at a time.
+Discover Jobs-to-be-Done from raw customer data by climbing the Ladder of Inference one rung at a time.
 
 ## Prerequisites
 

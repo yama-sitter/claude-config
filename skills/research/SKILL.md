@@ -4,7 +4,7 @@ description: |
   Support research design — building Research Questions (RQs), designing research plans, and creating interview guides.
   Built on the "Product Research Rules" 4-step framework, layered with FINER criteria, Known/Unknown matrix, and more.
   Use when: designing research (what to investigate and how)
-  Do not use when: analyzing collected data (use insight-craft / insight-digestion), designing experiment hypotheses (use experiment-discipline)
+  Do not use when: analyzing collected data (use insight-craft / job-discovery), designing experiment hypotheses (use experiment-discipline)
   Subcommands:
     - (default): Subcommand guide
     - `rq`: Research Question construction sparring
@@ -15,7 +15,7 @@ user-invocable: true
 
 # Research — Research Design Skill
 
-A skill that supports the "design" phase of research through collaborative sparring. Self-contained, and can connect to downstream skills (insight-craft, insight-digestion, experiment-discipline).
+A skill that supports the "design" phase of research through collaborative sparring. Self-contained, and can connect to downstream skills (insight-craft, job-discovery, experiment-discipline).
 
 ## Common Principles
 
@@ -26,12 +26,12 @@ A skill that supports the "design" phase of research through collaborative sparr
 
 ## Subcommand Routing
 
-| Argument    | Behavior                                                                 |
-| ----------- | ------------------------------------------------------------------------ |
-| (none)      | Show subcommand guide. Interview the user's situation and suggest one    |
-| `rq`        | → RQ construction workflow                                               |
-| `plan`      | → Research plan workflow                                                 |
-| `interview` | → Interview guide workflow                                               |
+| Argument    | Behavior                                                              |
+| ----------- | --------------------------------------------------------------------- |
+| (none)      | Show subcommand guide. Interview the user's situation and suggest one |
+| `rq`        | → RQ construction workflow                                            |
+| `plan`      | → Research plan workflow                                              |
+| `interview` | → Interview guide workflow                                            |
 
 **Default behavior (no argument)**:
 
@@ -137,11 +137,11 @@ Turn the selected questions into specific, researchable question statements.
 
 "What do you want to clarify through this research?"
 
-| User's state              | Response                                                     |
-| ------------------------- | ------------------------------------------------------------ |
-| Presents a clear RQ       | Proceed directly → Step 1                                    |
-| Vague explanation         | Confirm direction in 1-2 exchanges → Step 1                  |
-| "I don't know"            | Suggest `/research rq` and recommend building an RQ first    |
+| User's state        | Response                                                  |
+| ------------------- | --------------------------------------------------------- |
+| Presents a clear RQ | Proceed directly → Step 1                                 |
+| Vague explanation   | Confirm direction in 1-2 exchanges → Step 1               |
+| "I don't know"      | Suggest `/research rq` and recommend building an RQ first |
 
 **What this does NOT do**: Full RQ construction (4 steps). The entry gate only confirms "directional alignment."
 
@@ -192,12 +192,12 @@ Output: Research plan document (a single document summarizing RQ, methods, parti
 
 "What do you want to clarify through this interview? Who are the participants?"
 
-| User's state              | Response                                                              |
-| ------------------------- | --------------------------------------------------------------------- |
-| Has RQ + plan             | Proceed directly → Step 1                                             |
-| Has RQ only               | Briefly confirm participants and time allocation → Step 1             |
-| Vague explanation         | Confirm purpose and participants in 1-2 exchanges → Step 1            |
-| "I don't know"            | Suggest `/research rq` and recommend clarifying "what you want to know" first |
+| User's state      | Response                                                                      |
+| ----------------- | ----------------------------------------------------------------------------- |
+| Has RQ + plan     | Proceed directly → Step 1                                                     |
+| Has RQ only       | Briefly confirm participants and time allocation → Step 1                     |
+| Vague explanation | Confirm purpose and participants in 1-2 exchanges → Step 1                    |
+| "I don't know"    | Suggest `/research rq` and recommend clarifying "what you want to know" first |
 
 **What this does NOT do**: Research plan creation, full RQ construction.
 
@@ -228,11 +228,11 @@ Conversion checks:
 
 Output: Interview guide with explicit RQ mapping for each question
 
-| #   | Section   | Question | Mapped RQ | Intent          |
-| --- | --------- | -------- | --------- | --------------- |
-| 1   | Warm-up   | ...      | -         | Build rapport   |
-| 2   | Core      | ...      | RQ1       | ...             |
-| ... | ...       | ...      | ...       | ...             |
+| #   | Section | Question | Mapped RQ | Intent        |
+| --- | ------- | -------- | --------- | ------------- |
+| 1   | Warm-up | ...      | -         | Build rapport |
+| 2   | Core    | ...      | RQ1       | ...           |
+| ... | ...     | ...      | ...       | ...           |
 
 **→ Confirm the interview guide with the user. Iterate revisions as needed**
 
@@ -240,20 +240,20 @@ Output: Interview guide with explicit RQ mapping for each question
 
 ## Responsibility Boundaries
 
-|                                    | rq  | plan | interview |
-| ---------------------------------- | --- | ---- | --------- |
-| Full RQ construction (4 steps)     | Yes | No   | No        |
-| Brief directional confirmation     | -   | Yes  | Yes       |
-| Research method selection          | No  | Yes  | No        |
-| Full participant definition        | No  | Yes  | No        |
-| Brief participant confirmation     | No  | -    | Yes       |
-| IQ design                          | No  | No   | Yes       |
-| Redirect when context is lacking   | -   | Yes  | Yes       |
+|                                  | rq  | plan | interview |
+| -------------------------------- | --- | ---- | --------- |
+| Full RQ construction (4 steps)   | Yes | No   | No        |
+| Brief directional confirmation   | -   | Yes  | Yes       |
+| Research method selection        | No  | Yes  | No        |
+| Full participant definition      | No  | Yes  | No        |
+| Brief participant confirmation   | No  | -    | Yes       |
+| IQ design                        | No  | No   | Yes       |
+| Redirect when context is lacking | -   | Yes  | Yes       |
 
 ## Downstream Skill Connections
 
 - `/research rq` → Starting point for conducting interviews
-- Interview logs → `/insight-digestion` (JTBD extraction) / `/insight-craft` (insight discovery)
+- Interview logs → `/job-discovery` (JTBD extraction) / `/insight-craft` (insight discovery)
 - Insights / JTBD → `/experiment-discipline` (experiment design)
 
 ## Artifact Management
