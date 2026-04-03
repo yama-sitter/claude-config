@@ -436,15 +436,15 @@ Write the document to agent-memory as `output.md` in the analysis directory (e.g
 - **Traceability throughout**: All sections use Ctx-_/CF-_/F-XX identifiers. Include a legend at the top
 - **Hide internal process**: No lens names, Step numbers, or skill-internal terminology
 - **Appendix is collapsible**: Use `<details>` tags for raw data
-- **List formatting in tables**: When listing multiple items per case (e.g., "A: x / B: y / C: z"), use `- A: x<br>- B: y<br>- C: z` for readability
+- **List formatting in tables**: When listing multiple items per case (e.g., "A: x / B: y / C: z"), use comma-separated format `A: x, B: y, C: z` for Notion compatibility. Do NOT use `<br>` tags.
 
 **Document template**:
 
 ```markdown
 # Job Discovery: [1-line summary of the analysis focus]
 
-> - **分析対象**: [source material description]
-> - **焦点**: [analysis focus from Step 0]
+- **分析対象**: [source material description]
+- **焦点**: [analysis focus from Step 0]
 
 | ケース                  | 企業 | 事業 | 体制 | トリガー | 現在の位置づけ |
 | ----------------------- | ---- | ---- | ---- | -------- | -------------- |
@@ -467,15 +467,11 @@ Write the document to agent-memory as `output.md` in the analysis directory (e.g
 
 #### 候補N: [short label]
 
-> - **どんな時に**: [situation],
-> - **何をしたいか**: [motivation],
-> - **そうすれば**: [expected progress].
-
-| 句           | 根拠        | 出典      |
-| ------------ | ----------- | --------- |
-| どんな時に   | Ctx-_, CF-_ | F-XX, ... |
-| 何をしたいか | Ctx-_, CF-_ | F-XX, ... |
-| そうすれば   | Ctx-_, CF-_ | F-XX, ... |
+| 句               | 内容                | 根拠        | 出典      |
+| ---------------- | ------------------- | ----------- | --------- |
+| **どんな時に**   | [situation]         | Ctx-_, CF-_ | F-XX, ... |
+| **何をしたいか** | [motivation]        | Ctx-_, CF-_ | F-XX, ... |
+| **そうすれば**   | [expected progress] | Ctx-_, CF-_ | F-XX, ... |
 
 - 💡 **説明できること**: [unique explanatory power]
 - 🔍 **さらに検討が必要な点**: [blind spots]
@@ -545,8 +541,11 @@ _(Repeat for each candidate per phase)_
 
 Per case:
 
-- **前提条件**: List format, one condition per line with F-XX identifiers
-- **時系列の出来事**: Numbered list with phase labels and F-XX identifiers
+**前提条件**: List format, one condition per line with F-XX identifiers
+
+**時系列の出来事**: Table format:
+
+| # | フェーズ | 出来事 | 出典 |
 
 [Step 2 Background + Events per case]
 
@@ -554,6 +553,10 @@ Per case:
 
 <details>
 <summary>ケースごとの力学分析</summary>
+
+Per case, per phase: summary line + table format:
+
+| 力 | 強さ | 内容 |
 
 [Step 4a per-case Forces data]
 
