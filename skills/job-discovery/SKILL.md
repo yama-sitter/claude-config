@@ -528,7 +528,19 @@ _(Repeat for each candidate per phase)_
 <details>
 <summary>ファクトテーブル（生データ）</summary>
 
-[Step 1-2 full data per case]
+[Step 1 full Fact Tables per case]
+
+</details>
+
+<details>
+<summary>ケースごとのストーリー（時系列）</summary>
+
+Per case:
+
+- **前提条件**: List format, one condition per line with F-XX identifiers
+- **時系列の出来事**: Numbered list with phase labels and F-XX identifiers
+
+[Step 2 Background + Events per case]
 
 </details>
 
