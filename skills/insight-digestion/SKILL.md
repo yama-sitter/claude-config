@@ -19,15 +19,19 @@ Digest raw customer data into structural demand insights by climbing the Ladder 
 
 ## Workflow
 
-### 0. Research Question Alignment
+### 0. Scope Alignment
 
-Clarify the research question and define the filter criteria for Step 3.
+Define the analysis scope. A Research Question (RQ) is optional — when provided, it sharpens the analysis focus; when absent, a default scope applies.
 
-1. Confirm the user's research question (e.g., "Why do customers switch?", "What drives 2nd usage?")
-2. Based on the question's nature, define:
+1. Ask whether the user has a specific research question. If yes, confirm it. If no, proceed with the default scope.
+2. **When RQ is provided**: Based on the question's nature, define:
    - **注目する瞬間**: Step 3で探すモーメントの種類
    - **探すべき行動シグナル**: Step 3で注目する具体的な行動の兆候
-   - **RQの構成要素**: RQがデータを必要とする要素（例: 「Hire前の状況」「期待と現実のギャップ」「Re-hireのトリガー状況」）
+   - **RQの構成要素**: RQがデータを必要とする要素
+3. **When no RQ**: Apply default scope — analyze both Hire and Re-hire phases comprehensively.
+   - **注目する瞬間**: Hire時の行き詰まり + Re-hire時の期待と現実のギャップ
+   - **探すべき行動シグナル**: Switch/Acquisition + Retention/Loyalty の両方
+   - **スコープの構成要素**: Hire前の状況、初回体験のギャップ、Re-hire時の状況変化（Step 2 のデータ充足性チェックで使用）
 
 | 問いの種類           | 注目する瞬間         | 探すべき行動シグナル                                             |
 | -------------------- | -------------------- | ---------------------------------------------------------------- |
@@ -37,7 +41,7 @@ Clarify the research question and define the filter criteria for Step 3.
 
 The table above is a reference. For questions that don't fit these types, define a custom moment label and detection signals collaboratively with the user.
 
-**→ Self-review the alignment between research question and chosen signals, then present for user approval.**
+**→ Self-review the alignment between scope definition and chosen signals, then present for user approval.**
 
 ### 1. Extract Facts
 
@@ -86,7 +90,7 @@ For large fact sets (30+ facts): Launch a subagent, then self-review for complet
 **→ Self-review two things, then present for user approval:**
 
 1. **網羅性**: Step 1の全ファクトが「前提条件」または「時系列の出来事」のいずれかに配置されていること
-2. **データの充足性**: RQの各構成要素（Step 0で定義）に具体的なデータがあること。データが薄い・欠けている構成要素があれば報告する
+2. **データの充足性**: 分析スコープの各構成要素（Step 0で定義）に具体的なデータがあること。データが薄い・欠けている構成要素があれば報告する
 
 If data sufficiency issues are found, present the user with options: (a) return to data collection, (b) continue with the constraint noted, or (c) stop.
 
@@ -174,12 +178,12 @@ Extract the common **situation** across cases — the circumstances that created
 >    - OK: "Traditional recruitment channels produced zero applicants for months" → situation
 > 2. **Theoretical consistency**: Does each pattern describe a condition that _created demand_ for a new solution? Or is it merely a characteristic of the business that doesn't drive the Hire decision?
 > 3. **Category assignment**: Classify each pattern as:
->    - **A (Situation)**: Objective conditions observable by a third party before the Hire decision
->    - **B (Stance)**: The person's attitude/approach arising FROM a situation in category A. Always note which A-item it derives from
->    - **C (Post-experience change)**: Recognition shifts that occurred AFTER using the product. Not a Hire-time situation
->    - Test: "Could a third party observe this before the Hire?" → Yes = A, No = B or C
+>    - **A (Objective condition)**: Conditions observable by a third party, regardless of timing (before Hire, between Hire and Re-hire, or ongoing). These are the structural conditions that created demand.
+>    - **B (Stance)**: The person's attitude/approach arising FROM a condition in category A. Always note which A-item it derives from
+>    - **C (Post-experience change)**: Recognition shifts that occurred AFTER using the product. Not a demand-generating condition
+>    - Test: "Could a third party observe this as an objective condition?" → Yes = A, No = B or C
 > 4. **Redundancy**: Are any patterns listed independently that are actually sub-dimensions of another? Recommend merging or subordinating.
-> 5. **Temporal placement**: Are any Hire-time patterns that were actually recognized only after using the product? Apply: "Did this condition exist before the Hire decision?"
+> 5. **Temporal placement**: Are any patterns classified as A that are actually post-experience recognitions (C)? Apply: "Could a third party observe this as an objective condition independent of product use?"
 > 6. **Evidence strength**: Is each case's evidence based on recorded behavior/quotes, or merely a stated attitude? Flag weak evidence in Discrepancies.
 > 7. **Pattern nature**: Is each entry a "common pattern" (shared across cases) or a "difference description" (contrasting cases)? Differences belong in Discrepancies, not as standalone patterns.
 >
@@ -198,23 +202,21 @@ Extract the common **situation** across cases — the circumstances that created
 
 **Final output format**:
 
-> ### A. Hire時の状況（「いつ」「どんな時に」の材料）
+> ### A. 需要を生み出した共通の客観的条件
 >
 > | Ctx-A# | 共通コンテキスト | Case A 根拠 (F-XX) | Case B 根拠 (F-XX) | ケース間の差異 |
 >
-> ### B. 状況から生じた態度・構え（動機分析の材料）
+> ### B. 条件から生じた共通の態度・構え
 >
-> | Ctx-B# | 態度・構え | 由来する状況 (Ctx-A#) | Case A 根拠 (F-XX) | Case B 根拠 (F-XX) |
+> | Ctx-B# | 態度・構え | 由来する条件 (Ctx-A#) | Case A 根拠 (F-XX) | Case B 根拠 (F-XX) |
 >
-> ### C. 利用後に起きた認識の変化（Re-hire/定着分析の材料）
+> ### C. 利用後に起きた共通の認識変化
 >
 > | Ctx-C# | 変化 | Case A (F-XX) | Case B (F-XX) |
 
 **→ Present the final table for user approval. Confirm: Are the A/B/C classifications appropriate? Is the abstraction level right? Are any common contexts missing?**
 
 **Single-case behavior**: When only one case exists, skip the Comparator. Run Narrator + Critic only, and output a single-case context description. Cross-case synthesis happens when additional cases are added.
-
-<!-- Future consideration: Steps 3 and 4 follow different abstraction paths — Step 3 abstracts situations first (bottom-up → common), while Step 4 analyzes dynamics individually then compares (individual → compare). Theoretically, individual Forces analysis could reveal common situations (Step 4 → Step 3 order). Re-evaluate ordering as case count grows. -->
 
 ### 4. Analyze Demand Forces
 
@@ -225,7 +227,6 @@ Forces are about an individual person's decision dynamics — analyze each perso
 **Input**:
 
 - Per case: Fact Table (Step 1) + Background (Step 2)
-- For comparison: Step 3 common contexts (A/B/C) — used as comparison axes, not as the analysis target
 
 **Steps**:
 
@@ -247,26 +248,12 @@ Forces are about an individual person's decision dynamics — analyze each perso
 
 2. **Cross-case comparison (4b)**: Execute in the main conversation (dialogue with user). Place per-case Forces side by side.
 
-   First, reconcile 4a's Force classifications with Step 3's Ctx-A/Ctx-B/Ctx-C categories:
+   Compare 4a's per-case Forces across cases to identify common dynamics:
 
-   - For each F-XX cited in 4a, check whether it appears in Step 3's Ctx-A/Ctx-B/Ctx-C tables
-   - If the Force classification (Push/Pull/Anxiety/Habit) conflicts with the Step 3 category (Ctx-A=situation, Ctx-B=stance), flag it
-   - Resolve mismatches by returning to the original Fact in Step 1, and record the resolution
-   - Proceed to comparison analysis only after reconciliation is complete
-
-   Then, verify common context backing and assign Common Force identifiers:
-
-   - For each "Common dynamics" entry, check whether it is backed by Step 3 common context items (Ctx-A/Ctx-B)
-   - **Backed**: Record as common Force with identifier (CF-Push1, CF-Pull1, CF-Anxiety1, CF-Habit1, etc.)
-   - **Unbacked but observed in multiple cases**: Present to the user as a candidate for Step 3 addition. If user accepts, assign Ctx number and add to Step 3 table inline. If not, record as "emerging common Force" (ECF-\*) and separate from main Common dynamics table
-   - **Single-case only**: Retain in 4a only; do not include in 4b Common dynamics
-
-   If new Ctx items are added via feedback, update the Step 3 table inline (no need to re-run Step 3 subagents or re-pass the Step 3 confirmation gate).
-
-   Use Step 3's common contexts (Ctx-A/Ctx-B) as comparison axes to identify:
-
-   - **Common Forces dynamics**: Where both cases show the same Force pattern
-   - **Divergent dynamics**: Where the same common context produced different Force behaviors
+   1. For each Force type (Push/Pull/Anxiety/Habit), place each case's Forces side by side
+   2. Identify Forces with the same direction observed in 2 or more cases → assign as Common Force with identifier (CF-Push1, CF-Pull1, etc.)
+   3. Record case-specific differences within each Common Force (same direction but different intensity or manifestation)
+   4. Forces observed in only 1 case → retain in 4a only; do not include in 4b Common dynamics
 
    Judge relative strength using three axes:
 
@@ -282,8 +269,6 @@ Forces are about an individual person's decision dynamics — analyze each perso
 >
 > ### ケース横断比較 (4b)
 >
-> _Note: Classification reconciliation（分類の照合）は内部処理として実施し、ユーザーには統合結果のみ提示する_
->
 > #### Hire時
 >
 > | CF-# | 力 | 共通の力学 | Case A の特徴 | Case B の特徴 |
@@ -298,23 +283,21 @@ Forces are about an individual person's decision dynamics — analyze each perso
 
 ### 5. Define Jobs (Hypotheses)
 
-Synthesize the common context (Step 3) and Forces analysis (Step 4) into Job Statements. These are **hypotheses** — they require validation before acting on them. Step 4 may reveal multiple distinct demand structures; this step preserves that diversity.
+Synthesize the common context (Step 3) and Forces analysis (Step 4) into Job Statements. These are **hypotheses** — they require validation before acting on them. This step synthesizes only cross-case abstractions (Ctx-_ and CF-_) into Job Statements. Different demand structures (e.g., Hire-time vs Re-hire) may yield multiple Jobs.
 
 **Input**:
 
-- Step 4b Cross-case comparison: Dominant Force per phase (CF-\*)
-- Step 4a Per-case Forces: case-specific strong Push/Pull forces → emerging Job candidates only
-- Step 3 A (Ctx-A*), B (Ctx-B*), C (Ctx-C\*)
+- Step 4b Cross-case comparison: Common Forces (CF-\*)
+- Step 3 Common contexts: A (Ctx-A*), B (Ctx-B*), C (Ctx-C\*)
 
 #### 5a. Job candidate enumeration
 
 List candidate Jobs using the following axes (in priority order):
 
 1. **Hire-time vs Re-hire split**: If Step 4b shows different Dominant Forces for Hire-time and Re-hire, treat them as separate Job candidates by default
-2. **Case-specific strong Forces**: A Push/Pull force appearing strongly in only 1-2 cases is an Emerging Job candidate — list it separately
-3. **Step 3 B/C signals**: If Stance (B) or Post-experience (C) patterns suggest an independent motivation structure not captured by Dominant Forces, add as a candidate
+2. **Step 3 B/C signals**: If Stance (Ctx-B) or Post-experience (Ctx-C) patterns suggest an independent motivation structure not captured by Dominant Forces, add as a candidate
 
-Output: numbered list of Job candidates with the source evidence (CF-_ Dominant Force, Ctx-_ items). Emerging candidates may additionally cite per-case Forces (4a) with F-XX references.
+Output: numbered list of Job candidates with the source evidence (CF-_ Dominant Force, Ctx-_ items).
 
 #### 5b. Consolidation / separation decision
 
@@ -322,7 +305,7 @@ For each candidate pair, apply these criteria:
 
 - **Separate** if Dominant Forces differ (even when the When clause overlaps — different motivation structures = different Jobs)
 - **Merge** if candidates share both Dominant Force and motivation direction — state the merge rationale explicitly
-- **Emerging label**: Jobs supported by only 1-2 cases receive the `[Emerging]` label and must include evidence strength (e.g., "1 case, 2 Facts"). Emerging Jobs may cite per-case Forces (4a) as basis
+- **Emerging label**: Jobs where the CF-\* cited in the 根拠 column is observed in fewer than half of the total cases receive the `[Emerging]` label and must include evidence strength (e.g., "2 of 5 cases")
 
 If only one Job remains after consolidation, state why consolidation is justified.
 
@@ -340,9 +323,9 @@ For each Job from 5b, construct a statement:
 
 **Traceability rules**:
 
-- A clause with an empty 根拠 column is prohibited — every clause must be grounded in cross-case abstractions
+- A clause with an empty 根拠 column is prohibited — every clause must be grounded in cross-case abstractions (Ctx-_ and/or CF-_)
 - The 出典 column is optional — it provides supporting evidence from individual Facts
-- Emerging Jobs only: per-case Forces (4a) and emerging common Forces (ECF-\*) may appear in the 根拠 column. The `[萌芽的]` label is required.
+- Per-case Forces (4a) MUST NOT appear in the 根拠 column — they are individual-level analysis, not cross-case abstractions
 
 **Output format**:
 
@@ -368,11 +351,11 @@ For each Job from 5b, construct a statement:
 > > **I want to（～したい）** [motivation],
 > > **so that（そうすれば）** [expected progress].
 >
-> | 句        | 根拠（共通抽象）       | 出典（Facts）  |
-> | --------- | ---------------------- | -------------- |
-> | When      | Ctx-A1, ...            | F-B7, F-B8 他  |
-> | I want to | CF-Pull1 / 4a per-case | F-B3, F-B42 他 |
-> | So that   | ECF-\* / 4a per-case   | F-B37 他       |
+> | 句        | 根拠（共通抽象） | 出典（Facts）  |
+> | --------- | ---------------- | -------------- |
+> | When      | Ctx-A1, ...      | F-B7, F-B8 他  |
+> | I want to | CF-Push1, Ctx-B1 | F-B3, F-B42 他 |
+> | So that   | CF-Pull1         | F-B37 他       |
 >
 > この仮説の限界・前提: [Conditions, verification needs]
 > エビデンスの強さ: [N cases, M Facts]
@@ -382,6 +365,8 @@ For each Job from 5b, construct a statement:
 **→ Present for user approval. Verify that each clause has factual grounding and appropriate abstraction level.**
 
 ### 6. Answer RQ + Findings
+
+**This step is executed only when a Research Question was defined in Step 0.** If no RQ was defined, Step 5 (Job Statements) is the final output.
 
 Synthesize Steps 3-5 into a structured answer to the Research Question and present analysis findings.
 
@@ -446,6 +431,5 @@ This skill is complete when all conditions are met:
 
 - A Job Statement (hypothesis) exists that the user confirms
 - The statement is traceable to common contexts (Ctx-_) and Common Forces (CF-_), with Facts (F-\*) as supporting evidence
-- RQ answer and Findings have been presented (Step 6)
-- Input for next actions has been provided
+- If RQ was defined in Step 0: RQ answer and Findings have been presented (Step 6), and input for next actions has been provided
 - The user confirms analysis is complete, or directs additional investigation
