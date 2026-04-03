@@ -17,6 +17,13 @@ Discover Jobs-to-be-Done from raw customer data by climbing the Ladder of Infere
 - Customer interview logs, behavior data, or feedback are accessible
 - This skill produces demand-side analysis only — output feeds into experiment design
 
+## Argument Routing
+
+| Args     | Action                                                                                                         |
+| -------- | -------------------------------------------------------------------------------------------------------------- |
+| (none)   | Full analysis workflow: Step 0 → Step 5                                                                        |
+| `output` | Generate output document from completed analysis (requires Step 5 to be completed in the current conversation) |
+
 ## Workflow
 
 ### 0. Analysis Setup
@@ -408,3 +415,129 @@ This skill is complete when all conditions are met:
 - The user has selected, combined, or modified candidates to define the final Job Statement(s)
 - The final statement is traceable to common contexts (Ctx-_) and Common Forces (CF-_), with Facts (F-\*) as supporting evidence
 - The user confirms analysis is complete, or directs additional investigation
+
+## Output Subcommand (`/job-discovery output`)
+
+Generate a shareable Markdown document from the completed analysis. Requires Step 5 to be completed in the current conversation.
+
+### Prerequisites
+
+- Step 5 candidates have been presented in the current conversation
+- If Step 5 is not completed, display: **「Step 5が完了していません。分析を先に完了してください」** and stop
+
+### Output Document Structure
+
+Write the document to agent-memory as `output.md` in the analysis directory (e.g., `~/.agent-memory/<scope>/<date>_<topic>/output.md`).
+
+**Design principles**:
+
+- **No JTBD jargon without explanation**: Annotate Hire, Re-hire, Push, Pull, etc. with plain-language descriptions on first use
+- **Conclusion first**: Job hypotheses (most abstract) → supporting patterns → detailed data
+- **Traceability throughout**: All sections use Ctx-_/CF-_/F-XX identifiers. Include a legend at the top
+- **Hide internal process**: No lens names, Step numbers, or skill-internal terminology
+- **Appendix is collapsible**: Use `<details>` tags for raw data
+- **List formatting in tables**: When listing multiple items per case (e.g., "A: x / B: y / C: z"), use `- A: x<br>- B: y<br>- C: z` for readability
+
+**Document template**:
+
+```markdown
+# Job Discovery: [1-line summary of the analysis focus]
+
+> - **分析対象**: [source material description]
+> - **焦点**: [analysis focus from Step 0]
+
+| ケース                  | 企業 | 事業 | 体制 | トリガー | 現在の位置づけ |
+| ----------------------- | ---- | ---- | ---- | -------- | -------------- |
+| [Case rows from Step 0] |
+
+> **識別子の読み方**
+>
+> - `Ctx-A1` 等: 3社に共通する状況パターン（下記「共通する行動パターン」で定義）
+> - `CF-Push1` 等: 3社に共通する意思決定の力（下記「共通する力学」で定義）
+> - `F-A1` 等: 個別ケースの発言・行動記録（付録「ファクトテーブル」で参照可能）
+
+---
+
+## 1. 発見されたジョブ仮説
+
+「顧客がこのサービスを使う理由」の仮説候補。
+確定版ではなく、議論・検証のための叩き台として複数の視点から生成しています。
+
+### [Phase label]のジョブ（[plain-language question]）
+
+#### 候補N: [short label]
+
+> - **どんな時に**: [situation],
+> - **何をしたいか**: [motivation],
+> - **そうすれば**: [expected progress].
+
+| 句           | 根拠        | 出典      |
+| ------------ | ----------- | --------- |
+| どんな時に   | Ctx-_, CF-_ | F-XX, ... |
+| 何をしたいか | Ctx-_, CF-_ | F-XX, ... |
+| そうすれば   | Ctx-_, CF-_ | F-XX, ... |
+
+- 💡 **説明できること**: [unique explanatory power]
+- 🔍 **さらに検討が必要な点**: [blind spots]
+- 🗣️ **代表的な声**: _"[verbatim quote]"（[Case]）_
+
+この仮説の限界・前提: [constraints]
+
+_(Repeat for each candidate per phase)_
+
+---
+
+## 2. 3社に共通する行動パターン
+
+### [Phase]に至るまでの共通状況
+
+| Ctx-A# | パターン | 3社での現れ方 | 出典 |
+| ------ | -------- | ------------- | ---- |
+
+### [Phase]時の共通の構え
+
+| Ctx-B# | 構え | 由来する状況 | 出典 |
+| ------ | ---- | ------------ | ---- |
+
+### 利用後に共通して起きた変化
+
+| Ctx-C# | 変化 | 3社での現れ方 | 出典 |
+| ------ | ---- | ------------- | ---- |
+
+---
+
+## 3. 共通する意思決定の力学
+
+### [Phase]時
+
+| CF-# | 力  | 共通の力学 | ケース間の違い | 出典 |
+| ---- | --- | ---------- | -------------- | ---- |
+
+**最も強い力**: [summary]
+
+### 共通ナラティブ
+
+**[Phase 1]の共通因果フロー**: [narrative]
+
+**[Phase 2]の共通因果フロー**: [narrative]
+
+---
+
+## 付録
+
+<details>
+<summary>ファクトテーブル（生データ）</summary>
+
+[Step 1-2 full data per case]
+
+</details>
+
+<details>
+<summary>ケースごとの力学分析</summary>
+
+[Step 4a per-case Forces data]
+
+</details>
+```
+
+**→ Save the document to agent-memory and display the saved path to the user.**
