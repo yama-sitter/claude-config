@@ -517,9 +517,17 @@ _(Repeat for each candidate per phase)_
 
 ### 共通ナラティブ
 
-**[Phase 1]の共通因果フロー**: [narrative]
+**[Phase 1]の共通因果フロー**:
 
-**[Phase 2]の共通因果フロー**: [narrative]
+- [sentence 1]
+- [sentence 2]
+- ...
+
+**[Phase 2]の共通因果フロー**:
+
+- [sentence 1]
+- [sentence 2]
+- ...
 
 ---
 
