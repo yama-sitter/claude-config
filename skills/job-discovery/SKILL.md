@@ -32,10 +32,11 @@ Confirm the prerequisites for the analysis.
 
 1. **分析対象の素材**: What source material to analyze (interview transcripts, feedback logs, etc.)
 2. **ケース一覧**: Who are the cases? (Name, business type, role)
-3. **分析の焦点**: What decision (Hire) are we analyzing, and from what angle?
+3. **分析の焦点とフェーズ**: What decision (Hire) are we analyzing, from what angle, and what phases does the journey have?
    - Examples: "初回利用→継続利用の流れ", "チャーンの経緯", "新規獲得の経路"
-   - This determines the Narrator's narrative structure in Step 3 (e.g., Hire-time + Re-hire narratives for retention analysis)
-   - Note: The current skill is optimized for Hire → Re-hire (初回利用→継続利用) analysis. Other focus types (churn, acquisition) require Narrator prompt adjustments.
+   - Define 2-4 phases that the customer goes through (e.g., "利用前 → 初回利用後 → 2回目以降")
+   - This determines the Narrator's narrative structure in Step 3 (one narrative per phase)
+   - Note: The current skill is optimized for Hire → Re-hire analysis. Other focus types require Narrator prompt adjustments.
 4. **注目したい観点**（任意）: Any specific aspects the user wants to explore
 
 **→ Confirm the setup with the user before proceeding.**
@@ -93,58 +94,72 @@ If data sufficiency issues are found, present the user with options: (a) return 
 
 ### 3. Extract Common Context
 
-Extract the common **situation** across cases — the circumstances that created demand for the Hire decision. This step uses three specialized subagents.
+Extract the common contexts across cases **for each phase** defined in Step 0 — the circumstances that created demand for the Hire decision and how they evolved across phases. This step uses three specialized subagents.
 
-**"Situation" in JTBD** means the conditions in the person's business/life — NOT the product experience. A situation describes _why demand arose_, not _what happened after using the product_.
+**"Situation" in JTBD** means the conditions in the person's business/life — NOT the product experience. A situation describes _why demand arose_, not _what happened after using the product_. Each phase captures situations and stances at that point in the journey.
 
 #### 3a. Narrator (launch one per case, in parallel)
 
-**Input**: The case's Fact Table (Step 1) + Background (Step 2)
+**Input**: The case's Fact Table (Step 1) + Background (Step 2) + Phase definitions (Step 0)
 
 **Prompt essence**:
 
-> You are a JTBD researcher. From the Fact Table below, describe the **situation** this person was in when they decided to Hire a new solution.
+> You are a JTBD researcher. From the Fact Table below, describe the **situation** this person was in across the phases defined in the analysis setup.
 >
 > "Situation" means conditions in the person's business/life — NOT the product experience (what happened after using it).
 >
-> Write two narratives:
+> Write one narrative per phase defined in the analysis setup.
+> For each phase, describe:
 >
-> 1. **Hire-time situation**: What situation was this person in when they first Hired?
-> 2. **Re-hire situation**: What had changed by the time they used it again (or continued using it)?
+> - **Situations**: Objective conditions observable by a third party at this phase
+> - **Stances**: The person's attitude/approach at this phase, arising from the situations
 >
 > Each narrative must include:
 >
 > - **Background constraints**: Structural limitations of their business/environment
+> - **Structural affordances**: Business characteristics that make certain solution types viable (e.g., task simplicity, work schedule flexibility, geographic patterns)
 > - **Struggling moment**: When their current approach stopped working
 > - **Why now**: Why they acted at this point (not earlier, not later)
 >
+> For Phase 2 and beyond, also note:
+>
+> - Which situations **continued** from the previous phase
+> - Which situations **changed** from the previous phase
+> - Which situations are **new** (first appeared in this phase)
+>
 > Rules:
 >
-> - Do NOT include product experience (what happened after using the product)
+> - Do NOT include product experience (what happened after using the product) in Phase 1. Phase 2+ may reference post-experience observations as situations or stances
 > - Cite Fact identifiers (F-XX) for traceability
 > - No inference of emotions or motivations not evidenced by quotes or observable behavior
 
-**Output**: Two narratives per case (Hire-time + Re-hire), with Fact citations.
+**Output**: One narrative per phase per case, with Fact citations.
 
 #### 3b. Comparator (launch one)
 
-**Input**: All Narrator outputs + all Fact Tables
+**Input**: All Narrator outputs + all Fact Tables + Phase definitions (Step 0)
 
 **Prompt essence**:
 
-> You are a JTBD researcher. Compare the situation narratives across cases and extract common patterns.
+> You are a JTBD researcher. Compare the situation narratives across cases and extract common patterns **for each phase**.
 >
 > Steps:
 >
 > 1. Read all narratives. Discover **dimensions** for comparison (do NOT use a fixed list — derive dimensions from what the narratives contain)
 > 2. For each dimension, describe each case's situation and write a tentative **common pattern**
-> 3. Produce separate tables for Hire-time and Re-hire situations
+> 3. Produce separate tables for each phase defined in the analysis setup
 >
 > Common pattern rules:
 >
 > - Each pattern must be traceable to specific Facts (F-XX) in both cases
 > - Do not over-abstract — "any business that needs staff" is too vague
 > - Note where one case's fit is weaker than the other's
+>
+> For Phase 2+ patterns, determine the change tag:
+>
+> - **Continued**: This pattern existed in the previous phase and remains essentially the same
+> - **Changed**: This pattern existed in the previous phase but its content or intensity has shifted
+> - **New**: This pattern first appeared in this phase
 >
 > **Second pass**: After completing the table, check for missed dimensions using these prompts:
 >
@@ -157,7 +172,7 @@ Extract the common **situation** across cases — the circumstances that created
 >
 > Add any newly discovered dimensions to the table.
 
-**Output**: Cross-case comparison table: `| Dimension | Case A | Case B | Common pattern (tentative) | Notes |`
+**Output**: Per-phase cross-case comparison table: `| Dimension | Case A | Case B | Common pattern (tentative) | Change tag (Phase 2+) | Notes |`
 
 #### 3c. Critic (launch one)
 
@@ -175,20 +190,23 @@ Extract the common **situation** across cases — the circumstances that created
 >    - NG: "Filled in 5 minutes" → product experience, not a situation
 >    - OK: "Traditional recruitment channels produced zero applicants for months" → situation
 > 2. **Theoretical consistency**: Does each pattern describe a condition that _created demand_ for a new solution? Or is it merely a characteristic of the business that doesn't drive the Hire decision?
-> 3. **Category assignment**: Classify each pattern as:
->    - **A (Objective condition)**: Conditions observable by a third party, regardless of timing (before Hire, between Hire and Re-hire, or ongoing). These are the structural conditions that created demand.
->    - **B (Stance)**: The person's attitude/approach arising FROM a condition in category A. Always note which A-item it derives from
->    - **C (Post-experience change)**: Recognition shifts that occurred AFTER using the product. Not a demand-generating condition
->    - Test: "Could a third party observe this as an objective condition?" → Yes = A, No = B or C
+> 3. **Category assignment**: For each pattern, classify as:
+>    - **Situation**: Objective condition observable by a third party
+>    - **Stance**: The person's attitude/approach arising from a Situation. Always note which Situation item it derives from
+>    - And assign to the appropriate phase (P1, P2, P3, ...).
+>    - For Phase 2+, tag situations AND stances as: **Continued** / **Changed** / **New**
+>    - Classification test: "Could a third party observe this as an objective condition?" → Yes = Situation, No = Stance
+>    - Note: Items that were previously "post-experience changes" (old C category) must be re-classified as either Situation or Stance in the appropriate phase. Example: "ワーカーの質が期待を上回った" = Situation (observable), "安心感を得た" = Stance (subjective)
 > 4. **Redundancy**: Are any patterns listed independently that are actually sub-dimensions of another? Recommend merging or subordinating.
-> 5. **Temporal placement**: Are any patterns classified as A that are actually post-experience recognitions (C)? Apply: "Could a third party observe this as an objective condition independent of product use?"
+> 5. **Phase placement**: Are any patterns assigned to the wrong phase? Apply: "At which point in the journey did this condition first become observable?"
 > 6. **Evidence strength**: Is each case's evidence based on recorded behavior/quotes, or merely a stated attitude? Flag weak evidence in Discrepancies.
 > 7. **Pattern nature**: Is each entry a "common pattern" (shared across cases) or a "difference description" (contrasting cases)? Differences belong in Discrepancies, not as standalone patterns.
 > 8. **Functional bias check**: Are any patterns presented as purely functional (operational efficiency, cost, speed) that also contain emotional signals (relief, security, liberation from worry) or social signals (identity, peer perception, industry positioning) in the original verbatim quotes? If so, note the emotional/social dimension and recommend whether it should be a separate pattern or an annotation on the existing pattern.
+> 9. **Causal chain verification**: After reviewing the Integration's causal chain, verify: (a) every pattern participates in at least one chain, (b) each arrow's causal claim is supported by Fact Table evidence, (c) any isolated pattern (belongs to no chain) is truly independent or should be merged.
 >
 > Additionally: identify any common patterns the Comparator missed, based on your independent reading of the Facts.
 >
-> Output: For each pattern → Approve / Revise (with suggestion) / Reject (with reason) + Ctx-A/Ctx-B/Ctx-C classification.
+> Output: For each pattern → Approve / Revise (with suggestion) / Reject (with reason) + Phase + Layer (Situation/Stance) classification + Change tag (Phase 2+).
 > Do NOT write the final version yourself — provide critique and suggestions only.
 
 **Output**: Validation report with verdicts, classification, and additional proposals.
@@ -196,24 +214,50 @@ Extract the common **situation** across cases — the circumstances that created
 #### 3d. Integration (main conversation)
 
 1. Reflect the Critic's feedback: apply revisions, remove rejected patterns, add proposed patterns
-2. Apply A/B/C classification
-3. Compose the final table and present to the user
+2. Apply Phase × Layer (Situation/Stance) classification
+3. Compose the final tables per phase
+4. Write a **causal chain** connecting patterns across phases
+
+**Baseline conditions**: Conditions that persist unchanged across all phases (structural affordances, business characteristics) should be placed in Phase 1 as baseline conditions. They do not require a change tag in later phases unless they become relevant to a phase-specific pattern.
 
 **Final output format**:
 
-> ### A. 需要を生み出した共通の客観的条件
+> ### フェーズ1: [phase name]
 >
-> | Ctx-A# | 共通コンテキスト | Case A 根拠 (F-XX) | Case B 根拠 (F-XX) | ケース間の差異 |
+> #### 共通状況
 >
-> ### B. 条件から生じた共通の態度・構え
+> | P1-S# | パターン | 3社での現れ方 | 出典 |
 >
-> | Ctx-B# | 態度・構え | 由来する条件 (Ctx-A#) | Case A 根拠 (F-XX) | Case B 根拠 (F-XX) |
+> #### 共通の構え
 >
-> ### C. 利用後に起きた共通の認識変化
+> | P1-St# | 構え | 由来する状況 | 出典 |
 >
-> | Ctx-C# | 変化 | Case A (F-XX) | Case B (F-XX) |
+> ### フェーズ2: [phase name]
+>
+> #### 共通状況
+>
+> | P2-S# | 変化タグ | パターン | 3社での現れ方 | 出典 |
+>
+> (変化タグ: 継続 / 変化 / 新規)
+>
+> #### 共通の構え
+>
+> | P2-St# | 変化タグ | 構え | 由来する状況 | 出典 |
+>
+> _(Repeat for each additional phase)_
+>
+> ### 因果チェーン
+>
+> Describe the causal relationships between patterns using the following notation:
+>
+> - `→`: A situation/stance generates another stance
+> - `×`: Multiple conditions combine to produce a stance
+> - `※`: Annotate a pattern's analytical role (前提条件 = precondition that made this solution viable / 促進条件 = accelerant that enabled quick action)
+> - Use block headings to label demand structure phases (e.g., Hire需要の形成 / 体験による需要構造の変化 / Re-hire需要の構造)
+>
+> Every pattern must participate in at least one chain. If a pattern is isolated (belongs to no chain), reconsider whether it is truly independent or should be merged.
 
-**→ Present the final table for user approval. Confirm: Are the A/B/C classifications appropriate? Is the abstraction level right? Are any common contexts missing?**
+**→ Present the final tables and causal chain for user approval. Confirm: Are the Situation/Stance classifications appropriate? Are the phase assignments correct? Is the abstraction level right? Are any common contexts missing? Does the causal chain accurately represent the demand structure?**
 
 **Single-case behavior**: When only one case exists, skip the Comparator. Run Narrator + Critic only, and output a single-case context description. Cross-case synthesis happens when additional cases are added.
 
@@ -288,22 +332,22 @@ Forces are about an individual person's decision dynamics — analyze each perso
 
 ### 5. Define Jobs (Hypotheses)
 
-Synthesize the common context (Step 3) and Forces analysis (Step 4) into Job Statements. These are **hypotheses** — they require validation before acting on them. This step synthesizes only cross-case abstractions (Ctx-_ and CF-_) into Job Statements. Different demand structures (e.g., Hire-time vs Re-hire) may yield multiple Jobs.
+Synthesize the common context (Step 3) and Forces analysis (Step 4) into Job Statements. These are **hypotheses** — they require validation before acting on them. This step synthesizes only cross-case abstractions (P*-S*/P*-St* and CF-\*) into Job Statements. Different demand structures (e.g., different phases) may yield multiple Jobs.
 
 **Input**:
 
 - Step 4b Cross-case comparison: Common Forces (CF-\*) + 共通ナラティブ
-- Step 3 Common contexts: A (Ctx-A*), B (Ctx-B*), C (Ctx-C\*)
+- Step 3 Common contexts: Per-phase Situations (P*-S*) and Stances (P*-St*)
 - Step 1 Fact Tables (for hypothesis verification in 5e only — NOT for 根拠 column)
 
 #### 5a. Job candidate enumeration
 
 List candidate Jobs using the following axes (in priority order):
 
-1. **Hire-time vs Re-hire split**: If Step 4b shows different Dominant Forces for Hire-time and Re-hire, treat them as separate Job candidates by default
-2. **Step 3 B/C signals**: If Stance (Ctx-B) or Post-experience (Ctx-C) patterns suggest an independent motivation structure not captured by Dominant Forces, add as a candidate
+1. **Phase split**: If Step 4b shows different Dominant Forces for different phases, treat them as separate Job candidates by default
+2. **Stance signals**: If Stance (P*-St*) patterns suggest an independent motivation structure not captured by Dominant Forces, add as a candidate
 
-Output: numbered list of Job candidates with the source evidence (CF-_ Dominant Force, Ctx-_ items).
+Output: numbered list of Job candidates with the source evidence (CF-_ Dominant Force, P_-S*/P*-St\* items).
 
 #### 5b. Consolidation / separation decision
 
@@ -333,15 +377,15 @@ Process:
 
 **Lens 2: Synthesis Model (ゴール + 制約 + 触媒)**
 
-Using Step 3 Ctx-\* and Step 4b 共通ナラティブ:
+Using Step 3 P*-S*/P*-St* and Step 4b 共通ナラティブ:
 
-1. Classify Ctx-\* items into Goals (progress the customer wants to achieve) / Constraints (walls blocking that progress) / Catalysts (events that made the constrained goal unbearable)
+1. Classify P*-S*/P*-St* items into Goals (progress the customer wants to achieve) / Constraints (walls blocking that progress) / Catalysts (events that made the constrained goal unbearable)
 2. A Job is synthesized at the moment: "A Goal that could not be achieved due to Constraints becomes unbearable because of a Catalyst"
 3. When = Catalyst + Constraint becoming acute, I want to = bypass the Constraint toward the Goal, So that = achieve the Goal
 
 **Traceability rules** (apply to all lenses):
 
-- A clause with an empty 根拠 column is prohibited — every clause must be grounded in cross-case abstractions (Ctx-_ and/or CF-_)
+- A clause with an empty 根拠 column is prohibited — every clause must be grounded in cross-case abstractions (P*-S*/P*-St* and/or CF-\*)
 - The 出典 column is optional — it provides supporting evidence from individual Facts
 - Per-case Forces (4a) MUST NOT appear in the 根拠 column — they are individual-level analysis, not cross-case abstractions
 
@@ -372,9 +416,9 @@ Present surviving candidates in the following format:
 >
 > | 句        | 根拠（共通抽象）          | 出典（Facts）          |
 > | --------- | ------------------------- | ---------------------- |
-> | When      | Ctx-A1, Ctx-A2, ...       | F-A2, F-B4, F-C6 他    |
-> | I want to | CF-Push1 + Ctx-B1, Ctx-B2 | F-A16, F-B16, F-C8 他  |
-> | So that   | CF-Pull1 + Ctx-C1         | F-A29, F-B22, F-C28 他 |
+> | When      | P1-S1, P1-S2, ...         | F-A2, F-B4, F-C6 他    |
+> | I want to | CF-Push1 + P1-St1, P1-St2 | F-A16, F-B16, F-C8 他  |
+> | So that   | CF-Pull1 + P2-S1          | F-A29, F-B22, F-C28 他 |
 >
 > **このモデルが説明できること**: [What this candidate explains that others don't] > **このモデルが説明できないこと**: [Blind spots / limitations] > **代表的な顧客の言葉**: [Verbatim quote that best embodies this candidate]
 >
@@ -413,7 +457,7 @@ This skill is complete when all conditions are met:
 
 - Job Statement candidates have been generated through multiple lenses, quality-filtered, and presented to the user
 - The user has selected, combined, or modified candidates to define the final Job Statement(s)
-- The final statement is traceable to common contexts (Ctx-_) and Common Forces (CF-_), with Facts (F-\*) as supporting evidence
+- The final statement is traceable to common contexts (P*-S*/P*-St*) and Common Forces (CF-_), with Facts (F-_) as supporting evidence
 - The user confirms analysis is complete, or directs additional investigation
 
 ## Output Subcommand (`/job-discovery output`)
@@ -433,7 +477,7 @@ Write the document to agent-memory as `output.md` in the analysis directory (e.g
 
 - **No JTBD jargon without explanation**: Annotate Hire, Re-hire, Push, Pull, etc. with plain-language descriptions on first use
 - **Conclusion first**: Job hypotheses (most abstract) → supporting patterns → detailed data
-- **Traceability throughout**: All sections use Ctx-_/CF-_/F-XX identifiers. Include a legend at the top
+- **Traceability throughout**: All sections use P*-S*/P*-St*/CF-\*/F-XX identifiers. Include a legend at the top
 - **Hide internal process**: No lens names, Step numbers, or skill-internal terminology
 - **Appendix is collapsible**: Use `<details>` tags for raw data
 - **List formatting in tables**: When listing multiple items per case (e.g., "A: x / B: y / C: z"), use comma-separated format `A: x, B: y, C: z` for Notion compatibility. Do NOT use `<br>` tags.
@@ -452,7 +496,8 @@ Write the document to agent-memory as `output.md` in the analysis directory (e.g
 
 > **識別子の読み方**
 >
-> - `Ctx-A1` 等: 3社に共通する状況パターン（下記「共通する行動パターン」で定義）
+> - `P1-S1` 等: フェーズ1の共通状況パターン（下記「共通する行動パターン」で定義）
+> - `P1-St1` 等: フェーズ1の共通の構え（下記「共通する行動パターン」で定義）
 > - `CF-Push1` 等: 3社に共通する意思決定の力（下記「共通する力学」で定義）
 > - `F-A1` 等: 個別ケースの発言・行動記録（付録「ファクトテーブル」で参照可能）
 
@@ -485,20 +530,33 @@ _(Repeat for each candidate per phase)_
 
 ## 2. 3社に共通する行動パターン
 
-### [Phase]に至るまでの共通状況
+### フェーズ1: [phase name]
 
-| Ctx-A# | パターン | 3社での現れ方 | 出典 |
-| ------ | -------- | ------------- | ---- |
+#### 共通状況
 
-### [Phase]時の共通の構え
+| P1-S# | パターン | 3社での現れ方 | 出典 |
+| ----- | -------- | ------------- | ---- |
 
-| Ctx-B# | 構え | 由来する状況 | 出典 |
+#### 共通の構え
+
+| P1-St# | 構え | 由来する状況 | 出典 |
 | ------ | ---- | ------------ | ---- |
 
-### 利用後に共通して起きた変化
+### フェーズ2: [phase name]
 
-| Ctx-C# | 変化 | 3社での現れ方 | 出典 |
-| ------ | ---- | ------------- | ---- |
+#### 共通状況
+
+| P2-S# | 変化タグ | パターン | 3社での現れ方 | 出典 |
+| ----- | -------- | -------- | ------------- | ---- |
+
+(変化タグ: 継続 / 変化 / 新規)
+
+#### 共通の構え
+
+| P2-St# | 変化タグ | 構え | 由来する状況 | 出典 |
+| ------ | -------- | ---- | ------------ | ---- |
+
+_(Repeat for each additional phase)_
 
 ---
 
