@@ -320,62 +320,54 @@ If only one Job remains after consolidation, state why consolidation is justifie
 
 Output: final Job list with separation/merge rationale.
 
-#### 5c. Initial Job Statements
+#### 5c. Multi-lens Job Statement generation
 
-For each Job from 5b, construct an initial statement:
+For each Job from 5b, generate candidate Job Statements through 2 different analytical lenses. The goal is to produce diverse hypotheses as discussion material, not to converge on a single answer.
 
-1. **Causal chain extraction**: From Step 4b's 共通ナラティブ, identify the common causal flow: what condition led to what action, and why that action led to the next state. The causal chain — not the Ctx-_/CF-_ IDs — is the backbone of the Job Statement.
-2. **When clause**: Express the shared starting condition of the causal chain, grounded in Step 3 A/B common contexts (Ctx-\*)
-3. **Motivation (I want to)**: Express what the person wants to do as a consequence of the When condition. Must follow causally from When — not just thematically related.
-4. **Expected progress (so that)**: Express the end-state the person expects to reach. Must follow causally from I want to — not just a desirable outcome.
-5. **Causal flow annotation**: Below the Job Statement, document the causal chain: "When (X) → therefore I want to (Y) → so that (Z)", with the causal link between each step articulated.
-6. **Traceability**: Document Ctx-_ and CF-_ in 根拠 column. Facts (F-XX) in 出典 column only.
-7. **Hypothesis constraints**: State conditions for validity and what needs verification.
+**Lens 1: Belief Chain (顧客の主観的ロジック)**
 
-**Traceability rules**:
+Extract the customer's own subjective reasoning from Step 1 Fact Tables — statements where the customer says "because X, I did Y" or "X means Y to me."
+
+Process:
+
+1. For each case, extract belief chains in the form: "If [situation] + [means] → [result], and that means [value to me]"
+2. Place the 3 cases' belief chains side by side and identify **structurally similar beliefs** (not identical words, but the same reasoning pattern)
+3. Express the shared belief structure as When / I want to / So that
+
+**Lens 2: Synthesis Model (ゴール + 制約 + 触媒)**
+
+Using Step 3 Ctx-\* and Step 4b 共通ナラティブ:
+
+1. Classify Ctx-\* items into Goals (progress the customer wants to achieve) / Constraints (walls blocking that progress) / Catalysts (events that made the constrained goal unbearable)
+2. A Job is synthesized at the moment: "A Goal that could not be achieved due to Constraints becomes unbearable because of a Catalyst"
+3. When = Catalyst + Constraint becoming acute, I want to = bypass the Constraint toward the Goal, So that = achieve the Goal
+
+**Traceability rules** (apply to all lenses):
 
 - A clause with an empty 根拠 column is prohibited — every clause must be grounded in cross-case abstractions (Ctx-_ and/or CF-_)
 - The 出典 column is optional — it provides supporting evidence from individual Facts
 - Per-case Forces (4a) MUST NOT appear in the 根拠 column — they are individual-level analysis, not cross-case abstractions
 
-#### 5d. Premise reversal
+#### 5d. Quality filter
 
-Identify the central causal premise of each Job Statement from 5c, then generate 2 alternative hypotheses by reversing that premise.
+Test each candidate from 5c against Step 1 Fact Tables and apply the following filters. Drop or revise candidates that fail:
 
-Process:
+| Filter                   | Criterion                                                                                                                                                                         | Action              |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| **Facts contradiction**  | Contradicted by 2+ cases                                                                                                                                                          | Drop                |
+| **Tautology**            | I want to / So that merely restates the When condition. Test: "Would someone unfamiliar with this data say 'I see, so THAT's the structure' upon hearing this?" If No → tautology | Drop                |
+| **Redundancy**           | Central premise is identical to another candidate (wording differs only)                                                                                                          | Drop the weaker one |
+| **Granularity mismatch** | When / I want to / So that mix JyTBD-level (life transformation) with Micro-Job-level (operational task)                                                                          | Revise or Drop      |
 
-1. State the central premise of the initial Job Statement (e.g., "Desperation lowers expectations, and low expectations create positive surprise")
-2. Generate 2 alternative hypotheses using reversal strategies. Use at least 2 of the following:
-   - Negate the causal mechanism (e.g., "Expectations are irrelevant; ROI fit determines continuation regardless of surprise")
-   - Negate the trigger condition (e.g., "Pre-crisis awareness, not desperation, is the primary driver of Hire")
-   - Reframe from functional to emotional: "What if the true driver is not the practical outcome but the emotional state it creates (relief, security, liberation from worry)?"
-   - Reframe from individual to social: "What if the decision is influenced by how the person is perceived by peers/industry?"
+Target: 2-3 candidates per Job slot after filtering.
 
-Output: 3 competing hypotheses (initial + 2 reversals) with their central premises stated.
+#### 5e. Candidate presentation
 
-#### 5e. Facts-based verification
+Present surviving candidates in the following format:
 
-Test the 3 competing hypotheses from 5d against the original Fact Tables (Step 1).
-
-For each hypothesis:
-
-- **Supporting Facts**: Facts that directly support this causal mechanism (cite F-XX)
-- **Contradicting Facts**: Facts that contradict or weaken this hypothesis (cite F-XX)
-- **Unexplained Facts**: Important Facts that this hypothesis cannot account for
-
-Select the hypothesis that explains the most Facts with the fewest contradictions. If no single hypothesis is sufficient, synthesize elements from multiple hypotheses.
-
-**Important**: This step re-engages with Facts for hypothesis _testing_, not for Job Statement _evidence_. The 根拠 column rules (Ctx-_/CF-_ only) still apply in the final Job Statement.
-
-#### 5f. Final Job Statements
-
-Construct the final Job Statements based on the selected/synthesized hypothesis from 5e.
-
-**Output format**:
-
-> ### ジョブ仮説
+> ### ジョブ仮説候補
 >
-> #### ジョブ1: [短いラベル]
+> #### 候補1（レンズ名）: [短いラベル]
 >
 > > **When（どんな時に）** [situation],
 > > **I want to（～したい）** [motivation],
@@ -387,14 +379,13 @@ Construct the final Job Statements based on the selected/synthesized hypothesis 
 > | I want to | CF-Push1 + Ctx-B1, Ctx-B2 | F-A16, F-B16, F-C8 他  |
 > | So that   | CF-Pull1 + Ctx-C1         | F-A29, F-B22, F-C28 他 |
 >
-> **因果フロー**: When (X) → だから I want to (Y) → そうすれば So that (Z)
-> **中心的前提**: [5dで特定した前提のうち、検証を経て採用されたもの] > **棄却された代替仮説**: [5eで棄却された仮説の要約]
+> **このモデルが説明できること**: [What this candidate explains that others don't] > **このモデルが説明できないこと**: [Blind spots / limitations] > **代表的な顧客の言葉**: [Verbatim quote that best embodies this candidate]
 >
 > この仮説の限界・前提: [Conditions, verification needs]
 >
-> _(Repeat for additional Jobs. For emerging Jobs, add エビデンスの強さ: [N cases].)_
+> _(Repeat for each surviving candidate.)_
 
-**→ Present for user approval. Verify: (1) causal flow between When → I want to → So that is non-trivial, (2) premise reversal was performed and documented, (3) each clause has cross-case abstraction grounding.**
+**→ Present candidates for user discussion. The user selects, combines, or modifies candidates to define the final Job Statement(s). Once confirmed, proceed to Step 6 (if RQ was defined in Step 0).**
 
 ### 6. Answer RQ + Findings
 
@@ -454,14 +445,15 @@ Synthesize Steps 3-5 into a structured answer to the Research Question and prese
 - Inference permissions follow the epistemological ladder:
   - Steps 0-3: No inference. Observable behavior and verbatim quotes only.
   - Step 4: Fact-grounded interpretation permitted (Forces analysis — inferring demand dynamics from observed contexts).
-  - Step 5: Hypothesis synthesis permitted (Job definition — combining Common Forces (CF-_) with common contexts (Ctx-_). Includes premise reversal and Facts-based verification of competing hypotheses).
+  - Step 5: Hypothesis synthesis permitted (Job definition — generating candidate Job Statements through multiple analytical lenses (Belief Chain, Synthesis Model), filtering for quality, and presenting as discussion material for user selection).
   - Step 6: Integration only — synthesize Steps 3-5 outputs. Do not introduce new inferences not already established in Steps 4-5.
 
 ## Completion
 
 This skill is complete when all conditions are met:
 
-- A Job Statement (hypothesis) exists that the user confirms
-- The statement is traceable to common contexts (Ctx-_) and Common Forces (CF-_), with Facts (F-\*) as supporting evidence
+- Job Statement candidates have been generated through multiple lenses, quality-filtered, and presented to the user
+- The user has selected, combined, or modified candidates to define the final Job Statement(s)
+- The final statement is traceable to common contexts (Ctx-_) and Common Forces (CF-_), with Facts (F-\*) as supporting evidence
 - If RQ was defined in Step 0: RQ answer and Findings have been presented (Step 6), and input for next actions has been provided
 - The user confirms analysis is complete, or directs additional investigation
