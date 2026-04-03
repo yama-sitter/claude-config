@@ -37,7 +37,10 @@ Confirm the prerequisites for the analysis.
    - Define 2-4 phases that the customer goes through (e.g., "利用前 → 初回利用後 → 2回目以降")
    - This determines the Narrator's narrative structure in Step 3 (one narrative per phase)
    - Note: The current skill is optimized for Hire → Re-hire analysis. Other focus types require Narrator prompt adjustments.
-4. **注目したい観点**（任意）: Any specific aspects the user wants to explore
+4. **フレーム認識**: What does this RQ assume? What might it NOT ask?
+   - Note the implicit assumptions in the RQ's framing (e.g., "re-hire" assumes a single purpose for hiring)
+   - The analysis should answer the RQ, but remain open to demand structures the RQ does not anticipate. If the data reveals purposes, segments, or dynamics outside the RQ's frame, capture them
+5. **注目したい観点**（任意）: Any specific aspects the user wants to explore
 
 **→ Confirm the setup with the user before proceeding.**
 
@@ -118,6 +121,7 @@ Extract the common contexts across cases **for each phase** defined in Step 0 �
 >
 > - **Background constraints**: Structural limitations of their business/environment
 > - **Structural affordances**: Business characteristics that make certain solution types viable (e.g., task simplicity, work schedule flexibility, geographic patterns)
+> - **Purpose**: What is the person explicitly trying to achieve by using this solution? Cite verbatim quotes or observable actions only (F-XX). Do NOT infer purposes the customer did not express. Different cases may have different purposes — list all that are explicitly stated
 > - **Struggling moment**: When their current approach stopped working
 > - **Why now**: Why they acted at this point (not earlier, not later)
 >
@@ -147,7 +151,9 @@ Extract the common contexts across cases **for each phase** defined in Step 0 �
 >
 > 1. Read all narratives. Discover **dimensions** for comparison (do NOT use a fixed list — derive dimensions from what the narratives contain)
 > 2. For each dimension, describe each case's situation and write a tentative **common pattern**
-> 3. Produce separate tables for each phase defined in the analysis setup
+> 3. For each dimension, check whether cases are using the solution for the same purpose or for divergent purposes. If purposes diverge, note this in the table — it may indicate different Jobs within the same phase
+> 4. Produce separate tables for each phase defined in the analysis setup
+> 5. If a divergent purpose identified in step 3 is observed in 2+ cases, promote it to a formal Situation pattern (P*-S*) in the appropriate phase table. If observed in only 1 case, retain it in the Purpose table only — it may feed Step 5 as an [Emerging] signal but does not become a common pattern
 >
 > Common pattern rules:
 >
@@ -203,6 +209,7 @@ Extract the common contexts across cases **for each phase** defined in Step 0 �
 > 7. **Pattern nature**: Is each entry a "common pattern" (shared across cases) or a "difference description" (contrasting cases)? Differences belong in Discrepancies, not as standalone patterns.
 > 8. **Functional bias check**: Are any patterns presented as purely functional (operational efficiency, cost, speed) that also contain emotional signals (relief, security, liberation from worry) or social signals (identity, peer perception, industry positioning) in the original verbatim quotes? If so, note the emotional/social dimension and recommend whether it should be a separate pattern or an annotation on the existing pattern.
 > 9. **Causal chain verification**: After reviewing the Integration's causal chain, verify: (a) every pattern participates in at least one chain, (b) each arrow's causal claim is supported by Fact Table evidence, (c) any isolated pattern (belongs to no chain) is truly independent or should be merged.
+> 10. **Frame blindness check**: Review Step 0's frame awareness notes. Are there signals in the data that fall outside the RQ's frame? Specifically, check whether the Narrator's Purpose entries reveal divergent use cases not captured by the current pattern set.
 >
 > Additionally: identify any common patterns the Comparator missed, based on your independent reading of the Facts.
 >
@@ -219,6 +226,11 @@ Extract the common contexts across cases **for each phase** defined in Step 0 �
 4. Write a **causal chain** connecting patterns across phases
 
 **Baseline conditions**: Conditions that persist unchanged across all phases (structural affordances, business characteristics) should be placed in Phase 1 as baseline conditions. They do not require a change tag in later phases unless they become relevant to a phase-specific pattern.
+
+**Pattern descriptions must be observational only**: Describe what a third party could observe. Do NOT add interpretive conclusions (causes, effects, evaluations, significance). Interpretation belongs in the causal chain, not in the table.
+
+- NG: "〜が脅かされている", "〜が確認される", "〜転換点となる", "〜コストが低下する"
+- OK: "〜が発生している", "〜を上回っている", "〜が確立している", "〜が使われている"
 
 **Final output format**:
 
@@ -254,8 +266,11 @@ Extract the common contexts across cases **for each phase** defined in Step 0 �
 > - `×`: Multiple conditions combine to produce a stance
 > - `※`: Annotate a pattern's analytical role (前提条件 = precondition that made this solution viable / 促進条件 = accelerant that enabled quick action)
 > - Use block headings to label demand structure phases (e.g., Hire需要の形成 / 体験による需要構造の変化 / Re-hire需要の構造)
+> - For Purpose divergence: Include a 1-line summary in the relevant block heading (e.g., "Purpose divergence: A=量的確保, B=スカウト+休息, C=休息+拡張"). Single-case purposes that were not promoted to P*-S* should be noted as `※ Purpose [Case]: [description] (1ケースのみ。[Emerging]信号としてStep 5に渡す)`
 >
 > Every pattern must participate in at least one chain. If a pattern is isolated (belongs to no chain), reconsider whether it is truly independent or should be merged.
+>
+> **Note**: The Narrator's Purpose entries and Comparator's Purpose divergence analysis are intermediate artifacts. They are NOT included as separate tables in the Integration output. Purposes that are common across 2+ cases should already be promoted to P*-S* patterns. The remaining Purpose information is captured in the causal chain annotations above.
 
 **→ Present the final tables and causal chain for user approval. Confirm: Are the Situation/Stance classifications appropriate? Are the phase assignments correct? Is the abstraction level right? Are any common contexts missing? Does the causal chain accurately represent the demand structure?**
 
@@ -324,6 +339,8 @@ Forces are about an individual person's decision dynamics — analyze each perso
 >
 > #### 共通ナラティブ
 >
+> If Step 3 is already completed and its Purpose divergence identified divergent use cases, note how these divergent purposes manifest as different Force dynamics in the common narrative.
+>
 > **Hire時の共通因果フロー**: [3ケースに共通するForceの相互作用と因果の流れを1段落で記述。各ケースの個別事情ではなく、共通する構造的因果を表現する]
 >
 > **Re-hire時の共通因果フロー**: [同上。Hire時からの変化の共通構造を含む]
@@ -346,6 +363,7 @@ List candidate Jobs using the following axes (in priority order):
 
 1. **Phase split**: If Step 4b shows different Dominant Forces for different phases, treat them as separate Job candidates by default
 2. **Stance signals**: If Stance (P*-St*) patterns suggest an independent motivation structure not captured by Dominant Forces, add as a candidate
+3. **Causal chain divergence**: If the causal chain shows that a common pattern within the same phase diverges at the case level into different Progress (desired outcomes), list each divergent path as a sub-slot. Example: If ROI evaluation leads some cases to "limited use as backup" and others to "structural integration into operations," these represent different Jobs despite sharing the same phase and Dominant Force
 
 Output: numbered list of Job candidates with the source evidence (CF-_ Dominant Force, P_-S*/P*-St\* items).
 
@@ -363,7 +381,7 @@ Output: final Job list with separation/merge rationale.
 
 #### 5c. Multi-lens Job Statement generation
 
-For each Job from 5b, generate candidate Job Statements through 2 different analytical lenses. The goal is to produce diverse hypotheses as discussion material, not to converge on a single answer.
+For each Job from 5b, generate candidate Job Statements through 3 different analytical lenses. The goal is to produce diverse hypotheses as discussion material, not to converge on a single answer.
 
 **Lens 1: Belief Chain (顧客の主観的ロジック)**
 
@@ -383,11 +401,24 @@ Using Step 3 P*-S*/P*-St* and Step 4b 共通ナラティブ:
 2. A Job is synthesized at the moment: "A Goal that could not be achieved due to Constraints becomes unbearable because of a Catalyst"
 3. When = Catalyst + Constraint becoming acute, I want to = bypass the Constraint toward the Goal, So that = achieve the Goal
 
+**Lens 3: Emotional/Social Job (感情的・社会的ジョブ)**
+
+Extract emotional and social signals from Step 1 Fact Tables — expressions of relief, anxiety, pride, liberation, peer comparison, identity, or self-perception.
+
+Process:
+
+1. For each case, extract verbatim quotes containing emotional expressions (安心, 不安, 衝撃, 解放, 誇り) or social expressions (同業者との比較, 自己認識の変化, 周囲の評価)
+2. Place the 3 cases' emotional/social signals side by side and identify structurally similar patterns
+3. Express as When / I want to / So that, focusing on what the person wanted to FEEL or how they wanted to BE SEEN, not what they wanted to DO
+
+Note: Emotional/Social Jobs often share the When clause with Functional Jobs but diverge in I want to and So that. This is expected — the same situation creates both functional and emotional demand.
+
 **Traceability rules** (apply to all lenses):
 
 - A clause with an empty 根拠 column is prohibited — every clause must be grounded in cross-case abstractions (P*-S*/P*-St* and/or CF-\*)
 - The 出典 column is optional — it provides supporting evidence from individual Facts
 - Per-case Forces (4a) MUST NOT appear in the 根拠 column — they are individual-level analysis, not cross-case abstractions
+- For Lens 3, emotional/social signals from individual Facts (F-XX) may appear in the 根拠 column when no cross-case abstraction captures the emotional dimension. In this case, cite the Facts directly and note that the pattern is observed across 2+ cases
 
 #### 5d. Quality filter
 
