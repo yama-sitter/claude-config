@@ -187,6 +187,7 @@ Extract the common **situation** across cases — the circumstances that created
 > 5. **Temporal placement**: Are any patterns classified as A that are actually post-experience recognitions (C)? Apply: "Could a third party observe this as an objective condition independent of product use?"
 > 6. **Evidence strength**: Is each case's evidence based on recorded behavior/quotes, or merely a stated attitude? Flag weak evidence in Discrepancies.
 > 7. **Pattern nature**: Is each entry a "common pattern" (shared across cases) or a "difference description" (contrasting cases)? Differences belong in Discrepancies, not as standalone patterns.
+> 8. **Functional bias check**: Are any patterns presented as purely functional (operational efficiency, cost, speed) that also contain emotional signals (relief, security, liberation from worry) or social signals (identity, peer perception, industry positioning) in the original verbatim quotes? If so, note the emotional/social dimension and recommend whether it should be a separate pattern or an annotation on the existing pattern.
 >
 > Additionally: identify any common patterns the Comparator missed, based on your independent reading of the Facts.
 >
@@ -344,8 +345,11 @@ Identify the central causal premise of each Job Statement from 5c, then generate
 Process:
 
 1. State the central premise of the initial Job Statement (e.g., "Desperation lowers expectations, and low expectations create positive surprise")
-2. Generate Reversal 1: Negate the causal mechanism (e.g., "Expectations are irrelevant; ROI fit determines continuation regardless of surprise")
-3. Generate Reversal 2: Negate the trigger condition (e.g., "Pre-crisis awareness, not desperation, is the primary driver of Hire")
+2. Generate 2 alternative hypotheses using reversal strategies. Use at least 2 of the following:
+   - Negate the causal mechanism (e.g., "Expectations are irrelevant; ROI fit determines continuation regardless of surprise")
+   - Negate the trigger condition (e.g., "Pre-crisis awareness, not desperation, is the primary driver of Hire")
+   - Reframe from functional to emotional: "What if the true driver is not the practical outcome but the emotional state it creates (relief, security, liberation from worry)?"
+   - Reframe from individual to social: "What if the decision is influenced by how the person is perceived by peers/industry?"
 
 Output: 3 competing hypotheses (initial + 2 reversals) with their central premises stated.
 
