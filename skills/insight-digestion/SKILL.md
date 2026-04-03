@@ -156,6 +156,7 @@ Extract the common **situation** across cases — the circumstances that created
 > - Task characteristics (what kind of work needs to be done?)
 > - Geographic / physical constraints
 > - Relationship with alternative / competing solutions
+> - Evaluation behavior during decision-making (cost comparison, risk assessment, ROI calculation, alternative cost structures)
 >
 > Add any newly discovered dimensions to the table.
 
@@ -278,6 +279,12 @@ Forces are about an individual person's decision dynamics — analyze each perso
 >
 > | CF-# | 力 | 共通の力学 | Case A の特徴 | Case B の特徴 |
 > [Note data constraints.]
+>
+> #### 共通ナラティブ
+>
+> **Hire時の共通因果フロー**: [3ケースに共通するForceの相互作用と因果の流れを1段落で記述。各ケースの個別事情ではなく、共通する構造的因果を表現する]
+>
+> **Re-hire時の共通因果フロー**: [同上。Hire時からの変化の共通構造を含む]
 
 **→ Present for user approval.**
 
@@ -287,8 +294,9 @@ Synthesize the common context (Step 3) and Forces analysis (Step 4) into Job Sta
 
 **Input**:
 
-- Step 4b Cross-case comparison: Common Forces (CF-\*)
+- Step 4b Cross-case comparison: Common Forces (CF-\*) + 共通ナラティブ
 - Step 3 Common contexts: A (Ctx-A*), B (Ctx-B*), C (Ctx-C\*)
+- Step 1 Fact Tables (for hypothesis verification in 5e only — NOT for 根拠 column)
 
 #### 5a. Job candidate enumeration
 
@@ -311,21 +319,53 @@ If only one Job remains after consolidation, state why consolidation is justifie
 
 Output: final Job list with separation/merge rationale.
 
-#### 5c. Job Statements
+#### 5c. Initial Job Statements
 
-For each Job from 5b, construct a statement:
+For each Job from 5b, construct an initial statement:
 
-1. **When clause**: Integrate Step 3 A common contexts (Ctx-A\*) into 1-2 sentences describing the shared situation
-2. **Motivation (I want to)**: Derive from Step 4b's Common Push/Pull (CF-\*). Push inversion = what they want to escape. Pull direction = what they want to achieve.
-3. **Expected progress (so that)**: Derive from Step 4b's Common narrative (CF-\*)
-4. **Traceability**: Document which Step 3 items (Ctx-_) and Step 4b Common Forces (CF-_) inform each clause. Facts (F-XX) appear in the separate 出典 column only.
-5. **Hypothesis constraints**: State explicitly that this Job is a hypothesis. List conditions for validity and what needs verification.
+1. **Causal chain extraction**: From Step 4b's 共通ナラティブ, identify the common causal flow: what condition led to what action, and why that action led to the next state. The causal chain — not the Ctx-_/CF-_ IDs — is the backbone of the Job Statement.
+2. **When clause**: Express the shared starting condition of the causal chain, grounded in Step 3 A/B common contexts (Ctx-\*)
+3. **Motivation (I want to)**: Express what the person wants to do as a consequence of the When condition. Must follow causally from When — not just thematically related.
+4. **Expected progress (so that)**: Express the end-state the person expects to reach. Must follow causally from I want to — not just a desirable outcome.
+5. **Causal flow annotation**: Below the Job Statement, document the causal chain: "When (X) → therefore I want to (Y) → so that (Z)", with the causal link between each step articulated.
+6. **Traceability**: Document Ctx-_ and CF-_ in 根拠 column. Facts (F-XX) in 出典 column only.
+7. **Hypothesis constraints**: State conditions for validity and what needs verification.
 
 **Traceability rules**:
 
 - A clause with an empty 根拠 column is prohibited — every clause must be grounded in cross-case abstractions (Ctx-_ and/or CF-_)
 - The 出典 column is optional — it provides supporting evidence from individual Facts
 - Per-case Forces (4a) MUST NOT appear in the 根拠 column — they are individual-level analysis, not cross-case abstractions
+
+#### 5d. Premise reversal
+
+Identify the central causal premise of each Job Statement from 5c, then generate 2 alternative hypotheses by reversing that premise.
+
+Process:
+
+1. State the central premise of the initial Job Statement (e.g., "Desperation lowers expectations, and low expectations create positive surprise")
+2. Generate Reversal 1: Negate the causal mechanism (e.g., "Expectations are irrelevant; ROI fit determines continuation regardless of surprise")
+3. Generate Reversal 2: Negate the trigger condition (e.g., "Pre-crisis awareness, not desperation, is the primary driver of Hire")
+
+Output: 3 competing hypotheses (initial + 2 reversals) with their central premises stated.
+
+#### 5e. Facts-based verification
+
+Test the 3 competing hypotheses from 5d against the original Fact Tables (Step 1).
+
+For each hypothesis:
+
+- **Supporting Facts**: Facts that directly support this causal mechanism (cite F-XX)
+- **Contradicting Facts**: Facts that contradict or weaken this hypothesis (cite F-XX)
+- **Unexplained Facts**: Important Facts that this hypothesis cannot account for
+
+Select the hypothesis that explains the most Facts with the fewest contradictions. If no single hypothesis is sufficient, synthesize elements from multiple hypotheses.
+
+**Important**: This step re-engages with Facts for hypothesis _testing_, not for Job Statement _evidence_. The 根拠 column rules (Ctx-_/CF-_ only) still apply in the final Job Statement.
+
+#### 5f. Final Job Statements
+
+Construct the final Job Statements based on the selected/synthesized hypothesis from 5e.
 
 **Output format**:
 
@@ -343,26 +383,14 @@ For each Job from 5b, construct a statement:
 > | I want to | CF-Push1 + Ctx-B1, Ctx-B2 | F-A16, F-B16, F-C8 他  |
 > | So that   | CF-Pull1 + Ctx-C1         | F-A29, F-B22, F-C28 他 |
 >
-> この仮説の限界・前提: [Conditions, verification needs]
->
-> #### ジョブ2: [短いラベル] `[萌芽的]`
->
-> > **When（どんな時に）** [situation],
-> > **I want to（～したい）** [motivation],
-> > **so that（そうすれば）** [expected progress].
->
-> | 句        | 根拠（共通抽象） | 出典（Facts）  |
-> | --------- | ---------------- | -------------- |
-> | When      | Ctx-A1, ...      | F-B7, F-B8 他  |
-> | I want to | CF-Push1, Ctx-B1 | F-B3, F-B42 他 |
-> | So that   | CF-Pull1         | F-B37 他       |
+> **因果フロー**: When (X) → だから I want to (Y) → そうすれば So that (Z)
+> **中心的前提**: [5dで特定した前提のうち、検証を経て採用されたもの] > **棄却された代替仮説**: [5eで棄却された仮説の要約]
 >
 > この仮説の限界・前提: [Conditions, verification needs]
-> エビデンスの強さ: [N cases, M Facts]
 >
-> _(Repeat for additional Jobs. Omit Job 2 block if only one Job exists.)_
+> _(Repeat for additional Jobs. For emerging Jobs, add エビデンスの強さ: [N cases].)_
 
-**→ Present for user approval. Verify that each clause has factual grounding and appropriate abstraction level.**
+**→ Present for user approval. Verify: (1) causal flow between When → I want to → So that is non-trivial, (2) premise reversal was performed and documented, (3) each clause has cross-case abstraction grounding.**
 
 ### 6. Answer RQ + Findings
 
@@ -422,7 +450,7 @@ Synthesize Steps 3-5 into a structured answer to the Research Question and prese
 - Inference permissions follow the epistemological ladder:
   - Steps 0-3: No inference. Observable behavior and verbatim quotes only.
   - Step 4: Fact-grounded interpretation permitted (Forces analysis — inferring demand dynamics from observed contexts).
-  - Step 5: Hypothesis synthesis permitted (Job definition — combining Common Forces (CF-_) with common contexts (Ctx-_)).
+  - Step 5: Hypothesis synthesis permitted (Job definition — combining Common Forces (CF-_) with common contexts (Ctx-_). Includes premise reversal and Facts-based verification of competing hypotheses).
   - Step 6: Integration only — synthesize Steps 3-5 outputs. Do not introduce new inferences not already established in Steps 4-5.
 
 ## Completion
