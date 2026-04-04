@@ -185,7 +185,7 @@ Extract the common contexts across cases **for each phase** defined in Step 0 â€
 
 #### 3c. Critic (launch one)
 
-**Input**: Comparator output + original Fact Tables (NOT the Narrator outputs) + JTBD theoretical frame
+**Input**: Comparator output + Narrator outputs + original Fact Tables + JTBD theoretical frame
 
 **Prompt essence**:
 
@@ -193,7 +193,12 @@ Extract the common contexts across cases **for each phase** defined in Step 0 â€
 >
 > **IMPORTANT: Do NOT take the Comparator's output at face value.** Go back to the original Fact Tables independently and form your own view before reviewing.
 >
-> Apply three types of critique:
+> **First**, review the Narrator outputs for upstream issues:
+>
+> 1. **Narrator inference check**: Review each Narrator's Purpose entries. Purposes inferred from action patterns must carry a `[æŽ¨å®š]` tag with a stated inferential leap. Flag any Purpose that appears to be inferred (not a verbatim quote) but lacks the tag
+> 2. **Narrator situation/experience boundary**: Check whether any Narrator described product experience (what happened after using the product) as a Phase 1 Situation. Phase 1 must contain only pre-Hire conditions
+>
+> **Then**, validate the Comparator's common patterns:
 >
 > 1. **Conceptual accuracy**: Is each pattern a description of a _situation_ (conditions the person was in), or is it actually a _fact/event_ (something that happened) or _product experience_ (what happened after using the product)?
 >    - NG: "Filled in 5 minutes" â†’ product experience, not a situation
