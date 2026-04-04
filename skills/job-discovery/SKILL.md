@@ -352,6 +352,8 @@ Forces are about an individual person's decision dynamics — analyze each perso
 
 **→ Present for user approval.**
 
+**Single-case behavior**: When only one case exists, skip 4b (cross-case comparison). Produce the per-case Forces diagram (4a) and narrative only. Common Forces (CF-\*) are not generated. Proceed to Step 5 with per-case Forces as the input.
+
 ### 5. Define Jobs (Hypotheses)
 
 Synthesize the common context (Step 3) and Forces analysis (Step 4) into Job Statements. These are **hypotheses** — they require validation before acting on them. This step synthesizes only cross-case abstractions (P*-S*/P*-St* and CF-\*) into Job Statements. Different demand structures (e.g., different phases) may yield multiple Jobs.
@@ -361,6 +363,7 @@ Synthesize the common context (Step 3) and Forces analysis (Step 4) into Job Sta
 - Step 4b Cross-case comparison: Common Forces (CF-\*) + 共通ナラティブ
 - Step 3 Common contexts: Per-phase Situations (P*-S*) and Stances (P*-St*)
 - Step 1 Fact Tables (for hypothesis verification in 5e only — NOT for 根拠 column)
+- **Single-case adjustment**: When CF-\* does not exist (single-case analysis), use per-case Forces (4a) as the basis for Job Statements. Traceability rules are relaxed: the 根拠 column may cite per-case Forces and single-case context patterns instead of CF-\* and P\*-S\*/P\*-St\*. Label all resulting Job Statements as `[Single-case — requires cross-case validation]`
 
 #### 5a. Job candidate enumeration
 
