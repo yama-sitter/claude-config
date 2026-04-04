@@ -97,7 +97,7 @@ If data sufficiency issues are found, present the user with options: (a) return 
 
 ### 3. Extract Common Context
 
-Extract the common contexts across cases **for each phase** defined in Step 0 — the circumstances that created demand for the Hire decision and how they evolved across phases. This step uses three specialized subagents.
+Extract the common contexts across cases **for each phase** defined in Step 0 — the circumstances that created demand for the Hire decision and how they evolved across phases. This step uses two stages of subagents: Narrators (one per case, in parallel) and an Analyst-Critic (cross-case comparison + validation in a single pass).
 
 **"Situation" in JTBD** means the conditions in the person's business/life — NOT the product experience. A situation describes _why demand arose_, not _what happened after using the product_. Each phase captures situations and stances at that point in the journey.
 
@@ -142,17 +142,43 @@ Extract the common contexts across cases **for each phase** defined in Step 0 �
 
 **Output**: One narrative per phase per case, with Fact citations.
 
-#### 3b. Comparator (launch one)
+#### 3b. Analyst-Critic (launch one)
 
-**Input**: All Narrator outputs + all Fact Tables + Phase definitions (Step 0)
+**Input**: All Narrator outputs + all Fact Tables + Background (Step 2) + Phase definitions (Step 0)
 
 **Prompt essence**:
 
-> You are a JTBD researcher. Compare the situation narratives across cases and extract common patterns **for each phase**.
+> You are a JTBD researcher who combines cross-case comparison with critical validation. Your task has three sequential phases. **Complete each phase fully before moving to the next.**
+>
+> ---
+>
+> **Phase 1: Inventory (do this BEFORE any comparison)**
+>
+> For each Narrator output, extract and list ALL items under each category:
+>
+> - Background constraints (list each one)
+> - Structural affordances (list each one)
+> - Purpose entries (list each one, noting verbatim vs [推定])
+> - Struggling moment
+> - Why now
+> - Situations (list each one, per phase)
+> - Stances (list each one, per phase)
+>
+> Produce a structured inventory table:
+>
+> `| Category | Case A | Case B | Case C |`
+>
+> This inventory is your **completeness reference** for Phase 2. Every item listed here must be accounted for in the comparison output — either as part of a common pattern, or explicitly noted as case-specific (not common).
+>
+> ---
+>
+> **Phase 2: Cross-case Comparison**
+>
+> Using the inventory from Phase 1, compare across cases and extract common patterns **for each phase**.
 >
 > Steps:
 >
-> 1. Read all narratives. Discover **dimensions** for comparison — derive dimensions from what the narratives contain. As a checklist against blind spots, also consider whether any of the following are present in the data: decision-making structure, information acquisition path, task characteristics, geographic/physical constraints, relationship with alternatives, evaluation behavior during decision-making. Only add dimensions that are actually evidenced in the narratives
+> 1. Derive **dimensions** for comparison from the Phase 1 inventory. Each inventory category (Background constraints, Structural affordances, Purpose, Struggling moment, Why now, Situations, Stances) is a **mandatory candidate dimension** — evaluate whether it yields a cross-case pattern. Additionally, as a checklist against blind spots, consider whether any of the following are present in the data: decision-making structure, information acquisition path, task characteristics, geographic/physical constraints, relationship with alternatives, evaluation behavior during decision-making. Only add dimensions that are actually evidenced.
 > 2. For each dimension, describe each case's situation and write a tentative **common pattern**
 > 3. For each dimension, check whether cases are using the solution for the same purpose or for divergent purposes. If purposes diverge, note this in the table — it may indicate different Jobs within the same phase
 > 4. Produce separate tables for each phase defined in the analysis setup
@@ -169,25 +195,19 @@ Extract the common contexts across cases **for each phase** defined in Step 0 �
 > - **Continued**: This pattern existed in the previous phase and remains essentially the same
 > - **Changed**: This pattern existed in the previous phase but its content or intensity has shifted
 > - **New**: This pattern first appeared in this phase
-
-**Output**: Per-phase cross-case comparison table: `| Dimension | Case A | Case B | Common pattern (tentative) | Change tag (Phase 2+) | Notes |`
-
-#### 3c. Critic (launch one)
-
-**Input**: Comparator output + Narrator outputs + original Fact Tables + JTBD theoretical frame
-
-**Prompt essence**:
-
-> You are a critical reviewer with deep JTBD expertise. Validate the Comparator's common patterns.
 >
-> **IMPORTANT: Do NOT take the Comparator's output at face value.** Go back to the original Fact Tables independently and form your own view before reviewing.
+> ---
 >
-> **First**, review the Narrator outputs for upstream issues:
+> **Phase 3: Validation**
+>
+> **IMPORTANT: Go back to the original Fact Tables independently and form your own view before validating. Do NOT rely solely on your Phase 2 output.**
+>
+> **3A. Narrator upstream checks:**
 >
 > 1. **Narrator inference check**: Review each Narrator's Purpose entries. Purposes inferred from action patterns must carry a `[推定]` tag with a stated inferential leap. Flag any Purpose that appears to be inferred (not a verbatim quote) but lacks the tag
 > 2. **Narrator situation/experience boundary**: Check whether any Narrator described product experience (what happened after using the product) as a Phase 1 Situation. Phase 1 must contain only pre-Hire conditions
 >
-> **Then**, validate the Comparator's common patterns:
+> **3B. Pattern validation (for each pattern from Phase 2):**
 >
 > 1. **Conceptual accuracy**: Is each pattern a description of a _situation_ (conditions the person was in), or is it actually a _fact/event_ (something that happened) or _product experience_ (what happened after using the product)?
 >    - NG: "Filled in 5 minutes" → product experience, not a situation
@@ -205,22 +225,41 @@ Extract the common contexts across cases **for each phase** defined in Step 0 �
 > 6. **Evidence strength**: Is each case's evidence based on recorded behavior/quotes, or merely a stated attitude? Flag weak evidence in Discrepancies.
 > 7. **Pattern nature**: Is each entry a "common pattern" (shared across cases) or a "difference description" (contrasting cases)? Differences belong in Discrepancies, not as standalone patterns.
 > 8. **Functional bias check**: Are any patterns presented as purely functional (operational efficiency, cost, speed) that also contain emotional signals (relief, security, liberation from worry) or social signals (identity, peer perception, industry positioning) in the original verbatim quotes? If so, note the emotional/social dimension and recommend whether it should be a separate pattern or an annotation on the existing pattern.
-> 9. **Causal chain verification**: After reviewing the Integration's causal chain, verify: (a) every pattern participates in at least one chain, (b) each arrow's causal claim is supported by Fact Table evidence, (c) any isolated pattern (belongs to no chain) is truly independent or should be merged.
-> 10. **Frame blindness check**: Review Step 0's frame awareness notes. Are there signals in the data that fall outside the RQ's frame? Specifically, check whether the Narrator's Purpose entries reveal divergent use cases not captured by the current pattern set.
+> 9. **Frame blindness check**: Review Step 0's frame awareness notes. Are there signals in the data that fall outside the RQ's frame? Specifically, check whether the Narrator's Purpose entries reveal divergent use cases not captured by the current pattern set.
 >
-> Additionally: identify any common patterns the Comparator missed, based on your independent reading of the Facts.
+> Additionally: identify any common patterns the comparison missed, based on your independent reading of the Facts.
 >
-> Output: For each pattern → Approve / Revise (with suggestion) / Reject (with reason) + Phase + Layer (Situation/Stance) classification + Change tag (Phase 2+).
-> Do NOT write the final version yourself — provide critique and suggestions only.
+> **3C. Completeness verification (CRITICAL):**
+>
+> Compare the Phase 1 Inventory against the Phase 2 output:
+>
+> - For each item in the Inventory, verify it appears in at least one common pattern OR is explicitly noted as case-specific
+> - List any Inventory items that were NOT reflected in any comparison dimension
+> - For each missing item: determine whether it should become a new pattern, be merged into an existing pattern, or be explicitly excluded with stated reason
+> - **Items that appear in 2+ cases' inventories but are absent from Phase 2 output are HIGH PRIORITY gaps**
+>
+> ---
+>
+> **Output structure:**
+>
+> 1. Inventory table (Phase 1)
+> 2. Per-phase cross-case comparison tables (Phase 2): `| Dimension | Case A | Case B | Case C | Common pattern (tentative) | Change tag (Phase 2+) | Notes |`
+> 3. Validation report (Phase 3B): For each pattern → Approve / Revise (with suggestion) / Reject (with reason) + Phase + Layer (Situation/Stance) classification + Change tag (Phase 2+)
+> 4. Completeness gap report (Phase 3C): List of inventory items not reflected in patterns, with disposition
+> 5. Additional proposals: Patterns the comparison missed, identified from independent Fact Table reading
+>
+> Do NOT write the final integrated version yourself — provide comparison tables, validation verdicts, and gap reports only.
 
-**Output**: Validation report with verdicts, classification, and additional proposals.
+**Output**: Comparison tables + Validation report + Completeness gap report + Additional proposals.
 
-#### 3d. Integration (main conversation)
+#### 3c. Integration (main conversation)
 
-1. Reflect the Critic's feedback: apply revisions, remove rejected patterns, add proposed patterns
-2. Apply Phase × Layer (Situation/Stance) classification
-3. Compose the final tables per phase
-4. Write a **causal chain** connecting patterns across phases
+1. Review the Analyst-Critic's completeness gap report first: incorporate any HIGH PRIORITY gaps as new patterns
+2. Reflect the Analyst-Critic's validation report: apply revisions, remove rejected patterns, add proposed patterns
+3. Apply Phase × Layer (Situation/Stance) classification
+4. Compose the final tables per phase (including Purpose comparison tables — see output format below)
+5. Write a **causal chain** connecting patterns across phases
+6. **Causal chain self-verification**: After composing the causal chain, verify: (a) every pattern (P\*-S\*, P\*-St\*) participates in at least one chain, (b) each arrow's causal claim is supported by Fact Table evidence, (c) any isolated pattern (belongs to no chain) is truly independent or should be merged
 
 **Baseline conditions**: Conditions that persist unchanged across all phases (structural affordances, business characteristics) should be placed in Phase 1 as baseline conditions. They do not require a change tag in later phases unless they become relevant to a phase-specific pattern.
 
@@ -255,6 +294,14 @@ Extract the common contexts across cases **for each phase** defined in Step 0 �
 >
 > _(Repeat for each additional phase)_
 >
+> ### Purpose（顧客が明示した利用目的）
+>
+> Per-phase Purpose comparison table:
+>
+> > | Case | 明示された目的 | 出典 |
+> >
+> > **Purpose divergence**: [分岐の要約]
+>
 > ### 因果チェーン
 >
 > Describe the causal relationships between patterns using the following notation:
@@ -267,11 +314,11 @@ Extract the common contexts across cases **for each phase** defined in Step 0 �
 >
 > Every pattern must participate in at least one chain. If a pattern is isolated (belongs to no chain), reconsider whether it is truly independent or should be merged.
 >
-> **Note**: The Narrator's Purpose entries and Comparator's Purpose divergence analysis are intermediate artifacts. They are NOT included as separate tables in the Integration output. Purposes that are common across 2+ cases should already be promoted to P*-S* patterns. The remaining Purpose information is captured in the causal chain annotations above.
+> **Note**: The Narrator's Purpose entries and Analyst-Critic's Purpose divergence analysis are intermediate artifacts that inform the Purpose comparison table and causal chain. Purposes that are common across 2+ cases should be promoted to P*-S* patterns. Single-case purposes are captured in the causal chain annotations.
 
 **→ Present the final tables and causal chain for user approval. Confirm: Are the Situation/Stance classifications appropriate? Are the phase assignments correct? Is the abstraction level right? Are any common contexts missing? Does the causal chain accurately represent the demand structure?**
 
-**Single-case behavior**: When only one case exists, skip the Comparator. Run Narrator + Critic only, and output a single-case context description. Cross-case synthesis happens when additional cases are added.
+**Single-case behavior**: When only one case exists, run Narrator + Analyst-Critic (Phase 3A-3B validation only). Skip Phase 1 Inventory, Phase 2 Cross-case Comparison, and Phase 3C Completeness Verification (these require multiple cases). Output a single-case context description. Cross-case synthesis happens when additional cases are added.
 
 ### 4. Analyze Demand Forces
 
@@ -400,6 +447,7 @@ Process:
 1. For each case, extract belief chains in the form: "If [situation] + [means] → [result], and that means [value to me]"
 2. Place the 3 cases' belief chains side by side and identify **structurally similar beliefs** (not identical words, but the same reasoning pattern)
 3. Express the shared belief structure as When / I want to / So that
+4. Map each element of the shared belief structure to cross-case abstractions (P\*-S\*/P\*-St\* and/or CF-\*) for the 根拠 column. If a belief element has no corresponding cross-case abstraction, note this gap — it may indicate a missing pattern in Step 3 or a single-case signal
 
 **Lens 2: Synthesis Model (ゴール + 制約 + 触媒)**
 
