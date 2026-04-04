@@ -307,7 +307,15 @@ Forces are about an individual person's decision dynamics — analyze each perso
    > Push / Pull / Anxiety / Habit rows
    > **ナラティブ**: [How Forces shifted from Hire to Re-hire. Note data constraints if thin.]
 
-2. **Cross-case comparison (4b)**: Execute in the main conversation (dialogue with user). Place per-case Forces side by side.
+2. **Cross-check (4a review)**: Before proceeding to cross-case comparison, verify the per-case Forces in the main conversation:
+
+   1. **Category consistency**: Check whether the same Fact (F-XX) has been assigned to different Force categories across cases (e.g., F-A5 as Push in Case A, but a similar fact F-B3 as Pull in Case B). If found, resolve the categorization
+   2. **Strength justification**: Confirm that each strength rating (強/中/弱) is grounded in the three axes — scale of action, urgency of expression, and behavioral magnitude — not just impressionistic judgment
+   3. **Push/Pull separation**: Verify that Push items describe dissatisfaction with the _current state_, and Pull items describe attraction to _the new solution's promise_. Mixed items should be split or reclassified
+
+   If inconsistencies are found, revise the 4a outputs before proceeding.
+
+3. **Cross-case comparison (4b)**: Execute in the main conversation (dialogue with user). Place per-case Forces side by side.
 
    Compare 4a's per-case Forces across cases to identify common dynamics:
 
