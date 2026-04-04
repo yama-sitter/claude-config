@@ -121,7 +121,10 @@ Extract the common contexts across cases **for each phase** defined in Step 0 �
 >
 > - **Background constraints**: Structural limitations of their business/environment
 > - **Structural affordances**: Business characteristics that make certain solution types viable (e.g., task simplicity, work schedule flexibility, geographic patterns)
-> - **Purpose**: What is the person explicitly trying to achieve by using this solution? Cite verbatim quotes or observable actions only (F-XX). Do NOT infer purposes the customer did not express. Different cases may have different purposes — list all that are explicitly stated
+> - **Purpose**: What is the person explicitly trying to achieve by using this solution? Different cases may have different purposes — list all that are explicitly stated.
+>   - Purposes stated in verbatim quotes: cite the quote (F-XX) directly
+>   - Purposes inferred from observable action patterns (e.g., repeated ordering behavior → intent to secure ongoing supply): tag as `[推定]` and state in one sentence the action pattern and the inferential leap. Example: `[推定] 毎週発注を繰り返している (F-A3, F-A7) → 継続的な人材確保が目的と推定`
+>   - Do NOT infer purposes the customer did not express or demonstrate through repeated behavior
 > - **Struggling moment**: When their current approach stopped working
 > - **Why now**: Why they acted at this point (not earlier, not later)
 >
@@ -478,7 +481,7 @@ Present surviving candidates in the following format:
 - Do not score, rank, or prioritize — that belongs to experiment design
 - NEVER ask the user to verify completeness — always perform self-review against the source material before presenting results at any confirmation gate
 - Inference permissions follow the epistemological ladder:
-  - Steps 0-3: No inference. Observable behavior and verbatim quotes only.
+  - Steps 0-3: No inference. Observable behavior and verbatim quotes only. Exception: Step 3a Purpose allows action-pattern-based inference tagged as `[推定]` (see Narrator prompt).
   - Step 4: Fact-grounded interpretation permitted (Forces analysis — inferring demand dynamics from observed contexts).
   - Step 5: Hypothesis synthesis permitted (Job definition — generating candidate Job Statements through multiple analytical lenses (Belief Chain, Synthesis Model), filtering for quality, and presenting as discussion material for user selection).
 
