@@ -19,14 +19,27 @@ Discover Jobs-to-be-Done from raw customer data by climbing the Ladder of Infere
 
 ## Argument Routing
 
-| Args     | Action                                                                                                         |
-| -------- | -------------------------------------------------------------------------------------------------------------- |
-| (none)   | Full analysis workflow: Step 0 → Step 5                                                                        |
-| `output` | Generate output document from completed analysis (requires Step 5 to be completed in the current conversation) |
+| Args     | Action                                                                        |
+| -------- | ----------------------------------------------------------------------------- |
+| (none)   | Full analysis workflow: Step 0 → Step 5                                       |
+| `output` | Generate output document from completed analysis (requires Step 5 in worklog) |
+
+## Data Flow
+
+Each Step reads its input from `job-discovery-worklog.md` and writes its output back to `job-discovery-worklog.md`. The conversation context is used only for the current Step's working data.
+
+- **job-discovery-worklog.md**: Single source of truth. All Step outputs are persisted here.
+- **Read before execute**: Each Step reads the relevant prior Step sections from the worklog before starting.
+- **Write after confirm**: Each Step's output is written to the worklog after user approval at the confirmation gate.
+- **Cross-session continuity**: Any Step can be resumed in a new conversation by reading the worklog.
+
+Worklog path: `~/.agent-memory/<scope>/<date>_<topic>/job-discovery-worklog.md`
 
 ## Workflow
 
 ### 0. Analysis Setup
+
+**I/O**: Input: user instructions. Output to worklog: frontmatter + Step 0 section. → Write after confirmation gate.
 
 Confirm the prerequisites for the analysis.
 
@@ -42,9 +55,11 @@ Confirm the prerequisites for the analysis.
    - The analysis should answer the RQ, but remain open to demand structures the RQ does not anticipate. If the data reveals purposes, segments, or dynamics outside the RQ's frame, capture them
 5. **注目したい観点**（任意）: Any specific aspects the user wants to explore
 
-**→ Confirm the setup with the user before proceeding.**
+**→ Confirm the setup with the user before proceeding. After approval, create the worklog file and write Step 0.**
 
 ### 1. Extract Facts
+
+**I/O**: Input from worklog: Step 0 (case list) + source material paths. Output to worklog: Step 1 section (Fact Tables). → Write after confirmation gate.
 
 List observable behaviors and verbatim quotes. Separate what happened from why it happened.
 
@@ -66,9 +81,11 @@ Identifier format: `F-{Case}{Number}` (e.g., F-A1, F-B1, F-C1). F = Fact, A/B/C 
 1. Extract facts directly
 2. Perform self-review by re-reading the source before presenting
 
-**→ Self-review against the source material for completeness, then present the table for user approval.**
+**→ Self-review against the source material for completeness, then present the table for user approval. After approval, append Step 1 to the worklog.**
 
 ### 2. Organize Facts and Identify Background
+
+**I/O**: Input from worklog: Step 0 + Step 1. Output to worklog: Step 2 section (Background + Events + data sufficiency). → Write after confirmation gate.
 
 Arrange facts from Step 1 chronologically. Separate **Background** (ongoing structural conditions not tied to a specific moment) from **Events** (facts tied to specific time points).
 
@@ -88,7 +105,7 @@ Output format:
 
 For large fact sets (30+ facts): Launch a subagent, then self-review for completeness.
 
-**→ Self-review two things, then present for user approval:**
+**→ Self-review two things, then present for user approval. After approval, append Step 2 to the worklog:**
 
 1. **網羅性**: Step 1の全ファクトが「前提条件」または「時系列の出来事」のいずれかに配置されていること
 2. **データの充足性**: 分析の焦点（Step 0で定義）に対して十分なデータがあること。焦点の方向に対してデータが薄い・欠けている領域があれば報告する
@@ -97,13 +114,15 @@ If data sufficiency issues are found, present the user with options: (a) return 
 
 ### 3. Extract Common Context
 
+**I/O**: Input from worklog: Step 0 + Step 1 + Step 2. Subagents read from worklog (not from conversation context). Output to worklog: Step 3 section (Narrator outputs + Common Contexts + Causal Chain). → Write after confirmation gate.
+
 Extract the common contexts across cases **for each phase** defined in Step 0 — the circumstances that created demand for the Hire decision and how they evolved across phases. This step uses two stages of subagents: Narrators (one per case, in parallel) and an Analyst-Critic (cross-case comparison + validation in a single pass).
 
 **"Situation" in JTBD** means the conditions in the person's business/life — NOT the product experience. A situation describes _why demand arose_, not _what happened after using the product_. Each phase captures situations and stances at that point in the journey.
 
 #### 3a. Narrator (launch one per case, in parallel)
 
-**Input**: The case's Fact Table (Step 1) + Background (Step 2) + Phase definitions (Step 0)
+**Input**: The case's Fact Table (Step 1) + Background (Step 2) + Phase definitions (Step 0). **Data source**: Pass the worklog path to the subagent. The subagent reads its own case's Step 1 and Step 2 sections from the worklog.
 
 **Prompt essence**:
 
@@ -144,7 +163,7 @@ Extract the common contexts across cases **for each phase** defined in Step 0 �
 
 #### 3b. Analyst-Critic (launch one)
 
-**Input**: All Narrator outputs + all Fact Tables + Background (Step 2) + Phase definitions (Step 0)
+**Input**: All Narrator outputs + all Fact Tables + Background (Step 2) + Phase definitions (Step 0). **Data source**: Pass the worklog path to the subagent. The subagent reads all cases' Step 1, Step 2, and Step 3a Narrator outputs (full text) from the worklog.
 
 **Prompt essence**:
 
@@ -316,11 +335,13 @@ Extract the common contexts across cases **for each phase** defined in Step 0 �
 >
 > **Note**: The Narrator's Purpose entries and Analyst-Critic's Purpose divergence analysis are intermediate artifacts that inform the Purpose comparison table and causal chain. Purposes that are common across 2+ cases should be promoted to P*-S* patterns. Single-case purposes are captured in the causal chain annotations.
 
-**→ Present the final tables and causal chain for user approval. Confirm: Are the Situation/Stance classifications appropriate? Are the phase assignments correct? Is the abstraction level right? Are any common contexts missing? Does the causal chain accurately represent the demand structure?**
+**→ Present the final tables and causal chain for user approval. After approval, append Step 3 to the worklog (including Narrator outputs as intermediate artifacts). Confirm: Are the Situation/Stance classifications appropriate? Are the phase assignments correct? Is the abstraction level right? Are any common contexts missing? Does the causal chain accurately represent the demand structure?**
 
 **Single-case behavior**: When only one case exists, run Narrator + Analyst-Critic (Phase 3A-3B validation only). Skip Phase 1 Inventory, Phase 2 Cross-case Comparison, and Phase 3C Completeness Verification (these require multiple cases). Output a single-case context description. Cross-case synthesis happens when additional cases are added.
 
 ### 4. Analyze Demand Forces
+
+**I/O**: Input from worklog: Step 1 + Step 2 (per-case Fact Table + Background only — do NOT read Step 3 for 4a to preserve case independence). For 4b cross-case comparison, also read Step 3. Subagents read from worklog. Output to worklog: Step 4 section (4a + 4b + common narrative). → Write after confirmation gate.
 
 Analyze the Switch dynamics for each case individually, then compare across cases. This is the first step where **interpretation** (fact-grounded inference) is permitted.
 
@@ -397,11 +418,13 @@ Forces are about an individual person's decision dynamics — analyze each perso
 >
 > **Re-hire時の共通因果フロー**: [同上。Hire時からの変化の共通構造を含む]
 
-**→ Present for user approval.**
+**→ Present for user approval. After approval, append Step 4 to the worklog.**
 
 **Single-case behavior**: When only one case exists, skip 4b (cross-case comparison). Produce the per-case Forces diagram (4a) and narrative only. Common Forces (CF-\*) are not generated. Proceed to Step 5 with per-case Forces as the input.
 
 ### 5. Define Jobs (Hypotheses)
+
+**I/O**: Input from worklog: Step 3 + Step 4 (+ Step 1 for 5d verification only). Output to worklog: Step 5 section (Job Slots + candidates). → Write after confirmation gate.
 
 Synthesize the common context (Step 3) and Forces analysis (Step 4) into Job Statements. These are **hypotheses** — they require validation before acting on them. This step synthesizes only cross-case abstractions (P*-S*/P*-St* and CF-\*) into Job Statements. Different demand structures (e.g., different phases) may yield multiple Jobs.
 
@@ -513,7 +536,7 @@ Present surviving candidates in the following format:
 >
 > _(Repeat for each surviving candidate.)_
 
-**→ Present candidates for user discussion. The user selects, combines, or modifies candidates to define the final Job Statement(s).**
+**→ Present candidates for user discussion. After approval, append Step 5 to the worklog. The user selects, combines, or modifies candidates to define the final Job Statement(s).**
 
 ## Output Language Rules
 
@@ -549,16 +572,22 @@ This skill is complete when all conditions are met:
 
 ## Output Subcommand (`/job-discovery output`)
 
-Generate a shareable Markdown document from the completed analysis. Requires Step 5 to be completed in the current conversation.
+Generate a shareable Markdown document from the completed analysis worklog.
 
 ### Prerequisites
 
-- Step 5 candidates have been presented in the current conversation
-- If Step 5 is not completed, display: **「Step 5が完了していません。分析を先に完了してください」** and stop
+- `job-discovery-worklog.md` exists in agent-memory and contains a Step 5 section
+- The worklog path is specified by the user or detected from conversation context
+- If the worklog is not found or Step 5 section is missing, display: **「worklogが見つからない、またはStep 5が完了していません。分析を先に完了してください」** and stop
 
-### Output Document Structure
+### Implementation
 
-Write the document to agent-memory as `output.md` in the analysis directory (e.g., `~/.agent-memory/<scope>/<date>_<topic>/output.md`).
+1. Locate the worklog file (`job-discovery-worklog.md`) in agent-memory
+2. Read the worklog and verify all Step sections (0-5) exist
+3. Extract data from each Step section and reformat into the output template below
+4. Write `job-discovery-report.md` to the user-specified directory (or the same agent-memory directory)
+
+**Data source**: Read ALL data from the worklog file. Do NOT rely on conversation context for any analysis data.
 
 **Design principles**:
 
