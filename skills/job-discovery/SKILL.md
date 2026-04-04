@@ -152,7 +152,7 @@ Extract the common contexts across cases **for each phase** defined in Step 0 â€
 >
 > Steps:
 >
-> 1. Read all narratives. Discover **dimensions** for comparison (do NOT use a fixed list â€” derive dimensions from what the narratives contain)
+> 1. Read all narratives. Discover **dimensions** for comparison â€” derive dimensions from what the narratives contain. As a checklist against blind spots, also consider whether any of the following are present in the data: decision-making structure, information acquisition path, task characteristics, geographic/physical constraints, relationship with alternatives, evaluation behavior during decision-making. Only add dimensions that are actually evidenced in the narratives
 > 2. For each dimension, describe each case's situation and write a tentative **common pattern**
 > 3. For each dimension, check whether cases are using the solution for the same purpose or for divergent purposes. If purposes diverge, note this in the table â€” it may indicate different Jobs within the same phase
 > 4. Produce separate tables for each phase defined in the analysis setup
@@ -169,17 +169,6 @@ Extract the common contexts across cases **for each phase** defined in Step 0 â€
 > - **Continued**: This pattern existed in the previous phase and remains essentially the same
 > - **Changed**: This pattern existed in the previous phase but its content or intensity has shifted
 > - **New**: This pattern first appeared in this phase
->
-> **Second pass**: After completing the table, check for missed dimensions using these prompts:
->
-> - Decision-making structure (who decided, with what authority?)
-> - Information acquisition path (how did they learn about this solution?)
-> - Task characteristics (what kind of work needs to be done?)
-> - Geographic / physical constraints
-> - Relationship with alternative / competing solutions
-> - Evaluation behavior during decision-making (cost comparison, risk assessment, ROI calculation, alternative cost structures)
->
-> Add any newly discovered dimensions to the table.
 
 **Output**: Per-phase cross-case comparison table: `| Dimension | Case A | Case B | Common pattern (tentative) | Change tag (Phase 2+) | Notes |`
 
