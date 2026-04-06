@@ -11,7 +11,6 @@
 ## Plan Mode Rules
 
 - Follow the plan structure defined in plan-template.md when writing plans (unless superpowers flow is active)
-- After writing the plan, perform a self-review following the Plan Review Guidelines before finalizing
 - After the user approves the plan (ExitPlanMode approved), save the plan following Memory Guidelines
 
 ## Skill Conflict Resolution (superpowers vs custom skills)
@@ -37,7 +36,6 @@ This includes: direct code change requests, Plan Mode, or any task where the use
 - Worktree → Use custom `worktree` skill (EnterWorktree/ExitWorktree)
 - Brainstorming/design → Use custom `brainstorm` skill
 - Plan template → Use `plan-template.md`
-- Plan review → Use `plan-review.md` (2-cycle self-review)
 - Plan storage → `agent-memory` only
 
 ### Always applied (regardless of flow)
