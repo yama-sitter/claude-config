@@ -1,0 +1,90 @@
+# Jobs Workflow
+
+## Prerequisites
+
+Both the context and forces subcommands must be completed: `{{STEP3_COMMON_PATTERNS}}`, `{{STEP4_CROSS_FORCES}}`, and `{{STEP4_COMMON_NARRATIVE}}` are all replaced in the report file.
+
+## Owned Placeholders
+
+`{{STEP5_SUMMARY_INTRO}}`, `{{STEP5_JOB_HYPOTHESES}}`
+
+## Workflow
+
+Synthesize the common context (context subcommand) and Forces analysis (forces subcommand) into Job Statements. These are **hypotheses** — they require validation before acting on them. This step synthesizes only cross-case abstractions (P*-S*/P*-St* and CF-\*) into Job Statements. Different demand structures (e.g., different phases) may yield multiple Jobs.
+
+**Input from report**:
+
+- Section 2 (common patterns): Per-phase Situations (P*-S*) and Stances (P*-St*)
+- Section 3 (cross-case Forces): Common Forces (CF-\*) + 共通ナラティブ
+- Appendix Fact Tables (for hypothesis verification in 5d only — NOT for 根拠 column)
+
+### 5a. Job candidate enumeration
+
+List candidate Jobs using the following axes (in priority order):
+
+1. **Phase split**: If cross-case Forces show different Dominant Forces for different phases, treat them as separate Job candidates by default
+2. **Stance signals**: If Stance (P*-St*) patterns suggest an independent motivation structure not captured by Dominant Forces, add as a candidate
+3. **Causal chain divergence**: If the causal chain shows that a common pattern within the same phase diverges at the case level into different Progress (desired outcomes), list each divergent path as a sub-slot. Example: If ROI evaluation leads some cases to "limited use as backup" and others to "structural integration into operations," these represent different Jobs despite sharing the same phase and Dominant Force
+
+Output: numbered list of Job candidates with the source evidence (CF-_ Dominant Force, P_-S*/P*-St\* items).
+
+### 5b. Consolidation / separation decision
+
+For each candidate pair, apply these criteria:
+
+- **Separate** if Dominant Forces differ (even when the When clause overlaps — different motivation structures = different Jobs)
+- **Merge** if candidates share both Dominant Force and motivation direction — state the merge rationale explicitly
+- **Emerging label**: Jobs where the CF-\* cited in the 根拠 column is observed in fewer than half of the total cases receive the `[Emerging]` label and must include evidence strength (e.g., "2 of 5 cases")
+
+If only one Job remains after consolidation, state why consolidation is justified.
+
+Output: final Job list with separation/merge rationale.
+
+### 5c. Multi-lens Job Statement generation
+
+For each Job from 5b, generate candidate Job Statements through 3 analytical lenses (Belief Chain, Synthesis Model, Emotional/Social Job) to produce diverse hypotheses as discussion material.
+
+See [step5-lenses.md](step5-lenses.md) for lens details and traceability rules.
+
+### 5d. Quality filter
+
+Test each candidate from 5c against Step 1 Fact Tables and apply the following filters. Drop or revise candidates that fail:
+
+| Filter                   | Criterion                                                                                                                                                                         | Action              |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| **Facts contradiction**  | Contradicted by 2+ cases                                                                                                                                                          | Drop                |
+| **Tautology**            | I want to / So that merely restates the When condition. Test: "Would someone unfamiliar with this data say 'I see, so THAT's the structure' upon hearing this?" If No → tautology | Drop                |
+| **Redundancy**           | Central premise is identical to another candidate (wording differs only)                                                                                                          | Drop the weaker one |
+| **Granularity mismatch** | When / I want to / So that mix JTBD-level (life transformation) with Micro-Job-level (operational task)                                                                           | Revise or Drop      |
+
+Target: 2-3 candidates per Job slot after filtering.
+
+### 5e. Candidate presentation
+
+Present surviving candidates in the following format:
+
+> ### ジョブ仮説候補
+>
+> #### 候補N: [短いラベル]
+>
+> | 句               | 内容                | 根拠        | 出典      |
+> | ---------------- | ------------------- | ----------- | --------- |
+> | **どんな時に**   | [situation]         | P1-S1, ...  | F-XX, ... |
+> | **何をしたいか** | [motivation]        | CF-Push1, ...| F-XX, ... |
+> | **そうすれば**   | [expected progress] | CF-Pull1, ...| F-XX, ... |
+>
+> **このモデルが説明できること**: [What this candidate explains that others don't]
+> **このモデルが説明できないこと**: [Blind spots / limitations]
+> **代表的な顧客の言葉**: [Verbatim quote that best embodies this candidate]
+>
+> この仮説の限界・前提: [Conditions, verification needs]
+>
+> _(Repeat for each surviving candidate.)_
+
+## Confirmation Gate
+
+Present candidates for user discussion. The user selects, combines, or modifies candidates to define the final Job Statement(s). After the user's decision, replace `{{STEP5_SUMMARY_INTRO}}` (1-2 sentence summary of results, e.g., number of job slots discovered, number of Emerging hypotheses) and `{{STEP5_JOB_HYPOTHESES}}` (final Job Statements) in the report file.
+
+## Single-case Behavior
+
+When CF-\* does not exist (single-case analysis), use per-case Forces (4a) as the basis for Job Statements. Traceability rules are relaxed: the 根拠 column may cite per-case Forces and single-case context patterns instead of CF-\* and P\*-S\*/P\*-St\*. Label all resulting Job Statements as `[Single-case — requires cross-case validation]`.
