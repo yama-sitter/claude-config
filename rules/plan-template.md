@@ -3,7 +3,6 @@
 ## When
 
 Use this template when writing plans in Plan Mode.
-This defines the structure of the plan content itself (what to write), while plan-review.md defines the review criteria (how to evaluate).
 
 ## Required Sections
 
@@ -23,7 +22,15 @@ Concrete, executable steps. Each step should reference specific files and functi
 
 ### 4. Verification
 
-How to confirm the changes work end-to-end. Include specific commands, test scenarios, or manual checks.
+Define acceptance criteria as a table. A separate evaluator (`/verify`) uses this table to confirm the implementation.
+
+| # | Criterion | Command | Expected |
+|---|-----------|---------|----------|
+| 1 | [What to verify] | `[command]` or `Manual` | [What success looks like] |
+
+- At least 2 criteria required, at least 1 must have an automated command
+- Commands must be runnable from the project root
+- Expected results must be concrete enough for an independent evaluator to judge pass/fail
 
 ### 5. Risks and Notes (bullet list, optional)
 
