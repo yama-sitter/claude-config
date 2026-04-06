@@ -23,11 +23,11 @@ Discover Jobs-to-be-Done from raw customer data by climbing the Ladder of Infere
 | Args      | Action                                                                                                                      |
 | --------- | --------------------------------------------------------------------------------------------------------------------------- |
 | (none)    | Progress check: detect report → show filled/unfilled placeholders → suggest next subcommand                                 |
-| `scope`   | 分析の枠組み定義（焦点、ケース、フェーズ）→ レポートファイル作成。→ [scope-workflow.md](references/scope-workflow.md)        |
-| `facts`   | ソース素材からの事実抽出・時系列整理。→ [facts-workflow.md](references/facts-workflow.md)                                    |
-| `context` | ケース横断の共通コンテキスト抽出（Narrator→Analyst-Critic→Integration）。→ [context-workflow.md](references/context-workflow.md) |
-| `forces`  | 意思決定の力学分析（Push/Pull/Anxiety/Habit）。context との順序は任意。→ [forces-workflow.md](references/forces-workflow.md) |
-| `jobs`    | ジョブ仮説の生成・フィルタリング・提示。→ [jobs-workflow.md](references/jobs-workflow.md)                                    |
+| `scope`   | Define analysis framework (focus, cases, phases) → create report file. → [scope-workflow.md](references/scope-workflow.md)       |
+| `facts`   | Extract and organize facts from source material. → [facts-workflow.md](references/facts-workflow.md)                              |
+| `context` | Extract common context across cases (Narrator → Analyst-Critic → Integration). → [context-workflow.md](references/context-workflow.md) |
+| `forces`  | Analyze demand forces (Push/Pull/Anxiety/Habit). Order with context is flexible. → [forces-workflow.md](references/forces-workflow.md) |
+| `jobs`    | Generate, filter, and present Job hypotheses. → [jobs-workflow.md](references/jobs-workflow.md)                                    |
 
 Read the linked workflow file and follow its instructions.
 
