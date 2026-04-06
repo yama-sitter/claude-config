@@ -1,6 +1,12 @@
 # Narrator Prompt (Step 3a)
 
-This prompt is sent to each Narrator subagent (one per case, launched in parallel). Each Narrator receives only its own case's data from the worklog.
+This prompt is sent to each Narrator subagent (one per case, launched in parallel). Each Narrator reads its own case's data from the report file (`job-discovery-report.md`).
+
+**Data sources in the report file:**
+
+- **Case info and phase definitions**: Read from the report header (top of the file)
+- **Fact Tables**: Locate the appendix section with heading "ファクトテーブル（生データ）" (inside a `<details>` tag), then extract only this case's Fact Table
+- **Background/Events**: Locate the appendix section with heading "ケースごとのストーリー（時系列）" (inside a `<details>` tag), then extract only this case's Background and Events
 
 ---
 

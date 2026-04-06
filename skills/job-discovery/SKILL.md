@@ -19,27 +19,28 @@ Discover Jobs-to-be-Done from raw customer data by climbing the Ladder of Infere
 
 ## Argument Routing
 
-| Args     | Action                                                                        |
-| -------- | ----------------------------------------------------------------------------- |
-| (none)   | Full analysis workflow: Step 0 → Step 5                                       |
-| `output` | Generate output document from completed analysis (requires Step 5 in worklog) |
+| Args   | Action                          |
+| ------ | ------------------------------- |
+| (none) | Full analysis workflow: Step 0 → Step 5 |
 
 ## Data Flow
 
-Each Step reads its input from `job-discovery-worklog.md` and writes its output back to `job-discovery-worklog.md`. The conversation context is used only for the current Step's working data.
+Step 0 creates `job-discovery-report.md` from the report template ([report-template.md](references/report-template.md)). Each subsequent Step replaces its placeholders (`{{XXX}}`) in the report file with actual data after user confirmation. When all Steps complete, the report is the finished deliverable — no separate output step is needed.
 
-- **job-discovery-worklog.md**: Single source of truth. All Step outputs are persisted here.
-- **Read before execute**: Each Step reads the relevant prior Step sections from the worklog before starting.
-- **Write after confirm**: Each Step's output is written to the worklog after user approval at the confirmation gate.
-- **Cross-session continuity**: Any Step can be resumed in a new conversation by reading the worklog.
+- **job-discovery-report.md**: Single source of truth. The report file is both the analysis record and the final deliverable.
+- **Read before execute**: Each Step reads the relevant filled sections from the report before starting. Subagents locate sections by heading text (e.g., "ファクトテーブル（生データ）"), not by line number.
+- **Replace after confirm**: Each Step's output replaces its placeholder(s) after user approval at the confirmation gate. Content is wrapped in HTML comment boundary markers (`<!-- BEGIN XXX -->...<!-- END XXX -->`) for re-replacement if the user requests revisions.
+- **Atomic replacement**: When a Step has multiple placeholders, all are replaced together after the confirmation gate. No partial replacement state.
+- **Cross-session continuity**: Run `grep '{{STEP' report.md` to identify which Steps are incomplete. Resume from the earliest unfinished Step.
+- **Re-replacement**: If the user requests a revision after confirmation, locate the content between `<!-- BEGIN XXX -->` and `<!-- END XXX -->` markers and replace it with the revised content.
 
-Worklog path: `~/.agent-memory/<scope>/<date>_<topic>/job-discovery-worklog.md`
+Report path: `~/.agent-memory/<scope>/<date>_<topic>/job-discovery-report.md`
 
 ## Workflow
 
 ### 0. Analysis Setup
 
-**I/O**: Input: user instructions. Output to worklog: frontmatter + Step 0 section. → Write after confirmation gate.
+**I/O**: Input: user instructions. Output: create report file from [report-template.md](references/report-template.md) and replace header placeholders (`{{TITLE}}`, `{{SOURCE_MATERIAL}}`, `{{ANALYSIS_FOCUS}}`, `{{CASE_TABLE}}`, `{{LEGEND}}`). → Replace after confirmation gate.
 
 Confirm the prerequisites for the analysis.
 
@@ -55,11 +56,11 @@ Confirm the prerequisites for the analysis.
    - The analysis should answer the RQ, but remain open to demand structures the RQ does not anticipate. If the data reveals purposes, segments, or dynamics outside the RQ's frame, capture them
 5. **注目したい観点**（任意）: Any specific aspects the user wants to explore
 
-**→ Confirm the setup with the user before proceeding. After approval, create the worklog file and write Step 0.**
+**→ Confirm the setup with the user before proceeding. After approval, copy the report template to create `job-discovery-report.md` in agent-memory, then replace the header placeholders with confirmed data. Generate the `{{LEGEND}}` content dynamically based on the number of cases (e.g., '3社に共通する' for 3 cases, 'N社に共通する' for N cases).**
 
 ### 1. Extract Facts
 
-**I/O**: Input from worklog: Step 0 (case list) + source material paths. Output to worklog: Step 1 section (Fact Tables). → Write after confirmation gate.
+**I/O**: Input from report: header (case list) + source material paths. Output: replace `{{STEP1_FACT_TABLES}}`. → Replace after confirmation gate.
 
 List observable behaviors and verbatim quotes. Separate what happened from why it happened.
 
@@ -81,11 +82,11 @@ Identifier format: `F-{Case}{Number}` (e.g., F-A1, F-B1, F-C1). F = Fact, A/B/C 
 1. Extract facts directly
 2. Perform self-review by re-reading the source before presenting
 
-**→ Self-review against the source material for completeness, then present the table for user approval. After approval, append Step 1 to the worklog.**
+**→ Self-review against the source material for completeness, then present the table for user approval. After approval, replace `{{STEP1_FACT_TABLES}}` in the report file.**
 
 ### 2. Organize Facts and Identify Background
 
-**I/O**: Input from worklog: Step 0 + Step 1. Output to worklog: Step 2 section (Background + Events + data sufficiency). → Write after confirmation gate.
+**I/O**: Input from report: header + appendix Fact Tables. Output: replace `{{STEP2_BACKGROUND_EVENTS}}`. → Replace after confirmation gate.
 
 Arrange facts from Step 1 chronologically. Separate **Background** (ongoing structural conditions not tied to a specific moment) from **Events** (facts tied to specific time points).
 
@@ -105,7 +106,7 @@ Output format:
 
 For large fact sets (30+ facts): Launch a subagent, then self-review for completeness.
 
-**→ Self-review two things, then present for user approval. After approval, append Step 2 to the worklog:**
+**→ Self-review two things, then present for user approval. After approval, replace `{{STEP2_BACKGROUND_EVENTS}}` in the report file:**
 
 1. **網羅性**: Step 1の全ファクトが「前提条件」または「時系列の出来事」のいずれかに配置されていること
 2. **データの充足性**: 分析の焦点（Step 0で定義）に対して十分なデータがあること。焦点の方向に対してデータが薄い・欠けている領域があれば報告する
@@ -114,7 +115,7 @@ If data sufficiency issues are found, present the user with options: (a) return 
 
 ### 3. Extract Common Context
 
-**I/O**: Input from worklog: Step 0 + Step 1 + Step 2. Subagents read from worklog (not from conversation context). Output to worklog: Step 3 section (Narrator outputs + Common Contexts + Causal Chain). → Write after confirmation gate.
+**I/O**: Input from report: header + appendix (Fact Tables, Background/Events). Subagents read from report file appendix (not from conversation context). Output: replace `{{STEP3A_NARRATOR_OUTPUTS}}` (after 3a), `{{STEP3B_ANALYST_CRITIC_OUTPUT}}` (after 3b), and `{{STEP3_COMMON_PATTERNS}}` (after 3c confirmation). → Replace after confirmation gate.
 
 Extract the common contexts across cases **for each phase** defined in Step 0 — the circumstances that created demand for the Hire decision and how they evolved across phases. This step uses two stages of subagents: Narrators (one per case, in parallel) and an Analyst-Critic (cross-case comparison + validation in a single pass).
 
@@ -122,31 +123,35 @@ Extract the common contexts across cases **for each phase** defined in Step 0 �
 
 #### 3a. Narrator (launch one per case, in parallel)
 
-**Input**: The case's Fact Table (Step 1) + Background (Step 2) + Phase definitions (Step 0). **Data source**: Pass the worklog path to the subagent. The subagent reads its own case's Step 1 and Step 2 sections from the worklog.
+**Input**: The case's Fact Table (Step 1) + Background (Step 2) + Phase definitions (Step 0). **Data source**: Pass the report file path to the subagent. The subagent reads its own case's Fact Table and Background/Events from the report file appendix (locate by section headings).
 
 See [narrator-prompt.md](references/narrator-prompt.md) for the full Narrator prompt.
 
 **Output**: One narrative per phase per case, with Fact citations.
 
+**→ After all Narrators complete, replace `{{STEP3A_NARRATOR_OUTPUTS}}` in the report file with the combined Narrator outputs.**
+
 #### 3b. Analyst-Critic (launch one)
 
-**Input**: All Narrator outputs + all Fact Tables + Background (Step 2) + Phase definitions (Step 0). **Data source**: Pass the worklog path to the subagent. The subagent reads all cases' Step 1, Step 2, and Step 3a Narrator outputs (full text) from the worklog.
+**Input**: All Narrator outputs + all Fact Tables + Background (Step 2) + Phase definitions (Step 0). **Data source**: Pass the report file path to the subagent. The subagent reads all cases' Fact Tables, Background/Events, and Narrator outputs from the report file appendix (locate by section headings).
 
 See [analyst-critic-prompt.md](references/analyst-critic-prompt.md) for the full Analyst-Critic prompt.
 
 **Output**: Comparison tables + Validation report + Completeness gap report + Additional proposals.
 
+**→ After the Analyst-Critic completes, replace `{{STEP3B_ANALYST_CRITIC_OUTPUT}}` in the report file.**
+
 #### 3c. Integration (main conversation)
 
 See [integration-format.md](references/integration-format.md) for integration rules and output format.
 
-**→ Present the final tables and causal chain for user approval. After approval, append Step 3 to the worklog (including Narrator outputs as intermediate artifacts). Confirm: Are the Situation/Stance classifications appropriate? Are the phase assignments correct? Is the abstraction level right? Are any common contexts missing? Does the causal chain accurately represent the demand structure?**
+**→ Present the final tables and causal chain for user approval. After approval, replace `{{STEP3_COMMON_PATTERNS}}` in the report file with the section heading and final tables. The content must include the `## 2.` section heading (e.g., '## 2. 3社に共通する行動パターン') as part of the replacement since the heading is not in the template. Confirm: Are the Situation/Stance classifications appropriate? Are the phase assignments correct? Is the abstraction level right? Are any common contexts missing? Does the causal chain accurately represent the demand structure?**
 
 **Single-case behavior**: When only one case exists, run Narrator + Analyst-Critic (Phase 3A-3B validation only). Skip Phase 1 Inventory, Phase 2 Cross-case Comparison, and Phase 3C Completeness Verification (these require multiple cases). Output a single-case context description. Cross-case synthesis happens when additional cases are added.
 
 ### 4. Analyze Demand Forces
 
-**I/O**: Input from worklog: Step 1 + Step 2 (per-case Fact Table + Background only — do NOT read Step 3 for 4a to preserve case independence). For 4b cross-case comparison, also read Step 3. Subagents read from worklog. Output to worklog: Step 4 section (4a + 4b + common narrative). → Write after confirmation gate.
+**I/O**: Input from report: appendix Fact Tables + Background/Events only for 4a (do NOT read Section 2 common patterns to preserve case independence). For 4b, also read Section 2. Subagents read from report file appendix only — they must NOT read the main body sections. Output: replace `{{STEP4_PERCASE_FORCES}}` (after 4a), `{{STEP4_CROSS_FORCES}}` and `{{STEP4_COMMON_NARRATIVE}}` (after 4b confirmation). → Replace after confirmation gate.
 
 Analyze the Switch dynamics for each case individually, then compare across cases. This is the first step where **interpretation** (fact-grounded inference) is permitted.
 
@@ -165,12 +170,12 @@ Forces are about an individual person's decision dynamics — analyze each perso
    Per-case output:
 
    > **Case [X] Hire時の力学**
-   > | 力 | 内容 | 根拠 (F-XX) | 強さ |
+   > | 力 | 強さ | 内容 | 根拠 (F-XX) |
    > Push（現状への不満・圧力）/ Pull（新しい選択肢の魅力）/ Anxiety（新しい選択肢への不安）/ Habit（現状維持の慣性） rows
    > **ナラティブ**: [How Forces interacted for this person]
    >
    > **Case [X] Re-hire時の力学**
-   > | 力 | 内容 | 根拠 (F-XX) | 強さ |
+   > | 力 | 強さ | 内容 | 根拠 (F-XX) |
    > Push / Pull / Anxiety / Habit rows
    > **ナラティブ**: [How Forces shifted from Hire to Re-hire. Note data constraints if thin.]
 
@@ -223,13 +228,13 @@ Forces are about an individual person's decision dynamics — analyze each perso
 >
 > **Re-hire時の共通因果フロー**: [同上。Hire時からの変化の共通構造を含む]
 
-**→ Present for user approval. After approval, append Step 4 to the worklog.**
+**→ Present for user approval. After approval, replace `{{STEP4_PERCASE_FORCES}}`, `{{STEP4_CROSS_FORCES}}`, and `{{STEP4_COMMON_NARRATIVE}}` in the report file.**
 
-**Single-case behavior**: When only one case exists, skip 4b (cross-case comparison). Produce the per-case Forces diagram (4a) and narrative only. Common Forces (CF-\*) are not generated. Proceed to Step 5 with per-case Forces as the input.
+**Single-case behavior**: When only one case exists, skip 4b (cross-case comparison). Produce the per-case Forces diagram (4a) and narrative only. Common Forces (CF-\*) are not generated. Replace `{{STEP4_CROSS_FORCES}}` and `{{STEP4_COMMON_NARRATIVE}}` with a note indicating single-case analysis (e.g., "単一ケース分析のため、クロスケース比較は省略"). Proceed to Step 5 with per-case Forces as the input.
 
 ### 5. Define Jobs (Hypotheses)
 
-**I/O**: Input from worklog: Step 3 + Step 4 (+ Step 1 for 5d verification only). Output to worklog: Step 5 section (Job Slots + candidates). → Write after confirmation gate.
+**I/O**: Input from report: Section 2 (common patterns) + Section 3 (cross-case Forces) + appendix Fact Tables (for 5d verification only). Output: replace `{{STEP5_SUMMARY_INTRO}}` and `{{STEP5_JOB_HYPOTHESES}}`. → Replace after confirmation gate.
 
 Synthesize the common context (Step 3) and Forces analysis (Step 4) into Job Statements. These are **hypotheses** — they require validation before acting on them. This step synthesizes only cross-case abstractions (P*-S*/P*-St* and CF-\*) into Job Statements. Different demand structures (e.g., different phases) may yield multiple Jobs.
 
@@ -287,17 +292,13 @@ Present surviving candidates in the following format:
 
 > ### ジョブ仮説候補
 >
-> #### 候補1（レンズ名）: [短いラベル]
+> #### 候補N: [短いラベル]
 >
-> > **When（どんな時に）** [situation],
-> > **I want to（～したい）** [motivation],
-> > **so that（そうすれば）** [expected progress].
->
-> | 句        | 根拠（共通抽象）          | 出典（Facts）          |
-> | --------- | ------------------------- | ---------------------- |
-> | When      | P1-S1, P1-S2, ...         | F-A2, F-B4, F-C6 他    |
-> | I want to | CF-Push1 + P1-St1, P1-St2 | F-A16, F-B16, F-C8 他  |
-> | So that   | CF-Pull1 + P2-S1          | F-A29, F-B22, F-C28 他 |
+> | 句               | 内容                | 根拠        | 出典      |
+> | ---------------- | ------------------- | ----------- | --------- |
+> | **どんな時に**   | [situation]         | P1-S1, ...  | F-XX, ... |
+> | **何をしたいか** | [motivation]        | CF-Push1, ...| F-XX, ... |
+> | **そうすれば**   | [expected progress] | CF-Pull1, ...| F-XX, ... |
 >
 > **このモデルが説明できること**: [What this candidate explains that others don't] > **このモデルが説明できないこと**: [Blind spots / limitations] > **代表的な顧客の言葉**: [Verbatim quote that best embodies this candidate]
 >
@@ -305,7 +306,7 @@ Present surviving candidates in the following format:
 >
 > _(Repeat for each surviving candidate.)_
 
-**→ Present candidates for user discussion. After approval, append Step 5 to the worklog. The user selects, combines, or modifies candidates to define the final Job Statement(s).**
+**→ Present candidates for user discussion. After approval, replace `{{STEP5_SUMMARY_INTRO}}` and `{{STEP5_JOB_HYPOTHESES}}` in the report file. Generate `{{STEP5_SUMMARY_INTRO}}` as a 1-2 sentence summary of the analysis results (e.g., number of job slots discovered, number of Emerging hypotheses). The user selects, combines, or modifies candidates to define the final Job Statement(s).**
 
 ## Output Language Rules
 
@@ -339,14 +340,3 @@ This skill is complete when all conditions are met:
 - The final statement is traceable to common contexts (P*-S*/P*-St*) and Common Forces (CF-_), with Facts (F-_) as supporting evidence
 - The user confirms analysis is complete, or directs additional investigation
 
-## Output Subcommand (`/job-discovery output`)
-
-Generate a shareable Markdown document from the completed analysis worklog.
-
-### Prerequisites
-
-- `job-discovery-worklog.md` exists in agent-memory and contains a Step 5 section
-- The worklog path is specified by the user or detected from conversation context
-- If the worklog is not found or Step 5 section is missing, display: **「worklogが見つからない、またはStep 5が完了していません。分析を先に完了してください」** and stop
-
-See [output-template.md](references/output-template.md) for implementation details and document template.

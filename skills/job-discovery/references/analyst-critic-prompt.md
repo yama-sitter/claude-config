@@ -1,6 +1,12 @@
 # Analyst-Critic Prompt (Step 3b)
 
-This prompt is sent to a single Analyst-Critic subagent after all Narrators complete. The subagent reads all cases' Step 1, Step 2, and Step 3a Narrator outputs (full text) from the worklog.
+This prompt is sent to a single Analyst-Critic subagent after all Narrators complete. The subagent reads all cases' data from the report file (`job-discovery-report.md`).
+
+**Data sources in the report file (appendix sections, each inside a `<details>` tag):**
+
+- **Fact Tables**: Locate the section with heading "ファクトテーブル（生データ）"
+- **Background/Events**: Locate the section with heading "ケースごとのストーリー（時系列）"
+- **Narrator outputs**: Locate the section with heading "ケースごとの状況分析（ナレーター）"
 
 ---
 
