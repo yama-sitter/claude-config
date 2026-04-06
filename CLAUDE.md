@@ -19,11 +19,13 @@
 ### When superpowers flow is active
 
 The superpowers flow is considered active when any of the following is true:
+
 - The user explicitly invoked `/superpowers:brainstorming`
 - The user explicitly requested superpowers usage (e.g., "use superpowers", "with the superpowers flow")
 - Implementation is being driven by a plan file in `docs/superpowers/plans/`
 
 When active:
+
 - Plan template → Use `superpowers:writing-plans` (do not use `plan-template.md`)
 - Plan review → Use superpowers subagent review
 - Plan storage → Save to `docs/superpowers/plans/` → Execution Handoff の前に Memory Guidelines の手順で `agent-memory` にも保存
@@ -44,3 +46,20 @@ This includes: direct code change requests, Plan Mode, or any task where the use
 - Even if `superpowers:brainstorming` would auto-trigger, prefer custom skills unless the user explicitly requested superpowers
 - Worktree operations always use the custom `worktree` skill (EnterWorktree/ExitWorktree), regardless of flow
 - Brainstorming/design always uses the custom `brainstorm` skill, unless the user explicitly requested superpowers
+
+## Session Management
+
+- One task per session. Use `/clear` to start the next task after completing the current one
+- Before switching tasks, save important decisions to memory (`/agent-memory`)
+- When planning and implementation happen in the same session, run `/compact` between phases
+- Prefer separate sessions for Plan Mode (planning) and implementation (plan file bridges the gap)
+
+## Compact Instructions
+
+When compacting, preserve:
+
+- The user's request and intent
+- File paths modified and a summary of changes
+- Incomplete tasks and their current state
+- Key technical decisions and their rationale
+- Errors encountered and how they were resolved
