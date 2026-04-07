@@ -129,6 +129,7 @@ Report path: `~/.agent-memory/<scope>/<date>_<topic>/job-discovery-report.md`
   - brief, facts, context: No inference. Observable behavior and verbatim quotes only. Exception: context Narrator Purpose allows action-pattern-based inference tagged as `[推定]` (see Narrator prompt).
   - forces: Fact-grounded interpretation permitted (Forces analysis — inferring demand dynamics from observed contexts).
   - jobs: Hypothesis synthesis permitted (Job definition — generating candidate Job Statements through multiple analytical lenses, filtering for quality, and presenting as discussion material for user selection).
+- レポートに書き込まれる出力（サブエージェント出力・統合結果）にファイルパス・plan参照・外部ファイル参照を含めてはならない — レポートは単体で完結する成果物であること
 
 ## Completion
 

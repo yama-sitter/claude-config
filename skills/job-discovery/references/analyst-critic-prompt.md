@@ -120,3 +120,4 @@ This prompt is sent to a single Analyst-Critic subagent after all Narrators comp
 > 5. Additional proposals: Patterns the comparison missed, identified from independent Fact Table reading
 >
 > Do NOT write the final integrated version yourself — provide comparison tables, validation verdicts, and gap reports only.
+> Do NOT include file paths, plan references, or any external file references in your output — your entire output will be embedded directly into the report and must be fully self-contained.

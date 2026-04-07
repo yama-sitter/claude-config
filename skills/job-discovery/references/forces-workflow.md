@@ -24,6 +24,8 @@ Launch one subagent per case in parallel. Each subagent receives only its own ca
 
 **RQ Isolation Rule**: Per-case Forces subagents analyze Switch dynamics from Fact Tables and Background/Events. The report header contains ANALYSIS_FOCUS and FRAME_AWARENESS — these define the research question, NOT the expected force structure. Subagents must derive Forces from observed behaviors, not from the RQ's assumed demand drivers.
 
+**Output containment**: Subagent output must NOT include file paths, plan references, or any external file references. All output will be embedded directly into the report and must be self-contained.
+
 Per-case output:
 
 > Apply Anchor formatting from report-template.md: reference sites use `[ID](#ID)`.

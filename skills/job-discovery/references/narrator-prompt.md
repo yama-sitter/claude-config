@@ -48,6 +48,7 @@ This prompt is sent to each Narrator subagent (one per case, launched in paralle
 >   the Fact Tables show, regardless of whether they align with the RQ's framing
 > - If a fact does not fit neatly into a defined phase, do NOT force it into the closest phase —
 >   report it as an out-of-phase signal instead
+> - Do NOT include file paths, plan references, or any external file references in your output — your entire output will be embedded directly into the report and must be fully self-contained
 >
 > If you encounter important moments — behavioral shifts, emotional expressions, or situation changes — that do not fit cleanly into any of the defined phases, do NOT discard them. Report them in a separate section at the end of your output:
 >
