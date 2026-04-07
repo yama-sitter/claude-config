@@ -41,7 +41,7 @@ This prompt is sent to each Narrator subagent (one per case, launched in paralle
 > Rules:
 >
 > - Do NOT include product experience (what happened after using the product) in Phase 1. Phase 2+ may reference post-experience observations as situations or stances
-> - Cite Fact identifiers (F-XX) for traceability
+> - Cite Fact identifiers as in-page links for traceability: `[A1](#A1)` (apply Anchor formatting from report-template.md)
 > - No inference of emotions or motivations not evidenced by quotes or observable behavior
 > - The report header contains ANALYSIS_FOCUS (the RQ) and FRAME_AWARENESS (the RQ's assumptions).
 >   These define the research question, NOT the expected answer. Describe situations based on what

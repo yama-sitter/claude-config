@@ -57,7 +57,7 @@ This prompt is sent to a single Analyst-Critic subagent after all Narrators comp
 >
 > Common pattern rules:
 >
-> - Each pattern must be traceable to specific Facts (F-XX) in both cases
+> - Each pattern must be traceable to specific Facts in both cases, cited as in-page links: `[A1](#A1)` (apply Anchor formatting from report-template.md)
 > - Do not over-abstract — "any business that needs staff" is too vague
 > - Note where one case's fit is weaker than the other's
 >

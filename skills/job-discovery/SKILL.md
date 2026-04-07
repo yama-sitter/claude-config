@@ -28,6 +28,7 @@ Discover Jobs-to-be-Done from raw customer data by climbing the Ladder of Infere
 | `context` | Extract common context across cases (Narrator → Analyst-Critic → Integration). → [context-workflow.md](references/context-workflow.md) |
 | `forces`  | Analyze demand forces (Push/Pull/Anxiety/Habit). Order with context is flexible. → [forces-workflow.md](references/forces-workflow.md) |
 | `jobs`    | Generate, filter, and present Job hypotheses. → [jobs-workflow.md](references/jobs-workflow.md)                                    |
+| `linkify` | Add in-page anchor links to an existing report's identifiers. → [linkify-workflow.md](references/linkify-workflow.md)              |
 
 Read the linked workflow file and follow its instructions.
 

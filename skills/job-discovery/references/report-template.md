@@ -11,6 +11,11 @@ Design principles (apply when writing content into placeholders):
 - Hide internal process: No lens names, Step numbers, or skill-internal terminology in main sections
 - Appendix is collapsible: Use <details> tags for raw data
 - List formatting in tables: Use comma-separated format "A: x, B: y, C: z" for Notion compatibility. Do NOT use <br> tags
+- Anchor formatting (in-page links for traceability):
+  - Definition (identifier first appears in a table's first column): `<span id="ID">ID</span>`
+  - Reference (根拠/出典 columns, parenthesized citations, causal chain prose): `[ID](#ID)`
+  - Range references: `[A3](#A3)-[A5](#A5)` (link start and end points)
+  - Causal chain prose: `[P1-S1](#P1-S1)（description）→ [P1-St1](#P1-St1)（description）`
 -->
 
 ## Placeholder Reference

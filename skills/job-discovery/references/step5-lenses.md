@@ -35,6 +35,7 @@ Note: Emotional/Social Jobs often share the When clause with Functional Jobs but
 
 ## Traceability Rules (apply to all lenses)
 
+- Apply Anchor formatting from report-template.md: all identifier references in 根拠/出典 columns use `[ID](#ID)` link format
 - A clause with an empty 根拠 column is prohibited — every clause must be grounded in cross-case abstractions (P*-S*/P*-St* and/or CF-\*)
 - The 出典 column is optional — it provides supporting evidence from individual Facts
 - Per-case Forces (4a) MUST NOT appear in the 根拠 column — they are individual-level analysis, not cross-case abstractions

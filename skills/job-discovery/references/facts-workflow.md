@@ -27,12 +27,13 @@ On start, check the report file for owned placeholders:
 
 List observable behaviors and verbatim quotes. Separate what happened from why it happened.
 
-Output as a table:
+Output as a table (apply Anchor formatting from report-template.md — wrap identifiers in the # column with `<span id="ID">ID</span>`):
 
 | #   | 誰が | 何をした・何を言った（逐語） | 状況（いつ、どこで） |
 | --- | ---- | ---------------------------- | -------------------- |
+| <span id="A1">A1</span> | ... | ... | ... |
 
-Identifier format: `F-{Case}{Number}` (e.g., F-A1, F-B1, F-C1). F = Fact, A/B/C = case identifier.
+Identifier format: `{Case}{Number}` (e.g., A1, B1, C1). Case letter = case identifier from the case table.
 
 **For lengthy source material** (requiring multiple Read calls):
 
@@ -66,10 +67,10 @@ Arrange facts from Step 1 chronologically. Separate **Background** (ongoing stru
 Output format:
 
 > **前提条件**（サービス利用を決める前から存在していた構造的条件）
-> ファクト: [F-XX, ...]
+> ファクト: [[A1](#A1), [A3](#A3), ...]（Anchor formatting: リンク形式で記載）
 > 要約: [構造的条件 — 事業環境、継続的な制約、リソースの限界]
 >
-> **時系列の出来事** > [F-XX in time order with brief period labels]
+> **時系列の出来事** > [Fact IDs in time order with brief period labels, linked as [A1](#A1)]
 
 For large fact sets (30+ facts): Launch a subagent, then self-review for completeness.
 
@@ -109,6 +110,8 @@ Output format:
 > **フェーズ定義**
 >
 > | # | フェーズ名 | 開始の目印（データ上の観察可能なシグナル） | 該当ファクト | Switch決定 |
+>
+> 該当ファクト列はリンク形式で記載: `[A1](#A1), [A3](#A3)-[A5](#A5)`
 >
 > **RQの前提との比較**:
 > - RQが暗黙に想定していたフェーズ構造: [...]

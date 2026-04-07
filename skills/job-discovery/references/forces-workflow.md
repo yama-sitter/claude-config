@@ -26,13 +26,16 @@ Launch one subagent per case in parallel. Each subagent receives only its own ca
 
 Per-case output:
 
+> Apply Anchor formatting from report-template.md: reference sites use `[ID](#ID)`.
+>
 > **Case [X] Hire時の力学**
-> | 力 | 強さ | 内容 | 根拠 (F-XX) |
+> | 力 | 強さ | 内容 | 根拠 |
 > Push（現状への不満・圧力）/ Pull（新しい選択肢の魅力）/ Anxiety（新しい選択肢への不安）/ Habit（現状維持の慣性） rows
+> 根拠列はリンク形式: `[A2](#A2)-[A5](#A5)`, `[B7](#B7)`
 > **ナラティブ**: [How Forces interacted for this person]
 >
 > **Case [X] Re-hire時の力学**
-> | 力 | 強さ | 内容 | 根拠 (F-XX) |
+> | 力 | 強さ | 内容 | 根拠 |
 > Push / Pull / Anxiety / Habit rows
 > **ナラティブ**: [How Forces shifted from Hire to Re-hire. Note data constraints if thin.]
 
@@ -72,9 +75,12 @@ Output format:
 
 > ### ケース横断比較 (4b)
 >
+> Apply Anchor formatting: CF-# column uses `<span id="CF-Push1">CF-Push1</span>`. Fact references in Case columns use link format: `面接コスト大([A2](#A2)-[A5](#A5))`.
+>
 > #### Hire時
 >
 > | CF-# | 力 | 共通の力学 | Case A の特徴 | Case B の特徴 |
+> | <span id="CF-Push1">CF-Push1</span> | Push・強 | ... | ...([A2](#A2)-[A5](#A5)) | ...([B4](#B4),[B7](#B7)) |
 > **最も強い力**: [Per case and overall]
 >
 > #### Re-hire時

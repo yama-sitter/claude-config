@@ -28,27 +28,33 @@ After receiving the Analyst-Critic's output, integrate in the main conversation 
 
 ## Output Format
 
+> Apply Anchor formatting from report-template.md: definition sites use `<span id="ID">ID</span>`, reference sites use `[ID](#ID)`.
+>
 > ### フェーズ1: [phase name]
 >
 > #### 共通状況
 >
 > | P1-S# | パターン | 3社での現れ方 | 出典 |
+> | <span id="P1-S1">P1-S1</span> | ... | ... | [A3](#A3)-[A5](#A5), [B7](#B7) |
 >
 > #### 共通の構え
 >
 > | P1-St# | 構え | 由来する状況 | 出典 |
+> | <span id="P1-St1">P1-St1</span> | ... | [P1-S1](#P1-S1) | [A6](#A6), [B4](#B4) |
 >
 > ### フェーズ2: [phase name]
 >
 > #### 共通状況
 >
 > | P2-S# | 変化タグ | パターン | 3社での現れ方 | 出典 |
+> | <span id="P2-S1">P2-S1</span> | 新規 | ... | ... | [A14](#A14), [B18](#B18) |
 >
 > (変化タグ: 継続 / 変化 / 新規)
 >
 > #### 共通の構え
 >
 > | P2-St# | 変化タグ | 構え | 由来する状況 | 出典 |
+> | <span id="P2-St1">P2-St1</span> | 変化 | ... | [P2-S1](#P2-S1) × [P1-St2](#P1-St2) | [A16](#A16), [B15](#B15) |
 >
 > _(Repeat for each additional phase)_
 >
@@ -62,7 +68,7 @@ After receiving the Analyst-Critic's output, integrate in the main conversation 
 >
 > ### 因果チェーン
 >
-> Describe the causal relationships between patterns using the following notation:
+> Describe the causal relationships between patterns using the following notation. All pattern references in the causal chain must be linked: `[P1-S1](#P1-S1)（description）→ [P1-St1](#P1-St1)（description）`
 >
 > - `→`: A situation/stance generates another stance
 > - `×`: Multiple conditions combine to produce a stance

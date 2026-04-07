@@ -81,11 +81,13 @@ Present surviving candidates in the following format:
 >
 > #### 候補N: [短いラベル]
 >
+> Apply Anchor formatting from report-template.md: all identifier references use `[ID](#ID)`.
+>
 > | 句               | 内容                | 根拠          | 出典      |
 > | ---------------- | ------------------- | ------------- | --------- |
-> | **どんな時に**   | [situation]         | P1-S1, ...    | F-XX, ... |
-> | **何をしたいか** | [motivation]        | CF-Push1, ... | F-XX, ... |
-> | **そうすれば**   | [expected progress] | CF-Pull1, ... | F-XX, ... |
+> | **どんな時に**   | [situation]         | [P1-S1](#P1-S1), ...    | [A1](#A1), ... |
+> | **何をしたいか** | [motivation]        | [CF-Push1](#CF-Push1), ... | [A2](#A2), ... |
+> | **そうすれば**   | [expected progress] | [CF-Pull1](#CF-Pull1), ... | [B3](#B3), ... |
 >
 > **このモデルが説明できること**: [What this candidate explains that others don't] > **このモデルが説明できないこと**: [Blind spots / limitations] > **代表的な顧客の言葉**: [Verbatim quote that best embodies this candidate]
 >
