@@ -58,7 +58,6 @@ Compare 4a's per-case Forces across cases to identify common dynamics:
 4. Forces observed in only 1 case → retain in 4a only; do not include in 4b Common dynamics
 
 **Section 2 reference (use as reference, not ground truth)**: If Section 2 exists, read it and note how Purpose divergence manifests in Force dynamics. However:
-
 - Section 2 patterns were derived from phases that may reflect RQ assumptions. Do NOT let Section 2's categorization override your independent reading of Forces from the Fact Tables
 - If you observe Force patterns that suggest different purposes or dynamics than Section 2 presents, note them explicitly as "Section 2との乖離"
 - If Section 2 is not yet available, proceed without it — this does not diminish the validity of your Forces analysis
@@ -89,17 +88,7 @@ Output format:
 >
 > **Re-hire時の共通因果フロー**: [同上。Hire時からの変化の共通構造を含む]
 
-**Cross-case table cell rules** (applies to all per-case columns):
-
-- ALWAYS base cell text on the 4a output's「内容」column. Shorten only if meaning is preserved
-- ALWAYS include Fact references (F-XX) in each case's cell
-- NEVER add evaluative or interpretive words not present in the source facts (e.g., "信頼喪失", "効果なし")
-- ALWAYS preserve quantitative information (amounts, counts, periods) when present in the original
-- ALWAYS preserve contextual preconditions (e.g., "知人から聞いた上で" as decision background) — do not omit them for brevity
-
 ## Confirmation Gate
-
-Before presenting for approval, verify: (a) each per-case cell includes at least one F-XX reference, (b) no evaluative words absent from the source facts have been introduced, (c) any quantitative information from the original is preserved.
 
 Present for user approval. After approval, replace `{{STEP4_CROSS_FORCES}}` and `{{STEP4_COMMON_NARRATIVE}}` in the report file.
 
