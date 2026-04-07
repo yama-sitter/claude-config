@@ -77,8 +77,8 @@ For large fact sets (30+ facts): Launch a subagent, then self-review for complet
 
 Self-review two things, then present for user approval. After approval, replace `{{STEP2_BACKGROUND_EVENTS}}` in the report file:
 
-1. **網羅性**: Step 1の全ファクトが「前提条件」または「時系列の出来事」のいずれかに配置されていること
-2. **データの充足性**: 分析の焦点（scope で定義）に対して十分なデータがあること。焦点の方向に対してデータが薄い・欠けている領域があれば報告する
+1. **Completeness**: Every Fact from Step 1 is placed in either Background or Events — none are missing
+2. **Data sufficiency**: Sufficient data exists for the analysis focus (defined in scope). Report any areas where data is thin or missing relative to the focus direction
 
 If data sufficiency issues are found, present the user with options: (a) return to data collection, (b) continue with the constraint noted, or (c) stop.
 
