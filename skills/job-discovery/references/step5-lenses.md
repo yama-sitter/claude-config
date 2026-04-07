@@ -39,3 +39,8 @@ Note: Emotional/Social Jobs often share the When clause with Functional Jobs but
 - The 出典 column is optional — it provides supporting evidence from individual Facts
 - Per-case Forces (4a) MUST NOT appear in the 根拠 column — they are individual-level analysis, not cross-case abstractions
 - For Lens 3, emotional/social signals from individual Facts (F-XX) may appear in the 根拠 column when no cross-case abstraction captures the emotional dimension. In this case, cite the Facts directly and note that the pattern is observed across 2+ cases
+
+## RQ Bias Guard (apply to all lenses)
+
+- P*-S*/P*-St* patterns and CF-* forces were derived from data, but through phases and dimensions that may reflect RQ assumptions. When a lens output closely mirrors the RQ's expected demand structure, verify independently against Step 1 Fact Tables that this structure is data-grounded, not RQ-inherited
+- Lens 1 (Belief Chain) is the strongest RQ-independence check because it starts from verbatim customer quotes. If Lens 1 outputs diverge significantly from Lens 2 outputs, this may indicate that Section 2 patterns (used by Lens 2) have been RQ-influenced — flag this divergence for the user and present both candidate sets in 5e for comparison

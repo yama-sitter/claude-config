@@ -20,6 +20,8 @@ Extract the common contexts across cases **for each phase** defined in facts Ste
 
 **Input**: The case's Fact Table (Step 1) + Background (Step 2) + Phase definitions (facts Step 3). **Data source**: Pass the report file path to the subagent. The subagent reads its own case's Fact Table and Background/Events from the report file appendix, and phase definitions from the "フェーズ定義" appendix section (inside a `<details>` tag).
 
+**RQ Isolation Rule**: The Narrator's task is to describe situations from raw data, not to validate the RQ. When instructing the Narrator subagent, emphasize that ANALYSIS_FOCUS and FRAME_AWARENESS in the report header define the research question — they are NOT the expected findings. The Narrator must derive narratives from Fact Tables and Background/Events, not from the RQ's framing.
+
 See [narrator-prompt.md](narrator-prompt.md) for the full Narrator prompt.
 
 **Output**: One narrative per phase per case, with Fact citations.

@@ -17,6 +17,16 @@ This prompt is sent to a single Analyst-Critic subagent after all Narrators comp
 >
 > **Phase 1-2: Inventory and Cross-case Comparison**
 >
+> **PRE-CHECK: Read the Frame Awareness section in the report header BEFORE creating your inventory.**
+>
+> Note what the RQ assumes about:
+> - Phase structure (e.g., linear progression, specific boundaries)
+> - Purpose structure (e.g., single purpose for Hire/Re-hire)
+> - Demand drivers (e.g., which forces the RQ implicitly emphasizes)
+>
+> As you build your inventory, maintain awareness of these assumptions. If you find inventory items
+> that CONTRADICT or FALL OUTSIDE these assumptions, they are HIGH VALUE signals — do not minimize them.
+>
 > Before comparing, first extract and list ALL items from each Narrator output under each category to create an inventory:
 >
 > - Background constraints (list each one)
@@ -36,6 +46,10 @@ This prompt is sent to a single Analyst-Critic subagent after all Narrators comp
 > Then, using this inventory, compare across cases and extract common patterns **for each phase**:
 >
 > 1. Derive **dimensions** for comparison from the inventory. Each inventory category (Background constraints, Structural affordances, Purpose, Struggling moment, Why now, Situations, Stances) is a **mandatory candidate dimension** — evaluate whether it yields a cross-case pattern. Additionally, as a checklist against blind spots, consider whether any of the following are present in the data: decision-making structure, information acquisition path, task characteristics, geographic/physical constraints, relationship with alternatives, evaluation behavior during decision-making. Only add dimensions that are actually evidenced.
+> 6. Finally, review the Frame Awareness section and identify dimensions that:
+>    - ARE present in the Inventory but NOT mentioned in the RQ's frame
+>    - CONTRADICT the RQ's assumed purposes or phase structure
+>    Add these contrastive dimensions to your candidate list before filtering for evidence.
 > 2. For each dimension, describe each case's situation and write a tentative **common pattern**
 > 3. For each dimension, check whether cases are using the solution for the same purpose or for divergent purposes. If purposes diverge, note this in the table — it may indicate different Jobs within the same phase
 > 4. Produce separate tables for each phase defined in the analysis setup
@@ -78,7 +92,10 @@ This prompt is sent to a single Analyst-Critic subagent after all Narrators comp
 > 6. **Evidence strength**: Is each case's evidence based on recorded behavior/quotes, or merely a stated attitude? Flag weak evidence in Discrepancies.
 > 7. **Pattern nature**: Is each entry a "common pattern" (shared across cases) or a "difference description" (contrasting cases)? Differences belong in Discrepancies, not as standalone patterns.
 > 8. **Functional bias check**: Are any patterns presented as purely functional (operational efficiency, cost, speed) that also contain emotional signals (relief, security, liberation from worry) or social signals (identity, peer perception, industry positioning) in the original verbatim quotes? If so, note the emotional/social dimension and recommend whether it should be a separate pattern or an annotation on the existing pattern.
-> 9. **Frame blindness check**: Review the Frame Awareness section in the report header. Are there signals in the data that fall outside the RQ's frame? Specifically, check whether the Narrator's Purpose entries reveal divergent use cases not captured by the current pattern set.
+> 9. **Frame blindness check**: Compare the patterns you extracted in Phase 1-2 against the Frame Awareness section. Specifically:
+>    - Are there patterns that ONLY exist because the RQ assumed a particular phase structure? (If the phases were drawn differently, would this pattern dissolve?)
+>    - Are there facts in the Fact Tables that do NOT appear in ANY pattern? These omissions may indicate RQ-driven blind spots
+>    - Do the Purpose entries reveal use cases not anticipated by the RQ? If so, flag as HIGH PRIORITY
 > 10. **Phase boundary check**: Review Narrator outputs for any out-of-phase signals (listed in "フェーズ外のシグナル" sections). If 2 or more Narrators flag the same kind of out-of-phase signal, flag it as a potential phase definition issue and recommend specific revisions to the phase boundaries.
 >
 > Additionally: identify any common patterns the comparison missed, based on your independent reading of the Facts.

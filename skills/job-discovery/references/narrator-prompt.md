@@ -43,6 +43,11 @@ This prompt is sent to each Narrator subagent (one per case, launched in paralle
 > - Do NOT include product experience (what happened after using the product) in Phase 1. Phase 2+ may reference post-experience observations as situations or stances
 > - Cite Fact identifiers (F-XX) for traceability
 > - No inference of emotions or motivations not evidenced by quotes or observable behavior
+> - The report header contains ANALYSIS_FOCUS (the RQ) and FRAME_AWARENESS (the RQ's assumptions).
+>   These define the research question, NOT the expected answer. Describe situations based on what
+>   the Fact Tables show, regardless of whether they align with the RQ's framing
+> - If a fact does not fit neatly into a defined phase, do NOT force it into the closest phase —
+>   report it as an out-of-phase signal instead
 >
 > If you encounter important moments — behavioral shifts, emotional expressions, or situation changes — that do not fit cleanly into any of the defined phases, do NOT discard them. Report them in a separate section at the end of your output:
 >

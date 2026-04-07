@@ -18,6 +18,14 @@ Synthesize the common context (context subcommand) and Forces analysis (forces s
 - Section 3 (cross-case Forces): Common Forces (CF-\*) + 共通ナラティブ
 - Appendix Fact Tables (for hypothesis verification in 5d only — NOT for 根拠 column)
 
+### Pre-enumeration: RQ Assumptions Audit
+
+BEFORE enumerating candidates, read and record:
+1. The Frame Awareness section (RQ's explicit assumptions about demand structure)
+2. The "RQの前提との比較" table from facts Step 3's phase definitions
+
+Write down the RQ's assumptions about phase structure, purpose, and dominant forces. Keep this list visible throughout 5a-5e. The goal: ensure candidates that DON'T match the RQ's assumptions receive equal consideration. Candidates that contradict the RQ are often the most valuable discoveries.
+
 ### 5a. Job candidate enumeration
 
 List candidate Jobs using the following axes (in priority order):

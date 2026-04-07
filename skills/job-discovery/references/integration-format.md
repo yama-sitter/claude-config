@@ -9,7 +9,7 @@ After receiving the Analyst-Critic's output, integrate in the main conversation 
 3. Apply Phase × Layer (Situation/Stance) classification
 4. Compose the final tables per phase (including Purpose comparison tables — see output format below)
 5. Write a **causal chain** connecting patterns across phases
-6. **Causal chain self-verification**: After composing the causal chain, verify: (a) every pattern (P\*-S\*, P\*-St\*) participates in at least one chain, (b) each arrow's causal claim is supported by Fact Table evidence, (c) any isolated pattern (belongs to no chain) is truly independent or should be merged
+6. **Causal chain self-verification**: After composing the causal chain, verify: (a) every pattern (P\*-S\*, P\*-St\*) participates in at least one chain, (b) each arrow's causal claim is supported by Fact Table evidence, (c) any isolated pattern (belongs to no chain) is truly independent or should be merged, (d) **RQ-direction check**: if the causal chain follows the RQ's assumed phase progression exactly, verify this structure is grounded in cross-case data (not merely inherited from phase definitions). Check Narrator out-of-phase signals and Analyst-Critic Purpose divergence for evidence of alternative causal structures
 
 ## Rules
 

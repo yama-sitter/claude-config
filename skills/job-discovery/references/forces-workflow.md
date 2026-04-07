@@ -22,6 +22,8 @@ Forces are about an individual person's decision dynamics — analyze each perso
 
 Launch one subagent per case in parallel. Each subagent receives only its own case's Fact Table + Background, ensuring no cross-case anchoring. The subagent produces a Forces diagram + narrative.
 
+**RQ Isolation Rule**: Per-case Forces subagents analyze Switch dynamics from Fact Tables and Background/Events. The report header contains ANALYSIS_FOCUS and FRAME_AWARENESS — these define the research question, NOT the expected force structure. Subagents must derive Forces from observed behaviors, not from the RQ's assumed demand drivers.
+
 Per-case output:
 
 > **Case [X] Hire時の力学**
@@ -55,7 +57,10 @@ Compare 4a's per-case Forces across cases to identify common dynamics:
 3. Record case-specific differences within each Common Force (same direction but different intensity or manifestation)
 4. Forces observed in only 1 case → retain in 4a only; do not include in 4b Common dynamics
 
-**Section 2 reference**: If the context subcommand has been completed (Section 2 exists in report), read it and note how Purpose divergence identified there manifests as different Force dynamics in the common narrative. If Section 2 is not yet available, proceed without it.
+**Section 2 reference (use as reference, not ground truth)**: If Section 2 exists, read it and note how Purpose divergence manifests in Force dynamics. However:
+- Section 2 patterns were derived from phases that may reflect RQ assumptions. Do NOT let Section 2's categorization override your independent reading of Forces from the Fact Tables
+- If you observe Force patterns that suggest different purposes or dynamics than Section 2 presents, note them explicitly as "Section 2との乖離"
+- If Section 2 is not yet available, proceed without it — this does not diminish the validity of your Forces analysis
 
 Judge relative strength using three axes:
 
