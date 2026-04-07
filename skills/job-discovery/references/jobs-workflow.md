@@ -21,6 +21,7 @@ Synthesize the common context (context subcommand) and Forces analysis (forces s
 ### Pre-enumeration: RQ Assumptions Audit
 
 BEFORE enumerating candidates, read and record:
+
 1. The Frame Awareness section (RQ's explicit assumptions about demand structure)
 2. The "RQの前提との比較" table from facts Step 3's phase definitions
 
@@ -36,17 +37,22 @@ List candidate Jobs using the following axes (in priority order):
 
 Output: numbered list of Job candidates with the source evidence (CF-_ Dominant Force, P_-S*/P*-St\* items).
 
+List candidates from each axis independently. Do NOT merge candidates across axes at this stage — 5b handles consolidation. A single phase may yield multiple candidates if Axis 2 or Axis 3 identifies distinct motivation structures within it.
+
 ### 5b. Consolidation / separation decision
 
 For each candidate pair, apply these criteria:
 
 - **Separate** if Dominant Forces differ (even when the When clause overlaps — different motivation structures = different Jobs)
-- **Merge** if candidates share both Dominant Force and motivation direction — state the merge rationale explicitly
+- **Merge** only when ALL three conditions hold: (1) same Dominant Force, (2) same motivation direction, AND (3) same Progress pathway (the desired outcome follows the same causal route). State the merge rationale AND explicitly note what analytical nuance is lost by merging.
+- Even if (1) and (2) hold, if candidates were listed under different axes in 5a (e.g., one from Phase split, another from Stance signals), default to keeping them separate unless Progress is demonstrably identical.
 - **Emerging label**: Jobs where the CF-\* cited in the 根拠 column is observed in fewer than half of the total cases receive the `[Emerging]` label and must include evidence strength (e.g., "2 of 5 cases")
 
 If only one Job remains after consolidation, state why consolidation is justified.
 
 Output: final Job list with separation/merge rationale.
+
+Note: Job hypotheses are discussion material, not final answers. The goal of 5b is to preserve meaningful analytical distinctions, not to minimize candidate count. When in doubt, keep candidates separate — 5d (quality filter) will remove genuine redundancies.
 
 ### 5c. Multi-lens Job Statement generation
 
@@ -75,15 +81,13 @@ Present surviving candidates in the following format:
 >
 > #### 候補N: [短いラベル]
 >
-> | 句               | 内容                | 根拠        | 出典      |
-> | ---------------- | ------------------- | ----------- | --------- |
-> | **どんな時に**   | [situation]         | P1-S1, ...  | F-XX, ... |
-> | **何をしたいか** | [motivation]        | CF-Push1, ...| F-XX, ... |
-> | **そうすれば**   | [expected progress] | CF-Pull1, ...| F-XX, ... |
+> | 句               | 内容                | 根拠          | 出典      |
+> | ---------------- | ------------------- | ------------- | --------- |
+> | **どんな時に**   | [situation]         | P1-S1, ...    | F-XX, ... |
+> | **何をしたいか** | [motivation]        | CF-Push1, ... | F-XX, ... |
+> | **そうすれば**   | [expected progress] | CF-Pull1, ... | F-XX, ... |
 >
-> **このモデルが説明できること**: [What this candidate explains that others don't]
-> **このモデルが説明できないこと**: [Blind spots / limitations]
-> **代表的な顧客の言葉**: [Verbatim quote that best embodies this candidate]
+> **このモデルが説明できること**: [What this candidate explains that others don't] > **このモデルが説明できないこと**: [Blind spots / limitations] > **代表的な顧客の言葉**: [Verbatim quote that best embodies this candidate]
 >
 > この仮説の限界・前提: [Conditions, verification needs]
 >
@@ -99,11 +103,11 @@ Output format:
 
 > ### RQコントラスト
 >
-> | 観点 | RQが前提としていたこと | データが示したこと | 差分 |
-> | --- | --- | --- | --- |
-> | フェーズ構造 | [...] | [...] | [...] |
-> | 需要の構造 | [...] | [...] | [...] |
-> | 顧客の目的 | [...] | [...] | [...] |
+> | 観点         | RQが前提としていたこと | データが示したこと | 差分  |
+> | ------------ | ---------------------- | ------------------ | ----- |
+> | フェーズ構造 | [...]                  | [...]              | [...] |
+> | 需要の構造   | [...]                  | [...]              | [...] |
+> | 顧客の目的   | [...]                  | [...]              | [...] |
 >
 > **発見のハイライト**: [1-2 sentences summarizing the most significant delta — where the RQ's assumptions were most overturned by the data]
 
