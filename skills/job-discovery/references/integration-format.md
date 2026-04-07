@@ -8,8 +8,9 @@ After receiving the Analyst-Critic's output, integrate in the main conversation 
 2. Reflect the Analyst-Critic's validation report: apply revisions, remove rejected patterns, add proposed patterns
 3. Apply Phase × Layer (Situation/Stance) classification
 4. Compose the final tables per phase (including Purpose comparison tables — see output format below)
-5. Write a **causal chain** connecting patterns across phases
-6. **Causal chain self-verification**: After composing the causal chain, verify: (a) every pattern (P\*-S\*, P\*-St\*) participates in at least one chain, (b) each arrow's causal claim is supported by Fact Table evidence, (c) any isolated pattern (belongs to no chain) is truly independent or should be merged, (d) **RQ-direction check**: if the causal chain follows the RQ's assumed phase progression exactly, verify this structure is grounded in cross-case data (not merely inherited from phase definitions). Check Narrator out-of-phase signals and Analyst-Critic Purpose divergence for evidence of alternative causal structures
+5. **Evidence count verification**: For each pattern adopted from the Analyst-Critic, check the Evidence count column. If Evidence count < total cases, append `（N=X/Y）` to the pattern in the final table. If Evidence count = N=1/Y, do NOT include it as a common pattern — move it to the causal chain as a `※ Purpose` annotation or carry forward as an [Emerging] signal for Step 5
+6. Write a **causal chain** connecting patterns across phases
+7. **Causal chain self-verification**: After composing the causal chain, verify: (a) every pattern (P\*-S\*, P\*-St\*) participates in at least one chain, (b) each arrow's causal claim is supported by Fact Table evidence, (c) any isolated pattern (belongs to no chain) is truly independent or should be merged, (d) **RQ-direction check**: if the causal chain follows the RQ's assumed phase progression exactly, verify this structure is grounded in cross-case data (not merely inherited from phase definitions). Check Narrator out-of-phase signals and Analyst-Critic Purpose divergence for evidence of alternative causal structures
 
 ## Rules
 
@@ -68,9 +69,10 @@ After receiving the Analyst-Critic's output, integrate in the main conversation 
 > - `×`: Multiple conditions combine to produce a stance
 > - `※`: Annotate a pattern's analytical role (前提条件 = precondition that made this solution viable / 促進条件 = accelerant that enabled quick action)
 > - Use block headings to label demand structure phases (e.g., Hire需要の形成 / 体験による需要構造の変化 / Re-hire需要の構造)
+
 - If Narrator out-of-phase signals were validated by the Analyst-Critic, annotate them in the causal chain with `※ フェーズ外:` prefix
-> - For Purpose divergence: Include a 1-line summary in the relevant block heading (e.g., "Purpose divergence: A=量的確保, B=スカウト+休息, C=休息+拡張"). Single-case purposes that were not promoted to P*-S* should be noted as `※ Purpose [Case]: [description] (1ケースのみ)` — carry forward as an [Emerging] signal for Step 5
->
-> Every pattern must participate in at least one chain. If a pattern is isolated (belongs to no chain), reconsider whether it is truly independent or should be merged.
->
-> **Note**: The Narrator's Purpose entries and Analyst-Critic's Purpose divergence analysis are intermediate artifacts that inform the Purpose comparison table and causal chain. Purposes that are common across 2+ cases should be promoted to P*-S* patterns. Single-case purposes are captured in the causal chain annotations.
+  > - For Purpose divergence: Include a 1-line summary in the relevant block heading (e.g., "Purpose divergence: A=量的確保, B=スカウト+休息, C=休息+拡張"). Single-case purposes that were not promoted to P*-S* should be noted as `※ Purpose [Case]: [description] (1ケースのみ)` — carry forward as an [Emerging] signal for Step 5
+  >
+  > Every pattern must participate in at least one chain. If a pattern is isolated (belongs to no chain), reconsider whether it is truly independent or should be merged.
+  >
+  > **Note**: The Narrator's Purpose entries and Analyst-Critic's Purpose divergence analysis are intermediate artifacts that inform the Purpose comparison table and causal chain. Purposes that are common across 2+ cases should be promoted to P*-S* patterns. Single-case purposes are captured in the causal chain annotations.
