@@ -10,7 +10,7 @@
 
 ## Workflow
 
-Extract the common contexts across cases **for each phase** defined in the scope — the circumstances that created demand for the Hire decision and how they evolved across phases. This step uses two stages of subagents: Narrators (one per case, in parallel) and an Analyst-Critic (cross-case comparison + validation in a single pass).
+Extract the common contexts across cases **for each phase** defined in facts Step 3 — the circumstances that created demand for the Hire decision and how they evolved across phases. This step uses two stages of subagents: Narrators (one per case, in parallel) and an Analyst-Critic (cross-case comparison + validation in a single pass).
 
 **"Situation" in JTBD** means the conditions in the person's business/life — NOT the product experience. A situation describes _why demand arose_, not _what happened after using the product_. Each phase captures situations and stances at that point in the journey.
 
@@ -18,7 +18,7 @@ Extract the common contexts across cases **for each phase** defined in the scope
 
 ### 3a. Narrator (launch one per case, in parallel)
 
-**Input**: The case's Fact Table (Step 1) + Background (Step 2) + Phase definitions (scope). **Data source**: Pass the report file path to the subagent. The subagent reads its own case's Fact Table and Background/Events from the report file appendix (locate by section headings).
+**Input**: The case's Fact Table (Step 1) + Background (Step 2) + Phase definitions (facts Step 3). **Data source**: Pass the report file path to the subagent. The subagent reads its own case's Fact Table and Background/Events from the report file appendix, and phase definitions from the "フェーズ定義" appendix section (inside a `<details>` tag).
 
 See [narrator-prompt.md](narrator-prompt.md) for the full Narrator prompt.
 
@@ -28,7 +28,7 @@ See [narrator-prompt.md](narrator-prompt.md) for the full Narrator prompt.
 
 ### 3b. Analyst-Critic (launch one)
 
-**Input**: All Narrator outputs + all Fact Tables + Background (Step 2) + Phase definitions (scope). **Data source**: Pass the report file path to the subagent. The subagent reads all cases' Fact Tables, Background/Events, and Narrator outputs from the report file appendix (locate by section headings).
+**Input**: All Narrator outputs + all Fact Tables + Background (Step 2) + Phase definitions (facts Step 3). **Data source**: Pass the report file path to the subagent. The subagent reads all cases' Fact Tables, Background/Events, and Narrator outputs from the report file appendix, and phase definitions from the "フェーズ定義" appendix section (inside a `<details>` tag).
 
 See [analyst-critic-prompt.md](analyst-critic-prompt.md) for the full Analyst-Critic prompt.
 
@@ -45,6 +45,8 @@ See [integration-format.md](integration-format.md) for integration rules and out
 Present the final tables and causal chain for user approval. After approval, replace `{{STEP3_COMMON_PATTERNS}}` in the report file with the section heading and final tables. The content must include the `## 2.` section heading (e.g., '## 2. 3社に共通する行動パターン') as part of the replacement since the heading is not in the template.
 
 Confirm: Are the Situation/Stance classifications appropriate? Are the phase assignments correct? Is the abstraction level right? Are any common contexts missing? Does the causal chain accurately represent the demand structure?
+
+If Narrator out-of-phase signals were flagged and validated by the Analyst-Critic as potential phase boundary issues, report them to the user with options: (a) return to facts Step 3 to revise phase definitions, then re-run context; (b) continue with current phase definitions (out-of-phase signals will be considered in jobs Step 5); (c) stop and return to data collection.
 
 ## Single-case Behavior
 

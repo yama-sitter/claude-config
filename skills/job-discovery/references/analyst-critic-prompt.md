@@ -4,6 +4,7 @@ This prompt is sent to a single Analyst-Critic subagent after all Narrators comp
 
 **Data sources in the report file (appendix sections, each inside a `<details>` tag):**
 
+- **Phase definitions**: Locate the section with heading "フェーズ定義"
 - **Fact Tables**: Locate the section with heading "ファクトテーブル（生データ）"
 - **Background/Events**: Locate the section with heading "ケースごとのストーリー（時系列）"
 - **Narrator outputs**: Locate the section with heading "ケースごとの状況分析（ナレーター）"
@@ -77,7 +78,8 @@ This prompt is sent to a single Analyst-Critic subagent after all Narrators comp
 > 6. **Evidence strength**: Is each case's evidence based on recorded behavior/quotes, or merely a stated attitude? Flag weak evidence in Discrepancies.
 > 7. **Pattern nature**: Is each entry a "common pattern" (shared across cases) or a "difference description" (contrasting cases)? Differences belong in Discrepancies, not as standalone patterns.
 > 8. **Functional bias check**: Are any patterns presented as purely functional (operational efficiency, cost, speed) that also contain emotional signals (relief, security, liberation from worry) or social signals (identity, peer perception, industry positioning) in the original verbatim quotes? If so, note the emotional/social dimension and recommend whether it should be a separate pattern or an annotation on the existing pattern.
-> 9. **Frame blindness check**: Review Step 0's frame awareness notes. Are there signals in the data that fall outside the RQ's frame? Specifically, check whether the Narrator's Purpose entries reveal divergent use cases not captured by the current pattern set.
+> 9. **Frame blindness check**: Review the Frame Awareness section in the report header. Are there signals in the data that fall outside the RQ's frame? Specifically, check whether the Narrator's Purpose entries reveal divergent use cases not captured by the current pattern set.
+> 10. **Phase boundary check**: Review Narrator outputs for any out-of-phase signals (listed in "フェーズ外のシグナル" sections). If 2 or more Narrators flag the same kind of out-of-phase signal, flag it as a potential phase definition issue and recommend specific revisions to the phase boundaries.
 >
 > Additionally: identify any common patterns the comparison missed, based on your independent reading of the Facts.
 >

@@ -4,7 +4,8 @@ This prompt is sent to each Narrator subagent (one per case, launched in paralle
 
 **Data sources in the report file:**
 
-- **Case info and phase definitions**: Read from the report header (top of the file)
+- **Case info**: Read from the report header (top of the file)
+- **Phase definitions**: Read from the appendix section with heading "フェーズ定義" (inside a `<details>` tag)
 - **Fact Tables**: Locate the appendix section with heading "ファクトテーブル（生データ）" (inside a `<details>` tag), then extract only this case's Fact Table
 - **Background/Events**: Locate the appendix section with heading "ケースごとのストーリー（時系列）" (inside a `<details>` tag), then extract only this case's Background and Events
 
@@ -42,5 +43,13 @@ This prompt is sent to each Narrator subagent (one per case, launched in paralle
 > - Do NOT include product experience (what happened after using the product) in Phase 1. Phase 2+ may reference post-experience observations as situations or stances
 > - Cite Fact identifiers (F-XX) for traceability
 > - No inference of emotions or motivations not evidenced by quotes or observable behavior
+>
+> If you encounter important moments — behavioral shifts, emotional expressions, or situation changes — that do not fit cleanly into any of the defined phases, do NOT discard them. Report them in a separate section at the end of your output:
+>
+> **フェーズ外のシグナル**
+>
+> | F-XX | 内容 | なぜ既存フェーズに収まらないか |
+>
+> These signals may indicate that the phase definitions need revision or that a phenomenon spans phase boundaries.
 
 **Output**: One narrative per phase per case, with Fact citations.

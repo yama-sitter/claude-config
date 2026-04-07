@@ -6,21 +6,24 @@ Header placeholders (`{{TITLE}}`, `{{SOURCE_MATERIAL}}`, `{{ANALYSIS_FOCUS}}`, `
 
 ## Owned Placeholders
 
-`{{STEP1_FACT_TABLES}}`, `{{STEP2_BACKGROUND_EVENTS}}`
+`{{STEP1_FACT_TABLES}}`, `{{STEP2_BACKGROUND_EVENTS}}`, `{{STEP2B_PHASE_DEFINITIONS}}`
 
 ## Resume Logic
 
 On start, check the report file for owned placeholders:
 
-- Both `{{STEP1_FACT_TABLES}}` and `{{STEP2_BACKGROUND_EVENTS}}` present → start from Step 1
-- Only `{{STEP2_BACKGROUND_EVENTS}}` present → resume from Step 2 (Step 1 already completed)
-- Neither present → both steps already completed; inform the user
+- All three (`{{STEP1_FACT_TABLES}}`, `{{STEP2_BACKGROUND_EVENTS}}`, `{{STEP2B_PHASE_DEFINITIONS}}`) present → start from Step 1
+- `{{STEP2_BACKGROUND_EVENTS}}` and `{{STEP2B_PHASE_DEFINITIONS}}` present → resume from Step 2 (Step 1 already completed)
+- Only `{{STEP2B_PHASE_DEFINITIONS}}` present → resume from Step 3 (Steps 1-2 already completed)
+- None present → all steps already completed; inform the user
 
 ## Workflow
 
 ### Step 1: Extract Facts
 
 **Input from report**: header (case list) + source material paths.
+
+**RQ (分析の焦点) is NOT a filter for fact extraction.** Extract ALL observable behaviors and verbatim quotes from the source material, regardless of whether they appear relevant to the RQ. Omitting facts because they seem "off-topic" destroys the data foundation for discovering demand structures the RQ did not anticipate.
 
 List observable behaviors and verbatim quotes. Separate what happened from why it happened.
 
@@ -78,3 +81,42 @@ Self-review two things, then present for user approval. After approval, replace 
 2. **データの充足性**: 分析の焦点（scope で定義）に対して十分なデータがあること。焦点の方向に対してデータが薄い・欠けている領域があれば報告する
 
 If data sufficiency issues are found, present the user with options: (a) return to data collection, (b) continue with the constraint noted, or (c) stop.
+
+---
+
+### Step 3: Define Phases from Data
+
+**Input from report**: Step 2 output (Background + chronological Events) + Frame Awareness (from brief).
+
+Using the chronologically organized facts from Step 2, identify natural phase boundaries in the customer journey. Phases are derived from the data, not assumed from the RQ.
+
+Process:
+
+1. Identify phase boundary signals across cases. Look for:
+   - **Situational shifts**: Points where the customer's business environment structurally changed (e.g., adopted a new tool, staffing structure changed)
+   - **Stance transitions**: Points where the customer's attitude or decision criteria shifted (e.g., skeptical → trusting, experimental → committed)
+   - **Trigger events**: Specific events that prompted behavioral change (e.g., an existing approach definitively broke down)
+2. Confirm that identified signals are observable across multiple cases, then define 2-4 phases (each representing a distinct situation-stance configuration)
+3. For each phase, note whether it contains a Switch decision (Hire or Re-hire) — this maps to the forces subcommand's analysis units
+4. Compare against Frame Awareness notes from brief: How does the RQ's assumed phase structure compare to the data-derived phase structure? Record the delta
+
+**Data insufficiency fallback**: If timeline information is too sparse to identify clear phase boundaries (e.g., single case, shallow interviews), set provisional phases as "利用前 / 利用後" (2 phases) with the `[暫定]` label. Revise after context/forces analysis when more structure emerges.
+
+**Phase revision**: If later analysis (context Narrator out-of-phase signals, Analyst-Critic phase boundary check) reveals that phase boundaries are incorrect, this step can be re-run. The `<!-- BEGIN/END -->` markers in the report support re-replacement.
+
+Output format:
+
+> **フェーズ定義**
+>
+> | # | フェーズ名 | 開始の目印（データ上の観察可能なシグナル） | 該当ファクト | Switch決定 |
+>
+> **RQの前提との比較**:
+> - RQが暗黙に想定していたフェーズ構造: [...]
+> - データから導出されたフェーズ構造: [...]
+> - 差分: [...]
+
+This determines the Narrator's narrative structure in the context subcommand (one narrative per phase).
+
+### Step 3 Confirmation Gate
+
+Present phase definitions for user approval. After approval, replace `{{STEP2B_PHASE_DEFINITIONS}}` in the report file.

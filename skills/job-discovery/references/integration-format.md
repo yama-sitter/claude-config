@@ -68,6 +68,7 @@ After receiving the Analyst-Critic's output, integrate in the main conversation 
 > - `×`: Multiple conditions combine to produce a stance
 > - `※`: Annotate a pattern's analytical role (前提条件 = precondition that made this solution viable / 促進条件 = accelerant that enabled quick action)
 > - Use block headings to label demand structure phases (e.g., Hire需要の形成 / 体験による需要構造の変化 / Re-hire需要の構造)
+- If Narrator out-of-phase signals were validated by the Analyst-Critic, annotate them in the causal chain with `※ フェーズ外:` prefix
 > - For Purpose divergence: Include a 1-line summary in the relevant block heading (e.g., "Purpose divergence: A=量的確保, B=スカウト+休息, C=休息+拡張"). Single-case purposes that were not promoted to P*-S* should be noted as `※ Purpose [Case]: [description] (1ケースのみ。[Emerging]信号としてStep 5に渡す)`
 >
 > Every pattern must participate in at least one chain. If a pattern is isolated (belongs to no chain), reconsider whether it is truly independent or should be merged.

@@ -6,7 +6,7 @@ Both the context and forces subcommands must be completed: `{{STEP3_COMMON_PATTE
 
 ## Owned Placeholders
 
-`{{STEP5_SUMMARY_INTRO}}`, `{{STEP5_JOB_HYPOTHESES}}`
+`{{STEP5_SUMMARY_INTRO}}`, `{{STEP5_JOB_HYPOTHESES}}`, `{{STEP5_RQ_CONTRAST}}`
 
 ## Workflow
 
@@ -81,9 +81,27 @@ Present surviving candidates in the following format:
 >
 > _(Repeat for each surviving candidate.)_
 
+### 5f. RQ Contrast Comparison
+
+Compare what the RQ assumed about demand structure against what the analysis revealed.
+
+**Input from report**: Frame Awareness section (from brief) + Phase definition's RQ comparison (from facts Step 3) + all Section 1-3 findings.
+
+Output format:
+
+> ### RQコントラスト
+>
+> | 観点 | RQが前提としていたこと | データが示したこと | 差分 |
+> | --- | --- | --- | --- |
+> | フェーズ構造 | [...] | [...] | [...] |
+> | 需要の構造 | [...] | [...] | [...] |
+> | 顧客の目的 | [...] | [...] | [...] |
+>
+> **発見のハイライト**: [1-2 sentences summarizing the most significant delta — where the RQ's assumptions were most overturned by the data]
+
 ## Confirmation Gate
 
-Present candidates for user discussion. The user selects, combines, or modifies candidates to define the final Job Statement(s). After the user's decision, replace `{{STEP5_SUMMARY_INTRO}}` (1-2 sentence summary of results, e.g., number of job slots discovered, number of Emerging hypotheses) and `{{STEP5_JOB_HYPOTHESES}}` (final Job Statements) in the report file.
+Present candidates and RQ contrast for user discussion. The user selects, combines, or modifies candidates to define the final Job Statement(s). After the user's decision, replace `{{STEP5_SUMMARY_INTRO}}` (1-2 sentence summary of results, e.g., number of job slots discovered, number of Emerging hypotheses), `{{STEP5_JOB_HYPOTHESES}}` (final Job Statements), and `{{STEP5_RQ_CONTRAST}}` (RQ contrast table) in the report file.
 
 ## Single-case Behavior
 

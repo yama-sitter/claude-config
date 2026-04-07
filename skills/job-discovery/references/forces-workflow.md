@@ -4,6 +4,8 @@
 
 `{{STEP1_FACT_TABLES}}` and `{{STEP2_BACKGROUND_EVENTS}}` are replaced in the report file. Completion of the context subcommand is NOT required.
 
+Forces analysis units (Hire/Re-hire) are independent of the phase definitions from facts Step 3. Refer to the phase definitions' Switch decision annotations to see which phases contain the Hire/Re-hire decisions.
+
 ## Owned Placeholders
 
 `{{STEP4_PERCASE_FORCES}}`, `{{STEP4_CROSS_FORCES}}`, `{{STEP4_COMMON_NARRATIVE}}`

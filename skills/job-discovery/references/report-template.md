@@ -17,15 +17,16 @@ Design principles (apply when writing content into placeholders):
 
 | Step | Placeholder | Section |
 |------|-------------|---------|
-| 0 | `{{TITLE}}`, `{{SOURCE_MATERIAL}}`, `{{ANALYSIS_FOCUS}}`, `{{CASE_TABLE}}`, `{{LEGEND}}` | Header |
-| 1 | `{{STEP1_FACT_TABLES}}` | Appendix |
-| 2 | `{{STEP2_BACKGROUND_EVENTS}}` | Appendix |
+| brief | `{{TITLE}}`, `{{SOURCE_MATERIAL}}`, `{{ANALYSIS_FOCUS}}`, `{{CASE_TABLE}}`, `{{LEGEND}}`, `{{FRAME_AWARENESS}}` | Header |
+| facts 1 | `{{STEP1_FACT_TABLES}}` | Appendix |
+| facts 2 | `{{STEP2_BACKGROUND_EVENTS}}` | Appendix |
+| facts 3 | `{{STEP2B_PHASE_DEFINITIONS}}` | Appendix |
 | 3a | `{{STEP3A_NARRATOR_OUTPUTS}}` | Appendix |
 | 3b | `{{STEP3B_ANALYST_CRITIC_OUTPUT}}` | Appendix |
 | 3c | `{{STEP3_COMMON_PATTERNS}}` | Section 2 (includes section heading) |
 | 4a | `{{STEP4_PERCASE_FORCES}}` | Appendix |
 | 4b | `{{STEP4_CROSS_FORCES}}`, `{{STEP4_COMMON_NARRATIVE}}` | Section 3 |
-| 5 | `{{STEP5_SUMMARY_INTRO}}`, `{{STEP5_JOB_HYPOTHESES}}` | Section 1 |
+| 5 | `{{STEP5_SUMMARY_INTRO}}`, `{{STEP5_JOB_HYPOTHESES}}`, `{{STEP5_RQ_CONTRAST}}` | Section 1 |
 
 ## Document Skeleton
 
@@ -52,6 +53,10 @@ The content below (after the `---` separator) is copied as-is to create the repo
 {{LEGEND}}
 <!-- END LEGEND -->
 
+<!-- BEGIN FRAME_AWARENESS -->
+{{FRAME_AWARENESS}}
+<!-- END FRAME_AWARENESS -->
+
 ---
 
 ## 1. 発見されたジョブ仮説
@@ -66,6 +71,10 @@ The content below (after the `---` separator) is copied as-is to create the repo
 <!-- BEGIN STEP5_JOB_HYPOTHESES -->
 {{STEP5_JOB_HYPOTHESES}}
 <!-- END STEP5_JOB_HYPOTHESES -->
+
+<!-- BEGIN STEP5_RQ_CONTRAST -->
+{{STEP5_RQ_CONTRAST}}
+<!-- END STEP5_RQ_CONTRAST -->
 
 ---
 
@@ -106,6 +115,15 @@ The content below (after the `---` separator) is copied as-is to create the repo
 <!-- BEGIN STEP2_BACKGROUND_EVENTS -->
 {{STEP2_BACKGROUND_EVENTS}}
 <!-- END STEP2_BACKGROUND_EVENTS -->
+
+</details>
+
+<details>
+<summary>フェーズ定義</summary>
+
+<!-- BEGIN STEP2B_PHASE_DEFINITIONS -->
+{{STEP2B_PHASE_DEFINITIONS}}
+<!-- END STEP2B_PHASE_DEFINITIONS -->
 
 </details>
 
