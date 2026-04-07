@@ -8,9 +8,9 @@ After receiving the Analyst-Critic's output, integrate in the main conversation 
 2. Reflect the Analyst-Critic's validation report: apply revisions, remove rejected patterns, add proposed patterns
 3. Apply Phase × Layer (Situation/Stance) classification
 4. Compose the final tables per phase (including Purpose comparison tables — see output format below)
-5. **Evidence count verification**: For each pattern adopted from the Analyst-Critic, check the Evidence count column. If Evidence count < total cases, append `（N=X/Y）` to the pattern in the final table. If Evidence count = N=1/Y, do NOT include it as a common pattern — move it to the causal chain as a `※ Purpose` annotation or carry forward as an [Emerging] signal for Step 5
-6. Write a **causal chain** connecting patterns across phases
-7. **Causal chain self-verification**: After composing the causal chain, verify: (a) every pattern (P\*-S\*, P\*-St\*) participates in at least one chain, (b) each arrow's causal claim is supported by Fact Table evidence, (c) any isolated pattern (belongs to no chain) is truly independent or should be merged, (d) **RQ-direction check**: if the causal chain follows the RQ's assumed phase progression exactly, verify this structure is grounded in cross-case data (not merely inherited from phase definitions). Check Narrator out-of-phase signals and Analyst-Critic Purpose divergence for evidence of alternative causal structures
+5. Write a **causal chain** connecting patterns across phases
+6. **Causal chain self-verification**: After composing the causal chain, verify: (a) every pattern (P\*-S\*, P\*-St\*) participates in at least one chain, (b) each arrow's causal claim is supported by Fact Table evidence, (c) any isolated pattern (belongs to no chain) is truly independent or should be merged, (d) **RQ-direction check**: if the causal chain follows the RQ's assumed phase progression exactly, verify this structure is grounded in cross-case data (not merely inherited from phase definitions). Check Narrator out-of-phase signals and Analyst-Critic Purpose divergence for evidence of alternative causal structures
+7. **Table cell self-verification**: After composing final tables, verify: (a) each per-case cell includes at least one F-XX reference, (b) no evaluative words absent from the source data have been introduced, (c) quantitative information from the original is preserved in the cells
 
 ## Rules
 
@@ -20,6 +20,14 @@ After receiving the Analyst-Critic's output, integrate in the main conversation 
 
 - NG: "〜が脅かされている", "〜が確認される", "〜転換点となる", "〜コストが低下する"
 - OK: "〜が発生している", "〜を上回っている", "〜が確立している", "〜が使われている"
+
+**Table cell rules (for per-case columns)**:
+
+- ALWAYS base cell text on the Narrator/Analyst-Critic output. Shorten only if meaning is preserved
+- ALWAYS include Fact references (F-XX)
+- NEVER add evaluative or interpretive words not present in the source facts
+- ALWAYS preserve quantitative information when present in the original
+- ALWAYS preserve contextual preconditions — do not omit them for brevity
 
 **Change tags** (for Phase 2+ patterns):
 

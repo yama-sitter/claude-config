@@ -20,7 +20,6 @@ This prompt is sent to a single Analyst-Critic subagent after all Narrators comp
 > **PRE-CHECK: Read the Frame Awareness section in the report header BEFORE creating your inventory.**
 >
 > Note what the RQ assumes about:
->
 > - Phase structure (e.g., linear progression, specific boundaries)
 > - Purpose structure (e.g., single purpose for Hire/Re-hire)
 > - Demand drivers (e.g., which forces the RQ implicitly emphasizes)
@@ -47,23 +46,20 @@ This prompt is sent to a single Analyst-Critic subagent after all Narrators comp
 > Then, using this inventory, compare across cases and extract common patterns **for each phase**:
 >
 > 1. Derive **dimensions** for comparison from the inventory. Each inventory category (Background constraints, Structural affordances, Purpose, Struggling moment, Why now, Situations, Stances) is a **mandatory candidate dimension** — evaluate whether it yields a cross-case pattern. Additionally, as a checklist against blind spots, consider whether any of the following are present in the data: decision-making structure, information acquisition path, task characteristics, geographic/physical constraints, relationship with alternatives, evaluation behavior during decision-making. Only add dimensions that are actually evidenced.
-> 2. Finally, review the Frame Awareness section and identify dimensions that:
+> 6. Finally, review the Frame Awareness section and identify dimensions that:
 >    - ARE present in the Inventory but NOT mentioned in the RQ's frame
 >    - CONTRADICT the RQ's assumed purposes or phase structure
->      Add these contrastive dimensions to your candidate list before filtering for evidence.
-> 3. For each dimension, describe each case's situation and write a tentative **common pattern**
-> 4. For each dimension, check whether cases are using the solution for the same purpose or for divergent purposes. If purposes diverge, note this in the table — it may indicate different Jobs within the same phase
-> 5. Produce separate tables for each phase defined in the analysis setup
-> 6. If a divergent purpose identified in step 3 is observed in 2+ cases, promote it to a formal Situation pattern (P*-S*) in the appropriate phase table. If observed in only 1 case, retain it in the Purpose table only — it may feed Step 5 as an [Emerging] signal but does not become a common pattern
+>    Add these contrastive dimensions to your candidate list before filtering for evidence.
+> 2. For each dimension, describe each case's situation and write a tentative **common pattern**
+> 3. For each dimension, check whether cases are using the solution for the same purpose or for divergent purposes. If purposes diverge, note this in the table — it may indicate different Jobs within the same phase
+> 4. Produce separate tables for each phase defined in the analysis setup
+> 5. If a divergent purpose identified in step 3 is observed in 2+ cases, promote it to a formal Situation pattern (P*-S*) in the appropriate phase table. If observed in only 1 case, retain it in the Purpose table only — it may feed Step 5 as an [Emerging] signal but does not become a common pattern
 >
 > Common pattern rules:
 >
 > - Each pattern must be traceable to specific Facts (F-XX) in both cases
 > - Do not over-abstract — "any business that needs staff" is too vague
 > - Note where one case's fit is weaker than the other's
-> - **Evidence count**: For each pattern, record `N=X/Y` (X = cases with clear fit, Y = total cases). If fit is partial for a case, mark with asterisk (e.g., `N=3/4*` where \* = partial fit for one case)
-> - Evidence count N=1/Y → NEVER classify as common pattern. Record in Notes as case-specific
-> - Evidence count < Y with partial fit → append `（*ケース名は部分的適合）` to the pattern description
 >
 > For Phase 2+ patterns, determine the change tag: **Continued** (same as previous phase), **Changed** (shifted in content or intensity), **New** (first appeared in this phase).
 >
@@ -118,7 +114,7 @@ This prompt is sent to a single Analyst-Critic subagent after all Narrators comp
 > **Output structure:**
 >
 > 1. Inventory table (from Phase 1-2)
-> 2. Per-phase cross-case comparison tables: `| Dimension | Case A | Case B | ... | Evidence count | Common pattern (tentative) | Change tag (Phase 2+) | Notes |`
+> 2. Per-phase cross-case comparison tables: `| Dimension | Case A | Case B | Case C | Common pattern (tentative) | Change tag (Phase 2+) | Notes |`
 > 3. Validation report (Phase 3B): For each pattern → Approve / Revise (with suggestion) / Reject (with reason) + Phase + Layer (Situation/Stance) classification + Change tag (Phase 2+)
 > 4. Completeness gap report (Phase 3C): List of inventory items not reflected in patterns, with disposition
 > 5. Additional proposals: Patterns the comparison missed, identified from independent Fact Table reading
