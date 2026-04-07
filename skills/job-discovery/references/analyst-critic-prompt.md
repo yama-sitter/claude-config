@@ -20,6 +20,7 @@ This prompt is sent to a single Analyst-Critic subagent after all Narrators comp
 > **PRE-CHECK: Read the Frame Awareness section in the report header BEFORE creating your inventory.**
 >
 > Note what the RQ assumes about:
+>
 > - Phase structure (e.g., linear progression, specific boundaries)
 > - Purpose structure (e.g., single purpose for Hire/Re-hire)
 > - Demand drivers (e.g., which forces the RQ implicitly emphasizes)
@@ -46,14 +47,15 @@ This prompt is sent to a single Analyst-Critic subagent after all Narrators comp
 > Then, using this inventory, compare across cases and extract common patterns **for each phase**:
 >
 > 1. Derive **dimensions** for comparison from the inventory. Each inventory category (Background constraints, Structural affordances, Purpose, Struggling moment, Why now, Situations, Stances) is a **mandatory candidate dimension** — evaluate whether it yields a cross-case pattern. Additionally, as a checklist against blind spots, consider whether any of the following are present in the data: decision-making structure, information acquisition path, task characteristics, geographic/physical constraints, relationship with alternatives, evaluation behavior during decision-making. Only add dimensions that are actually evidenced.
-> 6. Finally, review the Frame Awareness section and identify dimensions that:
+>    1b. **Cross-category theme scan**: After deriving dimensions from inventory categories, perform a second pass IGNORING category boundaries. Read all inventory items across all cases as a flat list and identify items from 2+ cases that share the same underlying theme even if categorized differently (e.g., one case's Purpose and another case's Situation/New both describe "using the solution to relieve permanent staff burden"). For each such cross-category theme found in 2+ cases, add it as an additional comparison dimension.
+> 2. Finally, review the Frame Awareness section and identify dimensions that:
 >    - ARE present in the Inventory but NOT mentioned in the RQ's frame
 >    - CONTRADICT the RQ's assumed purposes or phase structure
->    Add these contrastive dimensions to your candidate list before filtering for evidence.
-> 2. For each dimension, describe each case's situation and write a tentative **common pattern**
-> 3. For each dimension, check whether cases are using the solution for the same purpose or for divergent purposes. If purposes diverge, note this in the table — it may indicate different Jobs within the same phase
-> 4. Produce separate tables for each phase defined in the analysis setup
-> 5. If a divergent purpose identified in step 3 is observed in 2+ cases, promote it to a formal Situation pattern (P*-S*) in the appropriate phase table. If observed in only 1 case, retain it in the Purpose table only — it may feed Step 5 as an [Emerging] signal but does not become a common pattern
+>      Add these contrastive dimensions to your candidate list before filtering for evidence.
+> 3. For each dimension, describe each case's situation and write a tentative **common pattern**
+> 4. For each dimension, check whether cases are using the solution for the same purpose or for divergent purposes. If purposes diverge, note this in the table — it may indicate different Jobs within the same phase
+> 5. Produce separate tables for each phase defined in the analysis setup
+> 6. If a divergent purpose identified in step 3 is observed in 2+ cases, promote it to a formal Situation pattern (P*-S*) in the appropriate phase table. If observed in only 1 case, retain it in the Purpose table only — it may feed Step 5 as an [Emerging] signal but does not become a common pattern
 >
 > Common pattern rules:
 >
