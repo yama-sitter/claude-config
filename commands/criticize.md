@@ -4,27 +4,32 @@ description: "Self-review and iteratively improve the previous response"
 
 # /criticize
 
-Self-review and iteratively improve the previous response.
+Self-review and iteratively improve the previous response until no issues remain.
 
 ## Usage
 
-- `/criticize` - Repeat review and improvement 3 times (default)
-- `/criticize [count]` - Repeat the specified number of times (e.g., `/criticize 2`)
+- `/criticize` - Review and improve until no issues remain (max 5 cycles)
+- `/criticize [max]` - Set the maximum number of cycles (e.g., `/criticize 3`). Terminates early if no issues are found
 - `/criticize --focus "aspect1,aspect2"` - Focus the review on specific aspects
 
 ## Execution
 
-Repeat the following cycle on the previous response.
+Repeat the following cycle on the previous response. The loop terminates when either (a) a review finds no issues, or (b) the maximum cycle count is reached.
 
-### Intermediate Cycles (1 to N-1)
+### Each Cycle
 
-1. **Review**: Critically evaluate the current response and identify specific issues
-2. **Plan**: Determine specific changes for each issue (do NOT output the full improved text; apply improvements internally and use the improved version as the review target for the next cycle)
+1. **Review**: Critically evaluate the current response against all Review Aspects (or `--focus` items) and list specific issues
+2. **Decide**:
+   - If issues exist AND max not reached → output the review, apply changes internally, and proceed to the next cycle
+   - If no issues exist → output the final version and stop
+   - If max reached → output the final version with a note on remaining issues and stop
 
-Output format:
+### Output Formats
+
+**Intermediate cycle (issues found, continuing):**
 
 ```
-=== Review [n]/[total] ===
+=== Review [n] ===
 **Issues**:
 - [Specific issues in bullet points]
 
@@ -32,20 +37,26 @@ Output format:
 - [Specific changes for each issue]
 ```
 
-### Final Cycle (N)
-
-1. **Review**: Perform a final review and identify any remaining issues
-2. **Improve**: Generate the final version incorporating all changes from all cycles
-
-Output format:
+**Final cycle (no issues found):**
 
 ```
-=== Review [n]/[total] ===
+=== Review [n] ===
 **Issues**:
-- [Specific issues, or "No further issues"]
+- No further issues
 
 === Final Version ===
 [Final improved response reflecting all cycles]
+```
+
+**Final cycle (max reached, issues remain):**
+
+```
+=== Review [n] (max reached) ===
+**Remaining Issues**:
+- [Unresolved issues]
+
+=== Final Version ===
+[Best version so far, incorporating all changes from previous cycles]
 ```
 
 ## Review Aspects (when --focus is not specified)

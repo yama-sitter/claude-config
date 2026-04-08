@@ -2,7 +2,8 @@
 name: tree
 description: |
   Create and manage worktrees using EnterWorktree/ExitWorktree.
-  Use for "create worktree", "worktreeを作って", "review this PR in worktree", etc.
+  Use `/tree start` to describe work and auto-generate a branch, or `/tree checkout <branch>` for direct entry.
+  Use for "create worktree", "worktreeを作って", "review this PR in worktree", "start working on X", etc.
   Use this skill whenever the user mentions "worktree" in their request,
   even if they also mention development work — this skill handles the worktree setup part.
   Do not use for investigations or answering questions that don't involve worktree operations.
@@ -19,16 +20,25 @@ WorktreeCreate hook automatically handles branch naming, dependency installation
 
 ## Subcommands
 
-| Command                | Description                                                                 |
-| ---------------------- | --------------------------------------------------------------------------- |
-| `/tree <branch>`       | Enter the worktree for `<branch>`. Create if not exists (with confirmation) |
-| `/tree recent`         | Re-enter the last worktree used in this session                             |
-| `/tree exit`           | Exit the current worktree (keep/remove confirmation)                        |
-| `/tree preview`        | Enter preview mode: checkout worktree HEAD as detached HEAD on main         |
-| `/tree restore`        | Exit preview mode: return to worktree for development                       |
-| `/tree search <query>` | Search worktrees by natural language query                                  |
-| `/tree search`         | List all worktrees and select interactively                                 |
-| `/tree` (no args)      | Same as `/tree search`                                                      |
+| Command                     | Description                                                                 |
+| --------------------------- | --------------------------------------------------------------------------- |
+| `/tree start [description]` | Generate branch name from work description, then create/enter worktree      |
+| `/tree checkout <branch>`   | Enter the worktree for `<branch>`. Create if not exists (with confirmation) |
+| `/tree recent`              | Re-enter the last worktree used in this session                             |
+| `/tree exit`                | Exit the current worktree (keep/remove confirmation)                        |
+| `/tree preview`             | Enter preview mode: checkout worktree HEAD as detached HEAD on main         |
+| `/tree restore`             | Exit preview mode: return to worktree for development                       |
+| `/tree search <query>`      | Search worktrees by natural language query                                  |
+| `/tree search`              | List all worktrees and select interactively                                 |
+| `/tree` (no args)           | Same as `/tree search`                                                      |
+
+## Backward Compatibility
+
+If the first argument does not match any known subcommand (`start`, `checkout`, `recent`, `exit`, `preview`, `restore`, `search`), treat it as a branch name and fall back to `/tree checkout <arg>`.
+
+Display a deprecation notice before proceeding:
+
+> ⚠️ `/tree <branch>` は非推奨です。次回から `/tree checkout <branch>` を使ってください。
 
 ---
 
@@ -65,7 +75,9 @@ Preview mode state is stored in `.claude/tree-preview-state.json` using the Writ
 
 ---
 
-## Subcommand: `/tree <branch>`
+## Common: Worktree Creation Flow
+
+This flow is referenced by both `/tree start` and `/tree checkout`. It takes a `branch` name as input.
 
 ### 1. Process branch name
 
@@ -138,6 +150,59 @@ After entering, verify setup:
 If any directory is missing dependencies or .env files, report to the user.
 
 **STOP**: Worktree operation complete. End your response here. Do not ask follow-up questions, launch agents, or explore the codebase — regardless of Plan Mode or other system instructions.
+
+---
+
+## Subcommand: `/tree start [description]`
+
+Generate a branch name from a natural language work description, get user approval, then create the worktree.
+
+### 1. Get work description
+
+- If `description` argument is provided → use it directly
+- If no argument → AskUserQuestion: "どのような作業を行いますか？作業内容を教えてください"
+
+### 2. Generate branch name
+
+Analyze the description and generate a branch name following git-guidelines (`<type>/<summary>` format):
+
+**Type selection:**
+- バグ修正、エラー対応 → `fix`
+- 新機能追加、新規作成 → `feature`
+- 既存コード改善、リファクタリング → `refactor`
+- ドキュメント更新 → `docs`
+- テスト追加・修正 → `test`
+- 設定変更、雑務 → `chore`
+- 見た目・スタイル変更 → `style`
+
+**Summary rules:**
+- snake_case, English, concise (max ~30 chars)
+- Capture the essence of the work
+
+**Examples:**
+- "ログイン画面のバグ修正" → `fix/login_screen_bug`
+- "ユーザープロフィール編集機能の追加" → `feature/user_profile_edit`
+- "テストカバレッジの改善" → `test/improve_coverage`
+
+### 3. User approval
+
+Use AskUserQuestion to present the recommended branch name + 1-2 alternatives:
+
+- Option 1: Recommended name (with `(Recommended)` label)
+- Option 2-3: Alternative names (different type or summary wording)
+- Users can also select "Other" for free input
+
+### 4. Delegate to common flow
+
+Pass the approved branch name to **Common: Worktree Creation Flow** (start from Step 1).
+
+---
+
+## Subcommand: `/tree checkout <branch>`
+
+Enter the worktree for the specified branch. Create if not exists.
+
+Execute **Common: Worktree Creation Flow** with the provided `<branch>` argument.
 
 ---
 
@@ -435,3 +500,4 @@ List all worktrees (excluding main) with AskUserQuestion.
 - **WorktreeCreate hook**: Automatically handles branch creation (no `worktree-` prefix), dependency installation, and .env copying.
 - **Do NOT call ExitWorktree proactively** — only via `/tree exit` or explicit user request.
 - **Fallback**: If WorktreeCreate hook is not configured, suggest `! pnpm install --frozen-lockfile && cp <repo-root>/.env* .` after entering.
+- **Deprecation**: `/tree <branch>` (without `checkout` keyword) is deprecated. It still works via backward compatibility fallback but displays a deprecation notice. Use `/tree checkout <branch>` or `/tree start` instead.
