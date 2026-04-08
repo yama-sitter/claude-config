@@ -12,7 +12,7 @@ Use the same report discovery logic as other subcommands (see SKILL.md).
 
 ## Algorithm
 
-Process the report in three sequential passes. Each pass operates on `<!-- BEGIN/END -->` sections for precise targeting.
+Process the report in four sequential passes. Each pass operates on `<!-- BEGIN/END -->` sections for precise targeting.
 
 ### Pass 1: Build Identifier Inventory
 
@@ -36,24 +36,58 @@ For each identifier in the inventory, wrap its first-column occurrence with `<sp
 
 ### Pass 3: Add Links at Reference Sites
 
-Process sections in this order to avoid partial matches: P*-St* → P*-S* → CF-* → Fact.
+**Processing granularity**: Process each identifier token individually within each cell/parenthesized group. Do NOT apply line-level regex — this causes the primary failure mode where mixed linked/unlinked identifiers in the same cell are skipped.
 
-For each section of the report (outside definition sites from Pass 2):
+**Processing order** (longest patterns first to avoid partial matches): P*-St* → P*-S* → CF-* → Fact.
 
-**P*-St* references**: Replace `P\d+-St\d+` with `[P1-St1](#P1-St1)` (only if in inventory).
+**Skip conditions** (check per-token, not per-line):
+- Token is already in `[...](#...)` format → skip that token
+- Token is inside a `<span id=...>` tag → skip that token
+- Token is not in Pass 1 inventory → skip that token
 
-**P*-S* references**: Replace `P\d+-S\d+` with `[P1-S1](#P1-S1)` (only if in inventory, and not already part of a P*-St* that was just linked).
+#### P*-St*, P*-S*, CF-* references
 
-**CF-* references**: Replace `CF-[A-Za-z]+\d+` with `[CF-Push1](#CF-Push1)` (only if in inventory).
+These patterns are sufficiently unique. Replace every bare occurrence with `[ID](#ID)` across the entire report.
 
-**Fact references** (most care needed due to short identifiers): Only link in these contexts:
+- `P2-St1` → `[P2-St1](#P2-St1)`
+- `P1-S1` → `[P1-S1](#P1-S1)` (but NOT if part of an already-linked `P*-St*`)
+- `CF-Push1` → `[CF-Push1](#CF-Push1)`
 
-- **Comma-separated lists in table cells**: `A3-A5, B7, C12` → `[A3](#A3)-[A5](#A5), [B7](#B7), [C12](#C12)`
-- **Parenthesized citations**: `(A8)` → `([A8](#A8))`, `(A2-A5)` → `([A2](#A2)-[A5](#A5))`
-- **Range references**: `A3-A5` → `[A3](#A3)-[A5](#A5)` (link start and end)
-- Only match identifiers that exist in the Pass 1 inventory
+#### Fact references (short identifiers — extra care required)
 
-**Idempotency**: If text is already in `[...](#...)` format, skip it. If text is inside a `<span id=...>` tag, skip it.
+Fact identifiers are short (`A1`, `B7`) and risk false matches. Only link in these contexts:
+
+| Context | Example before | Example after |
+|---|---|---|
+| 出典/根拠 column cells | `A3-A5, B7` | `[A3](#A3)-[A5](#A5), [B7](#B7)` |
+| 4社での現れ方 column — parenthesized citations | `時間コスト大([A3](#A3))` already linked, but `応募ゼロ(B7)` unlinked | `応募ゼロ([B7](#B7))` |
+| Inline parenthesized citations in prose | `(A8)` | `([A8](#A8))` |
+| Range references | `A3-A5` | `[A3](#A3)-[A5](#A5)` |
+
+**Cell-by-cell procedure**:
+
+1. For each target cell, scan left-to-right for inventory identifiers
+2. For each found identifier, check if it is already wrapped in `[...](#...)` — if yes, skip; if no, wrap it
+3. The presence of already-linked identifiers in the same cell must NOT cause unlinked identifiers to be skipped
+
+**Example — mixed-state cell** (the #1 failure mode in practice):
+
+Before: `[A3](#A3)-A5, B7, [C12](#C12)`
+After:  `[A3](#A3)-[A5](#A5), [B7](#B7), [C12](#C12)`
+
+A3 and C12 are already linked → skip. A5 and B7 are bare → link them.
+
+### Pass 4: Self-Verification
+
+Before presenting results, run these checks:
+
+1. **Unlinked reference scan**: Search for bare inventory identifiers that appear outside `<span>` tags and `[...](#...)` links. Use grep patterns:
+   - P*-S*/P*-St*: `grep -nP '(?<!\[)P\d+-S(t)?\d+(?![\w>])' FILE | grep -v 'span id'`
+   - CF-*: `grep -nP '(?<!\[)CF-[A-Za-z]+\d+(?![\w>])' FILE | grep -v 'span id'`
+   - Fact IDs: For each case letter in inventory, check table cells and parenthesized groups for bare references
+2. **Broken link scan**: For every unique `[ID](#ID)` target, verify a matching `<span id="ID">` exists.
+
+If unlinked references are found (count > 0), fix them and re-run the scan once. If issues persist after the fix pass, report the remaining count and locations to the user — do NOT silently skip them.
 
 ## Confirmation Gate
 
