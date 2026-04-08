@@ -3,7 +3,6 @@
 ## Prohibited Actions
 
 - Do not add Claude co-author footers (`Co-Authored-By: Claude`, `Generated with Claude Code`)
-- Avoid committing directly to `master`/`main` branches
 - Do not include unstaged changes in commits
 
 ## Branch Naming

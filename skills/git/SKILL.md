@@ -99,14 +99,7 @@ git branch --show-current
 git log --oneline -10
 ```
 
-### 2. Guard: main/master branch
-
-If the current branch is `main` or `master`:
-
-- **STOP** — do not commit
-- Report: "main ブランチへの直接コミットは禁止されています。`/git branch` でブランチを作成してください"
-
-### 3. Guard: secret files
+### 2. Guard: secret files
 
 Scan the changed files for secrets (`.env`, `.env.*`, `credentials.json`, `*.pem`, `*.key`, etc.).
 
@@ -155,14 +148,7 @@ git branch --show-current
 git status --short
 ```
 
-### 2. Guard: main/master branch
-
-If the current branch is `main` or `master`:
-
-- **STOP** — do not push
-- Report: "main ブランチへの直接プッシュは禁止されています"
-
-### 3. Guard: uncommitted changes
+### 2. Guard: uncommitted changes
 
 If `git status --short` shows uncommitted changes (lines not starting with `??`):
 
