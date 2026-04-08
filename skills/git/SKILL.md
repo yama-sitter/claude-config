@@ -18,14 +18,14 @@ Follow the [Git Guidelines](@../../rules/git-guidelines.md).
 
 ## Subcommands
 
-| Command | Description |
-| --- | --- |
-| `/git branch [description]` | Create a new branch from a description |
-| `/git commit` | Stage changes and create a commit |
-| `/git push` | Push the current branch to remote |
-| `/git pr` | Create a pull request |
-| `/git prune` | Remove local branches deleted on remote |
-| `/git` (no args) | Show this subcommand list |
+| Command                     | Description                             |
+| --------------------------- | --------------------------------------- |
+| `/git branch [description]` | Create a new branch from a description  |
+| `/git commit`               | Stage changes and create a commit       |
+| `/git push`                 | Push the current branch to remote       |
+| `/git pr`                   | Create a pull request                   |
+| `/git prune`                | Remove local branches deleted on remote |
+| `/git` (no args)            | Show this subcommand list               |
 
 ## Prerequisites
 
@@ -56,6 +56,7 @@ Create a new branch following Git Guidelines naming conventions.
 Analyze the description and generate a branch name following Git Guidelines (`<type>/<summary>` format):
 
 **Type selection:**
+
 - バグ修正、エラー対応 → `fix`
 - 新機能追加、新規作成 → `feature`
 - 既存コード改善、リファクタリング → `refactor`
@@ -65,6 +66,7 @@ Analyze the description and generate a branch name following Git Guidelines (`<t
 - 見た目・スタイル変更 → `style`
 
 **Summary rules:**
+
 - snake_case, English, concise (max ~30 chars)
 - Capture the essence of the work
 
@@ -170,11 +172,11 @@ If `git status --short` shows uncommitted changes (lines not starting with `??`)
 This command may fail — run it separately, not in parallel with other commands.
 
 ```bash
-git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null || echo "NO_UPSTREAM"
+git rev-parse --abbrev-ref --symbolic-full-name @{u}
 ```
 
-- Output is a remote ref → use `git push`
-- Output is `NO_UPSTREAM` → use `git push -u origin <branch>`
+- Command succeeds (outputs a remote ref) → use `git push`
+- Command fails (non-zero exit code) → treat as NO_UPSTREAM → use `git push -u origin <branch>`
 
 ### 5. Push
 
@@ -197,10 +199,10 @@ git branch --show-current
 Check whether an upstream tracking branch exists. This command may fail — do **not** run it in parallel with other commands.
 
 ```bash
-git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null || echo "NO_UPSTREAM"
+git rev-parse --abbrev-ref --symbolic-full-name @{u}
 ```
 
-- Output is `NO_UPSTREAM` → AskUserQuestion: "リモートにプッシュされていません。先にプッシュしますか？"
+- Command fails (non-zero exit code) → AskUserQuestion: "リモートにプッシュされていません。先にプッシュしますか？"
   - Yes → execute `/git push` flow, then continue
   - No → stop
 - Output is a remote ref → check if local is ahead:
