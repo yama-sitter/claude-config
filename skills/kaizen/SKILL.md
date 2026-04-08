@@ -8,7 +8,8 @@ description: |
   Subcommands:
     - (default): Run the full process (analyze → ideas → confirm → implement → record)
     - `diagnose`: Analyze and present improvement ideas only. Does not implement
-    - `apply`: Implement an improvement idea agreed upon in the conversation
+    - `plan`: Analyze and save the approved plan to agent-memory. Executable across sessions
+    - `apply [path]`: Implement an improvement. From plan file if path given, else from conversation
     - `commit`: Commit kaizen changes to claude-config repository
 user-invocable: true
 ---
@@ -34,12 +35,14 @@ Invoked when a failure is detected. A subagent performs analysis → idea genera
 |------|--------|
 | (empty) | Full process: Phase 1 → Phase 2 → Confirmation Gate → Phase 3 → Record |
 | `diagnose` | Analysis only: Phase 1 → Phase 2 → Confirmation Gate (stop. Guide user to `/kaizen apply`) |
+| `plan` | Save plan: Phase 1 → Phase 2 → Confirmation Gate → Save Plan (stop. Guide user to `/kaizen apply <path>`) |
 | `apply` | Implementation only: Identify approved idea from conversation → Phase 3 → Record |
+| `apply <path>` | Implementation from plan: Read plan file → Phase 3 → Record |
 | `commit` | Commit to claude-config: Detect changes → Generate commit message → Commit (auto or manual fallback) |
 
 ## Workflow
 
-### Phase 1: Failure Context Extraction (main agent) `(default, diagnose)`
+### Phase 1: Failure Context Extraction (main agent) `(default, diagnose, plan)`
 
 Trace back the conversation context and extract a structured failure context.
 Subagents cannot access parent conversation history, so this phase serves as a bridge.
@@ -54,7 +57,7 @@ User reaction: [What the user was dissatisfied with]
 Related files: [File paths involved]
 ```
 
-### Phase 2: Analysis + Idea Generation (subagent) `(default, diagnose)`
+### Phase 2: Analysis + Idea Generation (subagent) `(default, diagnose, plan)`
 
 Launch a `general-purpose` subagent via the Agent tool.
 Embed the Phase 1 context into the `{failure_context}` placeholder of the prompt template below.
@@ -135,7 +138,7 @@ Implementation plan: ...
 Side-effect risk: ...
 ```
 
-### Confirmation Gate (main agent) `(default, diagnose)`
+### Confirmation Gate (main agent) `(default, diagnose, plan)`
 
 Present the subagent's analysis results to the user and obtain approval.
 
@@ -151,15 +154,67 @@ Options to present:
 
 **For diagnose:**
 **→ Analysis complete. Run `/kaizen apply` to implement. Specify which idea (e.g., "#3") before running if you prefer a different one.**
+**セッションを跨いで実装したい場合は `/kaizen plan` でプランをファイルに保存できます。**
 (Stop here. Do not proceed to Phase 3)
+
+**For plan:**
+**→ どのアイデアをプランとして保存しますか？番号を指定するか、推奨案を承認してください。**
+(After approval, proceed to Save Plan. Do not proceed to Phase 3)
+
+### Save Plan (main agent) `(plan)`
+
+After the user approves an idea at the Confirmation Gate, save a self-contained plan file using the `/agent-memory save` skill.
+
+**Plan file format:**
+
+````markdown
+---
+summary: "Kaizen plan: <one-line description>"
+created: <YYYY-MM-DD>
+tags: [kaizen, plan]
+related:
+  - <target file paths>
+---
+
+# Kaizen Plan: <Idea name>
+
+## Failure Context
+<Phase 1 output>
+
+## Root Cause
+<Phase 2 root cause, category, structural factor>
+
+## Approved Improvement
+Idea: #N <name>
+Target: <hooks / rules / skills / CLAUDE.md / permissions>
+ICE Score: <score>
+Rationale: ...
+
+## Implementation Plan
+<Concrete steps from Phase 2 recommendation>
+
+## Side-effect Risk
+<Risk assessment>
+````
+
+**Steps:**
+
+1. Compose the plan file from Phase 1 + Phase 2 outputs + approved idea
+2. Scope: repository name (or `general` for global improvements)
+3. Save to: `~/.agent-memory/<scope>/<YYYY-MM-DD>_kaizen-plan-<failure-summary>/plan.md`
+   - Use `/agent-memory save` skill (handles duplicate check and frontmatter conventions)
+4. Display:
+   **改善プランを保存しました: `<saved_path>`**
+   **`/kaizen apply <saved_path>` で実装できます（別セッションでも実行可能）**
 
 ### Approved Idea Identification (main agent) `(apply)`
 
-When `/kaizen apply` is invoked, identify the approved improvement idea from conversation context:
+When `/kaizen apply` is invoked, identify the approved improvement idea using the following priority:
 
-1. User specified an idea number after `/kaizen diagnose` (e.g., "#2", "number 3") → adopt that idea
-2. No number specified but explicit agreement with the recommendation → adopt the recommendation
-3. No kaizen analysis in conversation (e.g., different session) → ask the user to specify the improvement directly
+1. **Path argument provided** (e.g., `/kaizen apply ~/.agent-memory/.../plan.md`) → Read the file at the given path → embed the **entire file content** into the Phase 3 subagent prompt `{approved_plan}` (the subagent extracts what it needs; passing the full content avoids information loss)
+2. User specified an idea number after `/kaizen diagnose` (e.g., "#2", "number 3") → adopt that idea
+3. No number specified but explicit agreement with the recommendation → adopt the recommendation
+4. No kaizen analysis in conversation (e.g., different session) → ask the user to specify the improvement directly
 
 Embed the identified idea's details (target, implementation plan, side-effect risk) into the Phase 3 subagent prompt `{approved_plan}`.
 
@@ -267,9 +322,17 @@ Commit kaizen changes to the claude-config repository.
 - Failure identified and root cause structurally analyzed
 - Improvement ideas presented (filtered by ICE ≥ 700)
 - `/kaizen apply` guidance displayed
+- （セッション跨ぎで実装したい場合は `/kaizen plan` の利用を案内済み）
+
+### plan
+- Failure identified and root cause structurally analyzed
+- Improvement ideas presented (filtered by ICE ≥ 700)
+- User approved one idea
+- Plan file saved to agent-memory
+- `/kaizen apply <path>` guidance displayed
 
 ### apply
-- Approved improvement implemented
+- Approved improvement implemented (from plan file or conversation context)
 - Improvement record saved to agent-memory
 - `/kaizen commit` の案内を表示済み
 
