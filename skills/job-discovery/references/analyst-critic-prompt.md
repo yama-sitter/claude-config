@@ -47,7 +47,20 @@ This prompt is sent to a single Analyst-Critic subagent after all Narrators comp
 > Then, using this inventory, compare across cases and extract common patterns **for each phase**:
 >
 > 1. Derive **dimensions** for comparison from the inventory. Each inventory category (Background constraints, Structural affordances, Purpose, Struggling moment, Why now, Situations, Stances) is a **mandatory candidate dimension** — evaluate whether it yields a cross-case pattern. Additionally, as a checklist against blind spots, consider whether any of the following are present in the data: decision-making structure, information acquisition path, task characteristics, geographic/physical constraints, relationship with alternatives, evaluation behavior during decision-making. Only add dimensions that are actually evidenced.
->    1b. **Cross-category theme scan**: After deriving dimensions from inventory categories, perform a second pass IGNORING category boundaries. Read all inventory items across all cases as a flat list and identify items from 2+ cases that share the same underlying theme even if categorized differently (e.g., one case's Purpose and another case's Situation/New both describe "using the solution to relieve permanent staff burden"). For each such cross-category theme found in 2+ cases, add it as an additional comparison dimension.
+>    1b. **Cross-category theme scan**: After deriving dimensions from inventory categories, perform a second pass IGNORING category boundaries AND phase boundaries. Read all inventory items across all cases as a flat list and identify items from 2+ cases that share the same underlying theme even if:
+>
+>    - categorized differently (e.g., one case's Purpose and another case's Situation)
+>    - in different phases (e.g., one case shows this theme in P2, another in P4)
+>    - at different maturity stages (e.g., one case has it as an established practice, another as a future plan/構想)
+>
+>    Specific patterns to check:
+>
+>    - **Purpose evolution**: Cases using the solution for a similar secondary purpose beyond the original Hire motivation (e.g., staff burden relief, trial hiring, cost optimization)
+>    - **Shared direction at different stages**: One case has already operationalized something another case is still planning
+>    - **Emotional/Social convergence**: Similar emotional or social outcomes mentioned across cases in different contexts
+>
+>    For each cross-category theme found in 2+ cases, add it as an additional comparison dimension. For themes where cases are at different maturity stages, note this explicitly (e.g., "Case C: operational, Case B: planning stage based on experience").
+>
 > 2. Finally, review the Frame Awareness section and identify dimensions that:
 >    - ARE present in the Inventory but NOT mentioned in the RQ's frame
 >    - CONTRADICT the RQ's assumed purposes or phase structure

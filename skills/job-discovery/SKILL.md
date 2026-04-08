@@ -20,15 +20,15 @@ Discover Jobs-to-be-Done from raw customer data by climbing the Ladder of Infere
 
 ## Argument Routing
 
-| Args      | Action                                                                                                                      |
-| --------- | --------------------------------------------------------------------------------------------------------------------------- |
-| (none)    | Progress check: detect report → show filled/unfilled placeholders → suggest next subcommand                                 |
+| Args      | Action                                                                                                                                   |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| (none)    | Progress check: detect report → show filled/unfilled placeholders → suggest next subcommand                                              |
 | `brief`   | Define research starting point (focus, cases, frame awareness) → create report file. → [brief-workflow.md](references/brief-workflow.md) |
-| `facts`   | Extract facts, organize chronologically, and define phases from data. → [facts-workflow.md](references/facts-workflow.md)    |
-| `context` | Extract common context across cases (Narrator → Analyst-Critic → Integration). → [context-workflow.md](references/context-workflow.md) |
-| `forces`  | Analyze demand forces (Push/Pull/Anxiety/Habit). Order with context is flexible. → [forces-workflow.md](references/forces-workflow.md) |
-| `jobs`    | Generate, filter, and present Job hypotheses. → [jobs-workflow.md](references/jobs-workflow.md)                                    |
-| `linkify` | Add in-page anchor links to an existing report's identifiers. → [linkify-workflow.md](references/linkify-workflow.md)              |
+| `facts`   | Extract facts, organize chronologically, and define phases from data. → [facts-workflow.md](references/facts-workflow.md)                |
+| `context` | Extract common context across cases (Narrator → Analyst-Critic → Integration). → [context-workflow.md](references/context-workflow.md)   |
+| `forces`  | Analyze demand forces (Push/Pull/Anxiety/Habit). Order with context is flexible. → [forces-workflow.md](references/forces-workflow.md)   |
+| `jobs`    | Generate, filter, and present Job hypotheses. → [jobs-workflow.md](references/jobs-workflow.md)                                          |
+| `linkify` | Add in-page anchor links to an existing report's identifiers. → [linkify-workflow.md](references/linkify-workflow.md)                    |
 
 Read the linked workflow file and follow its instructions.
 
@@ -45,13 +45,13 @@ When any subcommand other than `brief` is invoked, locate the active report:
 
 On subcommand start, verify that the prerequisite placeholders are all replaced (no `{{` remaining for those placeholders). If unmet, inform the user which prior subcommand to run.
 
-| Subcommand | Prerequisite placeholders that must be filled                                       |
-| ---------- | ----------------------------------------------------------------------------------- |
-| `brief`    | (none)                                                                              |
+| Subcommand | Prerequisite placeholders that must be filled                                                                   |
+| ---------- | --------------------------------------------------------------------------------------------------------------- |
+| `brief`    | (none)                                                                                                          |
 | `facts`    | `{{TITLE}}`, `{{SOURCE_MATERIAL}}`, `{{ANALYSIS_FOCUS}}`, `{{CASE_TABLE}}`, `{{LEGEND}}`, `{{FRAME_AWARENESS}}` |
-| `context`  | `{{STEP1_FACT_TABLES}}`, `{{STEP2_BACKGROUND_EVENTS}}`, `{{STEP2B_PHASE_DEFINITIONS}}` |
-| `forces`   | `{{STEP1_FACT_TABLES}}`, `{{STEP2_BACKGROUND_EVENTS}}`                              |
-| `jobs`     | `{{STEP3_COMMON_PATTERNS}}`, `{{STEP4_CROSS_FORCES}}`, `{{STEP4_COMMON_NARRATIVE}}` |
+| `context`  | `{{STEP1_FACT_TABLES}}`, `{{STEP2_BACKGROUND_EVENTS}}`, `{{STEP2B_PHASE_DEFINITIONS}}`                          |
+| `forces`   | `{{STEP1_FACT_TABLES}}`, `{{STEP2_BACKGROUND_EVENTS}}`                                                          |
+| `jobs`     | `{{STEP3_COMMON_PATTERNS}}`, `{{STEP4_CROSS_FORCES}}`, `{{STEP4_COMMON_NARRATIVE}}`                             |
 
 Note: `context` requires phase definitions (from facts Step 3) in addition to fact tables. `forces` does not depend on phase definitions — its analysis units (Hire/Re-hire) are independent. `jobs` requires both context and forces to be complete.
 
@@ -86,13 +86,13 @@ Next-step suggestion logic:
 
 Placeholder → subcommand mapping:
 
-| Placeholder pattern                                                                  | Subcommand |
-| ------------------------------------------------------------------------------------ | ---------- |
+| Placeholder pattern                                                                                             | Subcommand |
+| --------------------------------------------------------------------------------------------------------------- | ---------- |
 | `{{TITLE}}`, `{{SOURCE_MATERIAL}}`, `{{ANALYSIS_FOCUS}}`, `{{CASE_TABLE}}`, `{{LEGEND}}`, `{{FRAME_AWARENESS}}` | brief      |
-| `{{STEP1_FACT_TABLES}}`, `{{STEP2_BACKGROUND_EVENTS}}`, `{{STEP2B_PHASE_DEFINITIONS}}` | facts      |
-| `{{STEP3A_NARRATOR_OUTPUTS}}`, `{{STEP3B_ANALYST_CRITIC_OUTPUT}}`, `{{STEP3_COMMON_PATTERNS}}` | context |
-| `{{STEP4_PERCASE_FORCES}}`, `{{STEP4_CROSS_FORCES}}`, `{{STEP4_COMMON_NARRATIVE}}`   | forces     |
-| `{{STEP5_SUMMARY_INTRO}}`, `{{STEP5_JOB_HYPOTHESES}}`, `{{STEP5_RQ_CONTRAST}}`      | jobs       |
+| `{{STEP1_FACT_TABLES}}`, `{{STEP2_BACKGROUND_EVENTS}}`, `{{STEP2B_PHASE_DEFINITIONS}}`                          | facts      |
+| `{{STEP3A_NARRATOR_OUTPUTS}}`, `{{STEP3B_ANALYST_CRITIC_OUTPUT}}`, `{{STEP3_COMMON_PATTERNS}}`                  | context    |
+| `{{STEP4_PERCASE_FORCES}}`, `{{STEP4_CROSS_FORCES}}`, `{{STEP4_COMMON_NARRATIVE}}`                              | forces     |
+| `{{STEP5_SUMMARY_INTRO}}`, `{{STEP5_JOB_HYPOTHESES}}`, `{{STEP5_RQ_CONTRAST}}`                                  | jobs       |
 
 ## Data Flow
 
@@ -103,6 +103,50 @@ The `brief` subcommand creates `job-discovery-report.md` from the report templat
 - **Replace after confirm**: Each subcommand's output replaces its placeholder(s) after user approval at the confirmation gate. Content is wrapped in HTML comment boundary markers (`<!-- BEGIN XXX -->...<!-- END XXX -->`) for re-replacement if the user requests revisions.
 - **Atomic replacement**: When a subcommand has multiple placeholders, all are replaced together after the confirmation gate. No partial replacement state.
 - **Re-replacement**: If the user requests a revision after confirmation, locate the content between `<!-- BEGIN XXX -->` and `<!-- END XXX -->` markers and replace it with the revised content.
+
+### Section Dependency Map
+
+Cross-section dependencies. Consult this when manually editing or re-running subcommands to identify downstream impact.
+
+| Changed section                       | Affected downstream sections                               |
+| ------------------------------------- | ---------------------------------------------------------- |
+| STEP1_FACT_TABLES                     | STEP2, STEP2B, context (all), forces (all), jobs           |
+| STEP2B_PHASE_DEFINITIONS              | context only (forces does not depend on phase definitions) |
+| STEP3_COMMON_PATTERNS                 | STEP4 (forces 4b references Section 2), STEP5 (jobs 根拠)  |
+| STEP4_CROSS_FORCES / COMMON_NARRATIVE | STEP5 (jobs 根拠)                                          |
+| STEP5                                 | No downstream                                              |
+
+### Re-run for Case Addition
+
+To add cases to an existing analysis, re-run subcommands in this order:
+
+1. `facts`: Append new case's fact table and Background/Events. Re-evaluate phase definitions with the full case set
+2. `context`: Run Narrator for new case only (append) → Re-run Analyst-Critic and Integration with all cases (re-replacement)
+3. `forces`: Run per-case forces (4a) for new case only (append) → Re-run cross-case (4b) and common narrative with all cases (re-replacement)
+4. `jobs`: If already completed, re-run entirely (re-replacement). If not yet run, it will use the updated data automatically
+
+context (2) and forces (3) may run in parallel only if phase definitions did not change in step 1.
+
+### Post-hoc Correction
+
+When a missed pattern or error is discovered after a confirmation gate:
+
+**Small correction (no pattern ID additions/deletions/renames)**:
+
+- Edit the affected section directly (re-replace)
+- Consult the dependency map above and verify consistency in **only the downstream sections that reference the changed content**
+- Example: Adding B44 to P4-S1's case manifestation column → verify Purpose divergence summary, causal chain annotations, common narrative, and any job hypothesis citing P4-S1
+
+**Large correction (pattern IDs added/deleted/renamed)**:
+
+- Re-run the affected subcommand (re-replacement) rather than manual patching
+- Manual patching across multiple sections with ID changes is error-prone
+
+### Re-replacement Consistency Rule
+
+- ALWAYS: After any re-replacement or manual edit, consult the dependency map and verify consistency in **only the downstream sections that reference the modified content**
+- Verification items: (a) any P\*-S\*/P\*-St\*/CF-\* added or changed in the edit exists and is correctly referenced downstream, (b) quantitative phrases like "N cases" match the actual case count, (c) Purpose divergence summary is consistent with the causal chain and Purpose comparison table
+- If inconsistencies are found, re-replace the downstream sections as well
 
 Report path: `~/.agent-memory/<scope>/<date>_<topic>/job-discovery-report.md`
 
