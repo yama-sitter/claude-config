@@ -106,22 +106,32 @@ Scan the changed files for secrets (`.env`, `.env.*`, `credentials.json`, `*.pem
 - If found → warn the user and exclude them from staging
 - If the user explicitly requests to include them → warn again but respect the decision
 
-### 4. Analyze changes
+### 3. Analyze and group changes
 
-Review the diff content:
+Review the diff content and group changed files by purpose (one logical intent per group).
 
-- If changes span multiple unrelated purposes → suggest splitting:
-  "変更に複数の意図が含まれているようです。`! git add -p` で分割コミットを検討してください"
-  Ask whether to proceed with a single commit or let the user split first.
-- If all changes are already staged and nothing is unstaged → use staged changes as-is
+- If all changes are already staged and nothing is unstaged → use staged changes as-is, skip to Step 4
+- If all changes share a single purpose → select all files for this commit
+- If changes span multiple unrelated purposes:
+  1. Identify each purpose and the files belonging to it
+  2. Present the grouping to the user via AskUserQuestion:
+     - Show each group with its purpose and file list
+     - Ask which group to commit now (the rest remain unstaged for subsequent commits)
+     - Example: "変更が複数の目的に分かれています。どのグループをコミットしますか？"
+       - Option 1: "機能A: file1.ts, file2.ts"
+       - Option 2: "リファクタリング: file3.ts"
+       - Option 3: "すべて一括でコミット"
+  3. If the user selects a group → proceed with only those files
+  4. If a single file contains changes for multiple purposes → note this and suggest `! git add -p` for that file
 
-### 5. Stage and commit
+### 4. Stage and commit
 
-- Stage relevant files with `git add <file>...` (specific files, not `git add -A` or `git add .`)
+- Stage only the selected files with `git add <file>...` (never `git add -A` or `git add .`)
 - Draft a commit message following Git Guidelines:
   - Format: `<type>: <summary>` (first line) + blank line + detailed description (body)
   - Language: Japanese
   - Do **NOT** add `Co-Authored-By` footer
+  - The message must reflect only the staged changes, not all changes in the working tree
 - Create the commit using a HEREDOC:
 
 ```bash
