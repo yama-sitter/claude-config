@@ -27,21 +27,59 @@ A persistent memory space for storing knowledge that survives across conversatio
 
 ## Save Workflow
 
-1. **Determine content**: Identify what to save from the conversation context or `<description>` argument
-2. **Expand context from sources**: If the content being saved builds upon, extends, or references an existing memory (e.g., a recalled memo from earlier in the conversation), do both:
-   - **Embed context**: Incorporate the necessary background from the source memory so the new memo is fully understandable on its own. A reader with no prior knowledge must be able to follow the content without reading the source memo. Do not merely summarize — include the specific facts, decisions, and context that the new content depends on
-   - **Link source**: Add all source memory paths to the `related` field in frontmatter (e.g., `related: [..., scope/date_topic/file.md]`)
-3. **Choose scope and path**: Select scope (repository name or `general`) and build the path:
-   `<scope>/<YYYY-MM-DD>_<descriptive-name>/<filename>.md`
+Content composition and file writing are delegated to a subagent to keep Write tool output out of the main conversation context. The main agent handles extraction and decision-making; the subagent handles formatting and persistence.
+
+1. **Determine what to save**: Identify what to save from the conversation context or `<description>` argument. Extract:
+   - Scope (repository name or `general`), topic name, and filename
+   - Frontmatter fields: `summary`, `tags`, `related` paths
+   - Source memory paths (if extending an existing memory)
+   - **Content key points** — structured bullet points covering:
+     - Core facts, decisions, and their rationale (why)
+     - Specific file paths, function names, and commands
+     - Constraints, trade-offs, and open questions
+     - Current state and next steps (if applicable)
    - Use `date +%Y-%m-%d` for the current date
-4. **Duplicate check**: Search existing memories to avoid redundancy
+2. **Duplicate check**: Search existing memories to avoid redundancy
    ```bash
    rg "^summary:.*<keyword>" ~/.agent-memory/ --no-ignore --hidden -i
    ```
-   - If a closely related memory exists, update it instead of creating a new file
-5. **Write file**: Write the file with required frontmatter (Write tool creates parent directories automatically, so mkdir is not needed)
-   - Check if file exists before writing to avoid accidental overwrites
-6. **Confirm**: After saving, display the saved path and summary to the user
+   - If a closely related memory exists, decide whether to update it or create a new file (ask the user if unclear)
+   - Pass `mode: new` or `mode: update` (with the existing file path) to Step 3
+3. **Delegate to subagent**: Launch a `general-purpose` subagent via the Agent tool with the following prompt template. Replace `{placeholders}` with actual values from Steps 1-2.
+
+   ````
+   You are a memory writer agent for the agent-memory system.
+
+   ## Save Parameters
+   - Path: {absolute path to ~/.agent-memory/<scope>/<YYYY-MM-DD>_<topic>/<filename>.md}
+   - Mode: {new | update}
+   - Source memories to reference: {paths or "none"}
+
+   ## Frontmatter
+   summary: "{summary}"
+   created: {YYYY-MM-DD}
+   tags: [{tags}]
+   related: [{related paths}]
+
+   ## Content Key Points
+   {structured key points extracted in Step 1}
+
+   ## Quality Guidelines
+   - Self-contained: a reader with no prior knowledge must understand the note
+   - Write for resumption: include decisions, rationale, current state, next steps
+   - Keep one topic per file
+
+   ## Instructions
+   1. If source memories are specified, read them and embed necessary context into the note
+   2. If mode is "update", read the existing file first and incorporate its content
+   3. Compose the full markdown file: frontmatter + expanded prose from the key points
+   4. Write the file (Write tool creates parent directories automatically)
+   5. Return ONLY: status (success | failure), path, summary, reason (if failure)
+   ````
+
+4. **Confirm**: Display the result based on the subagent's return:
+   - `success`: display the saved path and summary to the user
+   - `failure`: display the error reason and suggest falling back to a direct Write
 
 ## Search Workflow
 
