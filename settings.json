@@ -140,7 +140,8 @@
     "additionalDirectories": [
       "~/.claude/skills",
       "~/.claude/plugins",
-      "~/.agent-memory"
+      "~/.agent-memory",
+      "~/.claude/analyze"
     ]
   },
   "hooks": {
