@@ -8,12 +8,9 @@
 
 ## Saving Plans to agent-memory
 
-Save the plan content using the `/agent-memory` skill when either of the following triggers occurs:
+Do NOT automatically save plans to agent-memory. Save only when the user explicitly instructs it.
 
-- **Trigger 1**: After the user approves a plan in Plan Mode (ExitPlanMode approved)
-- **Trigger 2**: After the superpowers writing-plans skill saves a plan file to `docs/superpowers/plans/`, before Execution Handoff (presenting execution choices)
-
-Save procedure:
+Save procedure (when instructed):
 
 - Scope: the current repository name
 - Directory name: `<YYYY-MM-DD>_<task-description>-plan`
