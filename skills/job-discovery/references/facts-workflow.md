@@ -70,7 +70,17 @@ Output format:
 > ファクト: [[A1](#A1), [A3](#A3), ...]（Anchor formatting: リンク形式で記載）
 > 要約: [構造的条件 — 事業環境、継続的な制約、リソースの限界]
 >
-> **時系列の出来事** > [Fact IDs in time order with brief period labels, linked as [A1](#A1)]
+> **時系列の出来事**
+>
+> | 時期 | # | 出来事 |
+> |------|---|--------|
+> | [時期ラベル] | [A1](#A1) | [ファクトテーブルの該当行から簡潔に要約] |
+> |  | [A2](#A2) | [要約] |
+> | [次の時期] | [A5](#A5) | [要約] |
+>
+> - 1行に1ファクト（または連続するファクト範囲）を記載
+> - 時期列は同一グループの先頭行のみ記載し、後続行は空欄とする
+> - 出来事列はファクトテーブル（Step 1）の「何をした・何を言った」から簡潔に要約
 
 For large fact sets (30+ facts): Launch a subagent, then self-review for completeness.
 
