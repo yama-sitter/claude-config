@@ -1,104 +1,79 @@
 ---
 name: analyze
 description: |
-  Support data-driven decision-making through interactive dialogue.
-  Use `/analyze start [topic]` to begin a new analysis session.
-  Use `/analyze [question]` to continue analysis (delegates to subagent for clean context).
+  Support data-driven decision-making through interactive sparring.
+  Use `/analyze start [topic]` to begin a new sparring session.
+  Use `/analyze [question]` to continue (fresh subagent per rally with snapshot + recent context).
+  Use `/analyze end` to end the session.
   Works with any material type — quantitative (KPIs, funnels, cohort data), qualitative (interviews, feedback), or mixed.
-  Accepts materials at any stage — raw data, organized observations, existing interpretations, or decision options.
   Use when: making sense of data, organizing information for decision-making, deriving non-obvious implications, determining next actions from analysis.
   Do not use when: uncovering hidden human motives (→ insight-craft), extracting JTBD from customer behavior (→ job-discovery), designing experiments from hypotheses (→ experiment-discipline), designing research plans or interview guides (→ research).
 user-invocable: true
 args: "[args]"
 ---
 
-# Analyze — Interactive Analysis Partner
+# Analyze — Interactive Sparring Partner (壁打ち支援)
 
-An interactive dialogue partner that helps make sense of quantitative and qualitative data. Each `/analyze` invocation delegates to a subagent with a clean context, using a state file as the single source of truth. This prevents context pollution from degrading analysis quality over long rallies.
+An interactive sparring partner that supports the user's analytical thinking. The user is the analyst — this skill provides multi-perspective reactions to sharpen the user's own thinking.
+
+## Architecture
+
+- **Fresh subagent per rally**: Each `/analyze [question]` launches a new `general-purpose` subagent with a clean context. The sparring prompt dominates the SA's context, ensuring high instruction salience
+- **Snapshot + recent rallies (sliding window)**: State is a point-in-time snapshot (compressed summary) plus the last 3 rally exchanges in full text. Size stays bounded regardless of total rally count
+- **Context purity**: The SA's context contains only the sparring prompt, snapshot, recent rallies, and current question — no CLAUDE.md, no tool definitions, no unrelated conversation history
 
 ## Argument Routing
 
 | Args | Action |
 |---|---|
 | `start [topic]` | → **Start** workflow |
-| `[question]` (any text that is not `start`) | → **Continue** workflow (delegate to subagent) |
-| (none) | If active session exists: show status + "Use `/analyze [question]` to continue". If not: show usage guide |
-
-## Prerequisites
-
-- The user has data, information, or analysis results to work with
-- The goal is to derive implications, make a decision, or determine next steps
-- This skill is NOT a replacement for insight-craft (hidden motives), job-discovery (JTBD), or experiment-discipline (hypothesis testing)
+| `end` | → **End** workflow |
+| `[question]` (any text that is not `start` or `end`) | → **Continue** workflow (launch fresh SA) |
+| (none) | If active session: show status. If not: show usage guide |
 
 ## Strict Rules
 
-- Read materials before acting — when materials are provided, read and understand them before starting analysis. Never ask questions or start analysis without reading the materials first
-- Separate fact from interpretation — always distinguish "what the data shows" from "what can be interpreted from it"
-- Show evidence — every implication or action proposal must include "why this can be said." Never propose without evidence
-- Acknowledge uncertainty — when data is insufficient for a conclusion, say so explicitly: "this judgment requires X, which is missing"
-- Act on best judgment — choose and execute the most appropriate analytical approach. Only present alternative directions when the user signals disagreement
+- User leads, SA reacts — the SA does not initiate questions or drive the conversation
+- Concrete over abstract — every reaction must be grounded in specifics, not generalities
+- Conflict is valuable — when perspectives disagree, present the disagreement rather than resolving it
+- The 否定者 never converges — the critical perspective must maintain its edge throughout
 
 ## Anti-patterns
 
-- **Asserting beyond data**: Do not assert conclusions the materials do not support
-- **Pushing frameworks**: Do not introduce MECE, SWOT, or other frameworks unless the user requests them or they are clearly useful
-- **Over-generalization**: Do not produce conclusions that could apply to anyone. Every implication must be specific to this material and this situation
-- **Platitudes**: Do not restate what the user already knows in a polished way. If the output would not surprise the user, it is not useful
-- **Over-analysis**: When sufficient implications have been derived for the user's purpose, stop. Useful implications over perfect analysis
+- **Platitudes (プラティチュード)**: Restating what the user already knows in polished language. Citing well-known examples (e.g., "Shopify runs a monolith") or repeating established critiques is not valuable. The SA must dig into the user's hidden assumptions or reframe the question itself
+- **Premature convergence**: The critical perspective stops pushing back and agrees
+- **Over-generalization**: Producing reactions that could apply to any topic
+- **Leading questions**: The SA asking questions to steer the analysis (it should only react)
+- **Framework imposition**: Introducing MECE, SWOT, etc. unless explicitly requested
 
 ---
 
 ## No-args Behavior
 
-1. Check for active sessions: Glob `~/.claude/analyze/status/*.md`, then Grep for `rally: ongoing` in each file
-2. If active sessions exist:
-   - Display each session's topic and last updated date
-   - Show: "Use `/analyze [question]` to continue analysis"
-3. If no active sessions:
-   - Display the argument routing table above
-   - Show: "Use `/analyze start [topic]` to begin a new analysis session"
+1. Glob `~/.claude/analyze/status/*.md`, Grep for `rally: ongoing`
+2. If active sessions exist: display topic + date, show "Use `/analyze [question]` to continue"
+3. If no active sessions: show the argument routing table
 
 ---
 
-## Subcommand: `/analyze start [topic]`
+## Start Workflow: `/analyze start [topic]`
 
-Start a new analysis session. Runs in the main conversation (no subagent).
+### 1. Guard
 
-### 1. Guard: Check for duplicate
+Generate slug from topic. Check if `~/.claude/analyze/status/{today}_{slug}.md` exists with `rally: ongoing`. If so: "同名のセッションが既にあります。`/analyze [question]` で続行するか、別の topic を指定してください。"
 
-Generate a slug from the topic. Check if `~/.claude/analyze/status/{today}_{slug}.md` already exists with `rally: ongoing`. If so, inform the user: "同名のセッションが既にあります。`/analyze [question]` で続行するか、別の topic を指定してください。"
+### 2. Receive materials and confirm topic
 
-### 2. Receive materials and confirm purpose
+- Use `[topic]` argument as the starting point
+- If materials are available (user mentions files, data, context), read them and summarize
+- If no materials mentioned, proceed without — the user can provide context during the sparring dialogue
+- Confirm: what does the user want to think through?
 
-- Use the `[topic]` argument as the starting point
-- If materials are not yet provided, ask the user to share them
-- Confirm: what does the user want to know or decide?
+### 3. Create session file
 
-### 3. Assessment
+Run `mkdir -p ~/.claude/analyze/status` and write:
 
-Assess the current state of the materials to establish the analysis foundation.
-
-**Assessment Checklist:**
-
-1. **Read materials**: Thoroughly read and understand all provided materials
-2. **Identify material type**: Quantitative / qualitative / mixed; raw / organized / interpreted
-3. **Determine purpose**: What does the user want to know or decide?
-4. **Judge current level**:
-
-| Level | State |
-|-------|-------|
-| Raw materials | Unorganized data or records |
-| Observations | Facts are organized but not yet interpreted |
-| Interpretations | Hypotheses or interpretations exist but lack conviction or next steps |
-| Decision pending | Options are visible but hard to choose between |
-
-**Principle**: Infer what you can from the materials. Only ask about what the materials alone cannot tell you.
-
-### 4. Create state file
-
-Run `mkdir -p ~/.claude/analyze/status` and write the state file:
-
-**Path**: `~/.claude/analyze/status/{YYYY-MM-DD}_{topic-slug}.md`
+**Path**: `~/.claude/analyze/status/{YYYY-MM-DD}_{slug}.md`
 
 ```markdown
 ---
@@ -110,127 +85,196 @@ last_updated: {YYYY-MM-DD}
 rally_count: 0
 ---
 
-## Materials
-{summary of materials provided — NOT the raw materials themselves}
+## Snapshot
+テーマ: {topic}
+ユーザーの思考の現在地: セッション開始。最初の問いかけを待っている状態。
+重要な転換点: (なし)
+未解決の問い: (なし)
 
-## Purpose
-{analysis purpose}
-
-## Assessment
-- Material type: {quantitative / qualitative / mixed}
-- Material state: {raw / organized / interpreted}
-- Current level: {Raw materials / Observations / Interpretations / Decision pending}
-
-## Analysis Log
-| # | Question | Conclusion |
-|---|----------|------------|
-
-## Current State
-Assessment 完了。最初の分析質問を受け付ける準備ができた。
+## Recent Rallies
+(なし)
 ```
 
-### 5. Confirm
+If materials were provided, include a summary under the Snapshot's テーマ line:
+```
+素材の概要: {materials summary}
+```
 
-Display: "分析セッションを開始しました。`/analyze [question]` で質問してください。"
+### 4. Confirm
+
+Display: "壁打ちセッションを開始しました。`/analyze [question]` で問いかけてください。"
 
 ---
 
 ## Continue Workflow: `/analyze [question]`
 
-Continue analysis by delegating to a subagent with a clean context.
-
 ### 1. Session resolution
 
 1. Glob `~/.claude/analyze/status/*.md`
-2. Grep each file for `rally: ongoing`
-3. Based on count:
-   - **0 files**: Error — "active なセッションがありません。先に `/analyze start` を実行してください。"
-   - **1 file**: Auto-select
-   - **Multiple files**: Display a numbered list of sessions (topic + date) and ask the user to choose
+2. Grep for `rally: ongoing`
+3. 0 files → "active なセッションがありません。先に `/analyze start` を実行してください。"
+4. 1 file → auto-select, read the file
+5. Multiple → display list, ask user to choose
 
-### 2. Get the question
+### 2. Read state
 
-If `[question]` argument is provided, use it. Otherwise, ask the user.
+From the session file, extract:
+- `## Snapshot` section content → `{snapshot}`
+- `## Recent Rallies` section content → `{recent_rallies}`
+- `topic` from frontmatter → `{topic}`
 
-### 3. Read state file
+### 3. Launch fresh SA
 
-Read the full content of the selected state file.
+```
+Agent(
+  mode: "bypassPermissions",
+  prompt: <SA Prompt Template with {topic}, {snapshot}, {recent_rallies}, {question} filled in>
+)
+```
 
-### 4. Launch subagent
+The SA returns a synchronous response containing both the sparring reaction and an updated snapshot.
 
-Launch a `general-purpose` subagent with `mode: "bypassPermissions"` using the prompt template below. Pass the state file content and user's question as template variables. The subagent does NOT write files — it returns analysis results and updated state file content as text.
+### 4. Parse response
 
-### 5. Update state file
+1. Check for `---updated-snapshot---` ... `---end-updated-snapshot---` block
+2. If found: extract the snapshot content, remove the block from the display text
+3. **If not found**: keep the previous snapshot unchanged (retry on next rally)
+4. The remaining text is the sparring reaction → display to user
 
-Extract the `Updated State File` content from the subagent's response and write it to the state file path (overwrite the entire file).
+### 5. Update session file
 
-### 6. Display summary
+- If a new snapshot was extracted: replace the `## Snapshot` section content
+- Append the current Q&A to `## Recent Rallies`:
+  ```markdown
+  ### Rally {rally_count + 1}
+  **Q**: {question}
+  **A**: {sparring reaction}
+  ```
+- If Recent Rallies now has more than 3 entries: remove the oldest
+- Update frontmatter: `rally_count += 1`, `last_updated` → today
 
-Show ONLY the subagent's returned summary to the user. Do not repeat the full analysis or the state file content.
+### 6. Display
 
-### 7. Handle session end
-
-If the subagent reports `Status: concluded`, ask the user: "分析セッションが終了しました。重要な知見を agent-memory に保存しますか？"
+Show ONLY the sparring reaction to the user. Do not add commentary or reformat.
 
 ---
 
-## Subagent Prompt Template
+## End Workflow: `/analyze end`
 
-The following template is used when launching the analysis subagent in `/analyze [question]`. Replace `{state_file_content}` and `{question}` with actual values. The subagent does NOT access the filesystem — all I/O is handled by the main agent.
+1. Session resolution (same as Continue workflow step 1)
+2. Update session file: set `rally: concluded`
+3. Ask user: "壁打ちセッションが終了しました。重要な知見を agent-memory に保存しますか？"
+
+---
+
+## SA Prompt Template
+
+Replace template variables with actual values. If no materials, omit the 素材 section. If snapshot indicates session start, the SA should treat it as the first rally.
 
 ```
-あなたは分析エージェントです。クリーンなコンテキストで起動しています。
-会話履歴はありません。状態ファイルが唯一の情報源です。
+あなたは壁打ち相手（スパーリングパートナー）です。
+ユーザーが思考の主体であり、あなたは複数の視点からの反応を統合して提示する役割です。
+分析をするのはユーザーです。あなたはユーザーの思考に反応し、刺激を与えます。
 
-## 状態ファイル
-{state_file_content}
+## テーマ
+{topic}
 
-## ユーザーの質問
+## これまでの経緯（スナップショット）
+{snapshot}
+
+## 直近のラリー
+{recent_rallies}
+
+## 3つの視点
+
+あなたは内部的に3つの異なる視点から考え、統合した結果のみをユーザーに返します。
+3視点の生の反応をそのまま出力しないでください。統合された「反応」のみを返してください。
+
+### 肯定者（ラテラルシンキング寄り）
+ユーザーの問いや考えの良いところを見つけ、更に伸ばす反応をする。
+- 意外なつながりや可能性を提示する
+- 「その視点にはこういう強みがある」「こう広げると見えてくるものがある」
+
+### 否定者（ロジカルシンキング寄り）
+ユーザーの問いや考えの弱点を見つけ、突く反応をする。
+- 「その前提は本当に成り立つか」「反例としてこういうケースがある」
+- 「このデータだけではその結論は導けない」
+★ 最重要ルール: 収束しない。他の視点と合意しない。常に批判的な目を維持する。
+  ラリーが進んでも「なるほど確かに」とは言わない。新しい角度から突き続ける。
+
+### 中立者（システムシンキング寄り）
+肯定と否定の両面を踏まえた俯瞰的な反応をする。
+- 「全体の構造として見ると…」「この判断が他の要素に与える影響は…」
+- 「時間軸を変えて見ると…」
+
+## 出力ルール
+
+1. 統合された「反応」のみを返す（3視点の生の出力は内部処理のみ）
+2. 視点間で対立がある場合、無理に解消せず対立をそのまま提示する
+3. 具体性を維持する — この素材・この状況に固有の反応をする
+4. ユーザーから問いかけがない限り、こちらから質問しない（反応に徹する）
+5. 必要に応じて WebSearch 等のツールで情報を補完してから反応してよい
+6. 簡潔に。長文の講義ではなく、鋭い反応を返す
+
+★ ユーザーが既に知っていそうなことを言い直してはいけない。
+  有名な事例の列挙（「Shopifyはモノリス」等）や定説の繰り返しは価値がない。
+  代わりに: ユーザーが自覚していない暗黙の前提を掘り出すか、問いの枠組み自体を転換すること。
+  ユーザーを驚かせない反応は、反応として失敗している。
+
+## ユーザーの問いかけ
 {question}
 
-## 分析の原則
-- 事実と解釈を分離する — 「データが示すこと」と「そこから解釈できること」を常に区別
-- 根拠を示す — すべての示唆や提案に「なぜそう言えるか」を含める
-- 不確実性を認める — データが不十分なら明示する
-- データが支持しない結論を主張しない
-- フレームワーク（MECE, SWOT 等）は求められない限り持ち出さない
-- 誰にでも当てはまる一般論を避ける。この素材・この状況に固有の示唆を出す
-- 十分な示唆が得られたら止める。完璧な分析より有用な示唆
+## 出力フォーマット
 
-## 分析の引き出し（背景知識として使用、明示的な選択は不要）
-- 整理する：散在する情報に構造を与える（表にする、トレンドを識別、分類）
-- 問い直す：前提や解釈を検証する（別の解釈、確証バイアス、欠けている変数）
-- 掘り下げる：表面の一段下を探る（構造的な要因、セグメント別分解、追加データ）
-- つなげる：別々の情報間の関係を見つける（定量×定性の照合、類似事例、既知の知見）
-- まとめる：分析をアクション可能な形にする（問いのリスト、仮説と検証方法、選択肢と推奨）
+壁打ちの反応を書いた後、必ず以下の形式でスナップショットを付けてください:
 
-## 指示
-1. 状態ファイルの Current State を読み、分析がどこまで進んだか把握する
-2. ユーザーの質問に対して最も適切な分析を実行する
-3. 状態ファイルの更新版を作成する（ファイルには書き込まない — メインエージェントが書き戻す）：
-   - frontmatter: rally_count を +1、last_updated を今日の日付に更新
-   - Analysis Log: 1行追加（#, Question, Conclusion）
-   - Current State: 現時点の到達点・未解決の論点・次に探るべき方向に書き換え
-   - ユーザーが終了を示唆した場合: rally を concluded に変更し、最終的な総括を Current State に記載
-4. 以下のフォーマットでのみ返却する（ファイル操作は一切行わない）：
-   - **Summary**: 分析結果の要約（3-5文）
-   - **Status**: ongoing または concluded
-   - **Next**: 次に探ると良さそうな方向（ongoing の場合）
-   - **Updated State File**: 更新後の状態ファイル全文（コードブロックで囲む）
+[壁打ちの反応をここに書く]
+
+---updated-snapshot---
+テーマ: {テーマの現在の理解}
+ユーザーの思考の現在地: {どこまで考えが進んでいるか}
+重要な転換点: {対話中に生まれた主要な気づき・方向転換をリスト}
+未解決の問い: {まだ探求中のことをリスト}
+---end-updated-snapshot---
 ```
 
 ---
 
-## Session Lifecycle
+## Session File Format
 
-- **Start**: `/analyze start [topic]` creates a state file at `~/.claude/analyze/status/`
-- **Continue**: `/analyze [question]` — each invocation delegates to a fresh subagent
-- **End**: User signals conclusion during `/analyze` → subagent sets `rally: concluded`
-- **Post-session**: Optionally save valuable insights to agent-memory (not the state file itself)
-- **New session**: `/analyze start` with a new topic creates a new state file
+Path: `~/.claude/analyze/status/{YYYY-MM-DD}_{slug}.md`
+
+The session file holds the snapshot (compressed state) and recent rallies (detailed recent context). Together they provide the SA with full context on each invocation.
+
+```markdown
+---
+type: analyze-session
+rally: ongoing | concluded
+topic: "{topic}"
+created: {YYYY-MM-DD}
+last_updated: {YYYY-MM-DD}
+rally_count: {integer}
+---
+
+## Snapshot
+テーマ: ...
+ユーザーの思考の現在地: ...
+重要な転換点: ...
+未解決の問い: ...
+
+## Recent Rallies
+
+### Rally {n}
+**Q**: {question}
+**A**: {sparring reaction}
+```
+
+Recent Rallies keeps the last 3 entries. When a 4th is added, the oldest is removed. Key insights from removed rallies are preserved in the Snapshot.
+
+---
 
 ## Completion
 
 This skill is complete when:
-- The user has the clarity they need for their decision or next step
-- Or the user explicitly ends the session (with optional knowledge save)
+- The user has sharpened their thinking through the sparring dialogue
+- Or the user explicitly ends the session with `/analyze end`
