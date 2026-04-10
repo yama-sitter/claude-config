@@ -141,7 +141,7 @@
       "~/.claude/skills",
       "~/.claude/plugins",
       "~/.agent-memory",
-      "~/.claude/analyze"
+      "~/.analyze"
     ]
   },
   "hooks": {

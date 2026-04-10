@@ -12,7 +12,7 @@ user-invocable: true
 args: "[args]"
 ---
 
-# Analyze — Interactive Sparring Partner (壁打ち支援)
+# Analyze — Interactive Sparring Partner
 
 An interactive sparring partner that supports the user's analytical thinking. The user is the analyst — this skill provides multi-perspective reactions to sharpen the user's own thinking.
 
@@ -36,11 +36,11 @@ An interactive sparring partner that supports the user's analytical thinking. Th
 - User leads, SA reacts — the SA does not initiate questions or drive the conversation
 - Concrete over abstract — every reaction must be grounded in specifics, not generalities
 - Conflict is valuable — when perspectives disagree, present the disagreement rather than resolving it
-- The 否定者 never converges — the critical perspective must maintain its edge throughout
+- The critical perspective never converges — it must maintain its edge throughout
 
 ## Anti-patterns
 
-- **Platitudes (プラティチュード)**: Restating what the user already knows in polished language. Citing well-known examples (e.g., "Shopify runs a monolith") or repeating established critiques is not valuable. The SA must dig into the user's hidden assumptions or reframe the question itself
+- **Platitudes**: Restating what the user already knows in polished language. Citing well-known examples (e.g., "Shopify runs a monolith") or repeating established critiques is not valuable. The SA must dig into the user's hidden assumptions or reframe the question itself
 - **Premature convergence**: The critical perspective stops pushing back and agrees
 - **Over-generalization**: Producing reactions that could apply to any topic
 - **Leading questions**: The SA asking questions to steer the analysis (it should only react)
@@ -50,7 +50,7 @@ An interactive sparring partner that supports the user's analytical thinking. Th
 
 ## No-args Behavior
 
-1. Glob `~/.claude/analyze/status/*.md`, Grep for `rally: ongoing`
+1. Glob `~/.analyze/*.md`, Grep for `rally: ongoing`
 2. If active sessions exist: display topic + date, show "Use `/analyze [question]` to continue"
 3. If no active sessions: show the argument routing table
 
@@ -60,7 +60,7 @@ An interactive sparring partner that supports the user's analytical thinking. Th
 
 ### 1. Guard
 
-Generate slug from topic. Check if `~/.claude/analyze/status/{today}_{slug}.md` exists with `rally: ongoing`. If so: "同名のセッションが既にあります。`/analyze [question]` で続行するか、別の topic を指定してください。"
+Generate slug from topic. Check if `~/.analyze/{today}_{slug}.md` exists with `rally: ongoing`. If so: "同名のセッションが既にあります。`/analyze [question]` で続行するか、別の topic を指定してください。"
 
 ### 2. Receive materials and confirm topic
 
@@ -71,9 +71,9 @@ Generate slug from topic. Check if `~/.claude/analyze/status/{today}_{slug}.md` 
 
 ### 3. Create session file
 
-Run `mkdir -p ~/.claude/analyze/status` and write:
+Run `mkdir -p ~/.analyze` and write:
 
-**Path**: `~/.claude/analyze/status/{YYYY-MM-DD}_{slug}.md`
+**Path**: `~/.analyze/{YYYY-MM-DD}_{slug}.md`
 
 ```markdown
 ---
@@ -110,7 +110,7 @@ Display: "壁打ちセッションを開始しました。`/analyze [question]` 
 
 ### 1. Session resolution
 
-1. Glob `~/.claude/analyze/status/*.md`
+1. Glob `~/.analyze/*.md`
 2. Grep for `rally: ongoing`
 3. 0 files → "active なセッションがありません。先に `/analyze start` を実行してください。"
 4. 1 file → auto-select, read the file
@@ -242,7 +242,7 @@ Replace template variables with actual values. If no materials, omit the 素材 
 
 ## Session File Format
 
-Path: `~/.claude/analyze/status/{YYYY-MM-DD}_{slug}.md`
+Path: `~/.analyze/{YYYY-MM-DD}_{slug}.md`
 
 The session file holds the snapshot (compressed state) and recent rallies (detailed recent context). Together they provide the SA with full context on each invocation.
 
