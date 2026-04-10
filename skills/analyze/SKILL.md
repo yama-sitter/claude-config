@@ -66,7 +66,7 @@ Generate slug from topic. Check if `~/.analyze/{today}_{slug}.md` exists with `r
 ### 2. Receive materials and confirm topic
 
 - Use `[topic]` argument as the starting point
-- If materials are available (user mentions files, data, context), read them and summarize
+- If materials are available (user mentions files, data, context), read them and summarize. Record their absolute file paths as `materials_path` for the session frontmatter
 - If no materials mentioned, proceed without — the user can provide context during the sparring dialogue
 - Confirm: what does the user want to think through?
 
@@ -105,13 +105,14 @@ From the session file, extract:
 - `## Snapshot` section content → `{snapshot}`
 - `## Recent Rallies` section content → `{recent_rallies}`
 - `topic` from frontmatter → `{topic}`
+- `materials_path` from frontmatter → `{materials_path}` (empty if not present — backward compatible)
 
 ### 3. Launch fresh SA
 
 ```
 Agent(
   mode: "bypassPermissions",
-  prompt: <SA Prompt Template with {topic}, {snapshot}, {recent_rallies}, {question} filled in>
+  prompt: <SA Prompt Template with {topic}, {snapshot}, {recent_rallies}, {materials_path}, {question} filled in>
 )
 ```
 
@@ -178,6 +179,8 @@ rally: ongoing
 topic: "{topic}"
 created: {YYYY-MM-DD}
 last_updated: {YYYY-MM-DD}
+materials_path:                    # optional, omit key entirely if no materials with file paths were provided
+  - "{path}"
 rally_count: 0
 ---
 
@@ -215,7 +218,7 @@ Path: {session file path}
 
 ## SA Prompt Template
 
-Replace template variables with actual values. If no materials, omit the 素材 section. If snapshot indicates session start, the SA should treat it as the first rally.
+Replace template variables with actual values. If `{materials_path}` is empty, omit the 素材 section entirely. If snapshot indicates session start, the SA should treat it as the first rally.
 
 ```
 あなたは壁打ち相手（スパーリングパートナー）です。
@@ -267,6 +270,10 @@ Replace template variables with actual values. If no materials, omit the 素材 
   代わりに: ユーザーが自覚していない暗黙の前提を掘り出すか、問いの枠組み自体を転換すること。
   ユーザーを驚かせない反応は、反応として失敗している。
 
+## 素材
+以下のファイルに分析対象の原文データがあります。反応する前に Read ツールで読んでください。
+{materials_path の各パスを箇条書き}
+
 ## ユーザーの問いかけ
 {question}
 
@@ -299,6 +306,8 @@ rally: ongoing | concluded
 topic: "{topic}"
 created: {YYYY-MM-DD}
 last_updated: {YYYY-MM-DD}
+materials_path:                    # optional, omit if no materials provided
+  - "{path}"
 rally_count: {integer}
 ---
 
