@@ -21,6 +21,7 @@ An interactive sparring partner that supports the user's analytical thinking. Th
 - **Fresh subagent per rally**: Each `/analyze [question]` launches a new `general-purpose` subagent with a clean context. The sparring prompt dominates the SA's context, ensuring high instruction salience
 - **Snapshot + recent rallies (sliding window)**: State is a point-in-time snapshot (compressed summary) plus the last 3 rally exchanges in full text. Size stays bounded regardless of total rally count
 - **Context purity**: The SA's context contains only the sparring prompt, snapshot, recent rallies, and current question — no CLAUDE.md, no tool definitions, no unrelated conversation history
+- **Writer SA for file I/O**: All session file writes (create, update, conclude) are delegated to a writer subagent to keep Write/Edit tool output out of the main conversation context
 
 ## Argument Routing
 
@@ -71,34 +72,16 @@ Generate slug from topic. Check if `~/.analyze/{today}_{slug}.md` exists with `r
 
 ### 3. Create session file
 
-Run `mkdir -p ~/.analyze` and write:
+Run `mkdir -p ~/.analyze`, then delegate file creation to a **synchronous** writer SA:
 
-**Path**: `~/.analyze/{YYYY-MM-DD}_{slug}.md`
-
-```markdown
----
-type: analyze-session
-rally: ongoing
-topic: "{topic}"
-created: {YYYY-MM-DD}
-last_updated: {YYYY-MM-DD}
-rally_count: 0
----
-
-## Snapshot
-テーマ: {topic}
-ユーザーの思考の現在地: セッション開始。最初の問いかけを待っている状態。
-重要な転換点: (なし)
-未解決の問い: (なし)
-
-## Recent Rallies
-(なし)
+```
+Agent(
+  mode: "bypassPermissions",
+  prompt: <Writer SA Prompt Template with operation=create, path, topic, materials_summary filled in>
+)
 ```
 
-If materials were provided, include a summary under the Snapshot's テーマ line:
-```
-素材の概要: {materials summary}
-```
+The writer SA creates `~/.analyze/{YYYY-MM-DD}_{slug}.md` with the initial session content. See **Writer SA Prompt Template** section for the full file format.
 
 ### 4. Confirm
 
@@ -141,29 +124,92 @@ The SA returns a synchronous response containing both the sparring reaction and 
 3. **If not found**: keep the previous snapshot unchanged (retry on next rally)
 4. The remaining text is the sparring reaction → display to user
 
-### 5. Update session file
-
-- If a new snapshot was extracted: replace the `## Snapshot` section content
-- Append the current Q&A to `## Recent Rallies`:
-  ```markdown
-  ### Rally {rally_count + 1}
-  **Q**: {question}
-  **A**: {sparring reaction}
-  ```
-- If Recent Rallies now has more than 3 entries: remove the oldest
-- Update frontmatter: `rally_count += 1`, `last_updated` → today
-
-### 6. Display
+### 5. Display
 
 Show ONLY the sparring reaction to the user. Do not add commentary or reformat.
+
+### 6. Update session file (background writer SA)
+
+Delegate the file update to a **background** writer SA to keep Write/Edit output out of the main context:
+
+```
+Agent(
+  mode: "bypassPermissions",
+  run_in_background: true,
+  prompt: <Writer SA Prompt Template with operation=update, path, topic, new_snapshot, question, reaction, rally_count, today filled in>
+)
+```
+
+The writer SA reads the current file, replaces the snapshot, appends the rally, removes the oldest if >3 entries, and updates frontmatter.
 
 ---
 
 ## End Workflow: `/analyze end`
 
 1. Session resolution (same as Continue workflow step 1)
-2. Update session file: set `rally: concluded`
+2. Delegate file update to a **synchronous** writer SA:
+   ```
+   Agent(
+     mode: "bypassPermissions",
+     prompt: <Writer SA Prompt Template with operation=conclude, path filled in>
+   )
+   ```
 3. Ask user: "壁打ちセッションが終了しました。重要な知見を agent-memory に保存しますか？"
+
+---
+
+## Writer SA Prompt Template
+
+Replace `{placeholders}` with actual values. Choose the operation block that matches the current workflow.
+
+```
+You are a file writer agent for the analyze skill. Perform ONLY the specified file operation. Do not output anything else.
+
+## Operation: {create | update | conclude}
+
+### create
+Path: {~/.analyze/YYYY-MM-DD_slug.md}
+
+Write this exact content:
+
+---
+type: analyze-session
+rally: ongoing
+topic: "{topic}"
+created: {YYYY-MM-DD}
+last_updated: {YYYY-MM-DD}
+rally_count: 0
+---
+
+## Snapshot
+テーマ: {topic}
+{素材の概要: {materials_summary} — include only if materials were provided}
+ユーザーの思考の現在地: セッション開始。最初の問いかけを待っている状態。
+重要な転換点: (なし)
+未解決の問い: (なし)
+
+## Recent Rallies
+(なし)
+
+### update
+Path: {session file path}
+
+1. Read the current file
+2. Replace the ## Snapshot section content with:
+{new_snapshot}
+3. Append to ## Recent Rallies:
+### Rally {rally_count + 1}
+**Q**: {question}
+**A**: {reaction}
+4. If ## Recent Rallies now has more than 3 Rally entries, remove the oldest
+5. Update frontmatter: rally_count = {rally_count + 1}, last_updated = {today}
+
+### conclude
+Path: {session file path}
+
+1. Read the current file
+2. Change frontmatter: rally: ongoing → rally: concluded
+```
 
 ---
 
