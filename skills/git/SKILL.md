@@ -309,3 +309,4 @@ Report the results.
 - **Guideline enforcement**: This skill always loads Git Guidelines via the `@` reference. Every subcommand operates under these rules.
 - **No force operations**: This skill never uses `--force` on push or destructive git operations.
 - **Worktree operations**: Use the `/tree` skill for worktree management. `/git branch` only creates branches in the current repository.
+- **No unnecessary `cd`**: Bash tool preserves the working directory between calls. Do not prepend `cd <path> &&` to git commands when the current working directory is already within the target repository. Only use `cd` when the user explicitly requests an operation on a different repository.
