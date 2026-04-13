@@ -2,19 +2,18 @@
 
 ## Prerequisites
 
-Header placeholders (`{{TITLE}}`, `{{SOURCE_MATERIAL}}`, `{{ANALYSIS_FOCUS}}`, `{{CASE_TABLE}}`, `{{LEGEND}}`) are all replaced in the report file.
+Header placeholders (`{{TITLE}}`, `{{SOURCE_MATERIAL}}`, `{{ANALYSIS_FOCUS}}`, `{{CASE_TABLE}}`, `{{LEGEND}}`) are all replaced in the main report file.
 
 ## Owned Placeholders
 
-`{{STEP1_FACT_TABLES}}`, `{{STEP2_BACKGROUND_EVENTS}}`, `{{STEP2B_PHASE_DEFINITIONS}}`
+`{{FACT_TABLES}}`, `{{BACKGROUND_EVENTS}}`
 
 ## Resume Logic
 
-On start, check the report file for owned placeholders:
+On start, check the appendix file for owned placeholders:
 
-- All three (`{{STEP1_FACT_TABLES}}`, `{{STEP2_BACKGROUND_EVENTS}}`, `{{STEP2B_PHASE_DEFINITIONS}}`) present → start from Step 1
-- `{{STEP2_BACKGROUND_EVENTS}}` and `{{STEP2B_PHASE_DEFINITIONS}}` present → resume from Step 2 (Step 1 already completed)
-- Only `{{STEP2B_PHASE_DEFINITIONS}}` present → resume from Step 3 (Steps 1-2 already completed)
+- Both (`{{FACT_TABLES}}`, `{{BACKGROUND_EVENTS}}`) present → start from Step 1
+- Only `{{BACKGROUND_EVENTS}}` present → resume from Step 2 (Step 1 already completed)
 - None present → all steps already completed; inform the user
 
 ## Workflow
@@ -27,11 +26,11 @@ On start, check the report file for owned placeholders:
 
 List observable behaviors and verbatim quotes. Separate what happened from why it happened.
 
-Output as a table (apply Anchor formatting from report-template.md — wrap identifiers in the # column with `<span id="ID">ID</span>`):
+Output as a table:
 
 | #   | 誰が | 何をした・何を言った（逐語） | 状況（いつ、どこで） |
 | --- | ---- | ---------------------------- | -------------------- |
-| <span id="A1">A1</span> | ... | ... | ... |
+| A1  | ...  | ...                          | ...                  |
 
 Identifier format: `{Case}{Number}` (e.g., A1, B1, C1). Case letter = case identifier from the case table.
 
@@ -48,13 +47,13 @@ Identifier format: `{Case}{Number}` (e.g., A1, B1, C1). Case letter = case ident
 
 ### Step 1 Confirmation Gate
 
-Self-review against the source material for completeness, then present the table for user approval. After approval, replace `{{STEP1_FACT_TABLES}}` in the report file.
+Self-review against the source material for completeness, then present the table for user approval. After approval, replace `{{FACT_TABLES}}` in the appendix file.
 
 ---
 
 ### Step 2: Organize Facts and Identify Background
 
-**Input from report**: header + appendix Fact Tables.
+**Input from appendix**: Fact Tables.
 
 Arrange facts from Step 1 chronologically. Separate **Background** (ongoing structural conditions not tied to a specific moment) from **Events** (facts tied to specific time points).
 
@@ -67,16 +66,16 @@ Arrange facts from Step 1 chronologically. Separate **Background** (ongoing stru
 Output format:
 
 > **前提条件**（サービス利用を決める前から存在していた構造的条件）
-> ファクト: [[A1](#A1), [A3](#A3), ...]（Anchor formatting: リンク形式で記載）
+> ファクト: A1, A3, ...
 > 要約: [構造的条件 — 事業環境、継続的な制約、リソースの限界]
 >
 > **時系列の出来事**
 >
-> | 時期 | # | 出来事 |
-> |------|---|--------|
-> | [時期ラベル] | [A1](#A1) | [ファクトテーブルの該当行から簡潔に要約] |
-> |  | [A2](#A2) | [要約] |
-> | [次の時期] | [A5](#A5) | [要約] |
+> | 時期         | #   | 出来事                                   |
+> | ------------ | --- | ---------------------------------------- |
+> | [時期ラベル] | A1  | [ファクトテーブルの該当行から簡潔に要約] |
+> |              | A2  | [要約]                                   |
+> | [次の時期]   | A5  | [要約]                                   |
 >
 > - 1行に1ファクト（または連続するファクト範囲）を記載
 > - 時期列は同一グループの先頭行のみ記載し、後続行は空欄とする
@@ -86,50 +85,9 @@ For large fact sets (30+ facts): Launch a subagent, then self-review for complet
 
 ### Step 2 Confirmation Gate
 
-Self-review two things, then present for user approval. After approval, replace `{{STEP2_BACKGROUND_EVENTS}}` in the report file:
+Self-review two things, then present for user approval. After approval, replace `{{BACKGROUND_EVENTS}}` in the appendix file:
 
 1. **Completeness**: Every Fact from Step 1 is placed in either Background or Events — none are missing
 2. **Data sufficiency**: Sufficient data exists for the analysis focus (defined in brief). Report any areas where data is thin or missing relative to the focus direction
 
 If data sufficiency issues are found, present the user with options: (a) return to data collection, (b) continue with the constraint noted, or (c) stop.
-
----
-
-### Step 3: Define Phases from Data
-
-**Input from report**: Step 2 output (Background + chronological Events) + Frame Awareness (from brief).
-
-Using the chronologically organized facts from Step 2, identify natural phase boundaries in the customer journey. Phases are derived from the data, not assumed from the RQ.
-
-Process:
-
-1. Identify phase boundary signals across cases. Look for:
-   - **Situational shifts**: Points where the customer's business environment structurally changed (e.g., adopted a new tool, staffing structure changed)
-   - **Stance transitions**: Points where the customer's attitude or decision criteria shifted (e.g., skeptical → trusting, experimental → committed)
-   - **Trigger events**: Specific events that prompted behavioral change (e.g., an existing approach definitively broke down)
-2. Confirm that identified signals are observable across multiple cases, then define 2-4 phases (each representing a distinct situation-stance configuration)
-3. For each phase, note whether it contains a Switch decision (Hire or Re-hire) — this maps to the forces subcommand's analysis units
-4. Compare against Frame Awareness notes from brief: How does the RQ's assumed phase structure compare to the data-derived phase structure? Record the delta
-
-**Data insufficiency fallback**: If timeline information is too sparse to identify clear phase boundaries (e.g., single case, shallow interviews), set provisional phases as "利用前 / 利用後" (2 phases) with the `[暫定]` label. Revise after context/forces analysis when more structure emerges.
-
-**Phase revision**: If later analysis (context Narrator out-of-phase signals, Analyst-Critic phase boundary check) reveals that phase boundaries are incorrect, this step can be re-run. The `<!-- BEGIN/END -->` markers in the report support re-replacement.
-
-Output format:
-
-> **フェーズ定義**
->
-> | # | フェーズ名 | 開始の目印（データ上の観察可能なシグナル） | 該当ファクト | Switch決定 |
->
-> 該当ファクト列はリンク形式で記載: `[A1](#A1), [A3](#A3)-[A5](#A5)`
->
-> **RQの前提との比較**:
-> - RQが暗黙に想定していたフェーズ構造: [...]
-> - データから導出されたフェーズ構造: [...]
-> - 差分: [...]
-
-This determines the Narrator's narrative structure in the context subcommand (one narrative per phase).
-
-### Step 3 Confirmation Gate
-
-Present phase definitions for user approval. After approval, replace `{{STEP2B_PHASE_DEFINITIONS}}` in the report file.

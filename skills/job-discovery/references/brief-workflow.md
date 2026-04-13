@@ -19,7 +19,7 @@ Confirm the prerequisites for the analysis.
    - Note: The current skill is optimized for Hire → Re-hire analysis. Other focus types require Narrator prompt adjustments.
 4. **フレーム認識**: What does this RQ assume? What might it NOT ask?
    - Note the implicit assumptions in the RQ's framing (e.g., "re-hire" assumes a single purpose for hiring)
-   - Record the RQ's implicit phase assumptions (e.g., "re-hire" assumes a linear "try then repeat" journey). These assumptions become the contrast frame for phase definition (in facts Step 3) and RQ contrast (in jobs Step 5f)
+   - Record the RQ's implicit assumptions as personal bias awareness notes. These help the analyst stay open to findings that don't match initial expectations
    - The analysis should answer the RQ, but remain open to demand structures the RQ does not anticipate. If the data reveals purposes, segments, or dynamics outside the RQ's frame, capture them
 5. **注目したい観点**（任意）: Any specific aspects the user wants to explore
 
@@ -27,6 +27,8 @@ Confirm the prerequisites for the analysis.
 
 Confirm the setup with the user before proceeding. After approval:
 
-1. Copy [report-template.md](report-template.md) to create `job-discovery-report.md` at `~/.agent-memory/<scope>/<date>_<topic>/job-discovery-report.md`
-2. Replace the header placeholders with confirmed data, including `{{FRAME_AWARENESS}}` with the frame awareness notes
+1. Copy [report-template.md](report-template.md) to create two files at `~/.agent-memory/<scope>/<date>_<topic>/`:
+   - `job-discovery-report.md` (main report — from the main report skeleton)
+   - `job-discovery-appendix.md` (appendix — from the appendix skeleton)
+2. Replace the header placeholders in the main report with confirmed data, including `{{FRAME_AWARENESS}}` with the frame awareness notes. Replace `{{TITLE}}` in the appendix file as well
 3. Generate the `{{LEGEND}}` content dynamically based on the number of cases (e.g., '3社に共通する' for 3 cases, 'N社に共通する' for N cases)

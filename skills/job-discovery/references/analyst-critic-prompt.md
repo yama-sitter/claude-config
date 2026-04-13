@@ -1,13 +1,13 @@
 # Analyst-Critic Prompt (Step 3b)
 
-This prompt is sent to a single Analyst-Critic subagent after all Narrators complete. The subagent reads all cases' data from the report file (`job-discovery-report.md`).
+This prompt is sent to a single Analyst-Critic subagent after all Narrators complete. The subagent reads data from both the appendix file and temporary files.
 
-**Data sources in the report file (appendix sections, each inside a `<details>` tag):**
+**Data sources:**
 
-- **Phase definitions**: Locate the section with heading "フェーズ定義"
-- **Fact Tables**: Locate the section with heading "ファクトテーブル（生データ）"
-- **Background/Events**: Locate the section with heading "ケースごとのストーリー（時系列）"
-- **Narrator outputs**: Locate the section with heading "ケースごとの状況分析（ナレーター）"
+- **Fact Tables**: From the appendix file (`job-discovery-appendix.md`), section "ファクトテーブル（生データ）"
+- **Background/Events**: From the appendix file, section "ケースごとのストーリー（時系列）"
+- **Narrator outputs**: From the temporary file `_narrator_tmp.md` in the same directory
+- **Frame Awareness**: From the main report header (`job-discovery-report.md`)
 
 ---
 
@@ -17,11 +17,10 @@ This prompt is sent to a single Analyst-Critic subagent after all Narrators comp
 >
 > **Phase 1-2: Inventory and Cross-case Comparison**
 >
-> **PRE-CHECK: Read the Frame Awareness section in the report header BEFORE creating your inventory.**
+> **PRE-CHECK: Read the Frame Awareness section in the main report header BEFORE creating your inventory.**
 >
 > Note what the RQ assumes about:
 >
-> - Phase structure (e.g., linear progression, specific boundaries)
 > - Purpose structure (e.g., single purpose for Hire/Re-hire)
 > - Demand drivers (e.g., which forces the RQ implicitly emphasizes)
 >
@@ -35,8 +34,8 @@ This prompt is sent to a single Analyst-Critic subagent after all Narrators comp
 > - Purpose entries (list each one, noting verbatim vs [推定])
 > - Struggling moment
 > - Why now
-> - Situations (list each one, per phase)
-> - Stances (list each one, per phase)
+> - Situations (list each one, per Hire/Re-hire)
+> - Stances (list each one, per Hire/Re-hire)
 >
 > Produce a structured inventory table:
 >
@@ -44,17 +43,14 @@ This prompt is sent to a single Analyst-Critic subagent after all Narrators comp
 >
 > This inventory is your **completeness reference** — every item listed here must be accounted for in the comparison output (either as part of a common pattern, or explicitly noted as case-specific).
 >
-> Then, using this inventory, compare across cases and extract common patterns **for each phase**:
+> Then, using this inventory, compare across cases and extract common patterns **for Hire and Re-hire**:
 >
 > 1. Derive **dimensions** for comparison from the inventory. Each inventory category (Background constraints, Structural affordances, Purpose, Struggling moment, Why now, Situations, Stances) is a **mandatory candidate dimension** — evaluate whether it yields a cross-case pattern. Additionally, as a checklist against blind spots, consider whether any of the following are present in the data: decision-making structure, information acquisition path, task characteristics, geographic/physical constraints, relationship with alternatives, evaluation behavior during decision-making. Only add dimensions that are actually evidenced.
->    1b. **Cross-category theme scan**: After deriving dimensions from inventory categories, perform a second pass IGNORING category boundaries AND phase boundaries. Read all inventory items across all cases as a flat list and identify items from 2+ cases that share the same underlying theme even if:
->
+>    1b. **Cross-category theme scan**: After deriving dimensions from inventory categories, perform a second pass IGNORING category boundaries AND Hire/Re-hire boundaries. Read all inventory items across all cases as a flat list and identify items from 2+ cases that share the same underlying theme even if:
 >    - categorized differently (e.g., one case's Purpose and another case's Situation)
->    - in different phases (e.g., one case shows this theme in P2, another in P4)
 >    - at different maturity stages (e.g., one case has it as an established practice, another as a future plan/構想)
 >
 >    Specific patterns to check:
->
 >    - **Purpose evolution**: Cases using the solution for a similar secondary purpose beyond the original Hire motivation (e.g., staff burden relief, trial hiring, cost optimization)
 >    - **Shared direction at different stages**: One case has already operationalized something another case is still planning
 >    - **Emotional/Social convergence**: Similar emotional or social outcomes mentioned across cases in different contexts
@@ -63,20 +59,18 @@ This prompt is sent to a single Analyst-Critic subagent after all Narrators comp
 >
 > 2. Finally, review the Frame Awareness section and identify dimensions that:
 >    - ARE present in the Inventory but NOT mentioned in the RQ's frame
->    - CONTRADICT the RQ's assumed purposes or phase structure
+>    - CONTRADICT the RQ's assumed purposes
 >      Add these contrastive dimensions to your candidate list before filtering for evidence.
 > 3. For each dimension, describe each case's situation and write a tentative **common pattern**
-> 4. For each dimension, check whether cases are using the solution for the same purpose or for divergent purposes. If purposes diverge, note this in the table — it may indicate different Jobs within the same phase
-> 5. Produce separate tables for each phase defined in the analysis setup
-> 6. If a divergent purpose identified in step 3 is observed in 2+ cases, promote it to a formal Situation pattern (P*-S*) in the appropriate phase table. If observed in only 1 case, retain it in the Purpose table only — it may feed Step 5 as an [Emerging] signal but does not become a common pattern
+> 4. For each dimension, check whether cases are using the solution for the same purpose or for divergent purposes. If purposes diverge, note this in the table — it may indicate different Jobs
+> 5. Produce separate tables for Hire and Re-hire
+> 6. If a divergent purpose identified in step 3 is observed in 2+ cases, promote it to a formal Situation pattern (H-S*/R-S*) in the appropriate table. If observed in only 1 case, retain it in the Purpose table only
 >
 > Common pattern rules:
 >
-> - Each pattern must be traceable to specific Facts in both cases, cited as in-page links: `[A1](#A1)` (apply Anchor formatting from report-template.md)
+> - Each pattern must be traceable to specific Facts in both cases, cited as plain text identifiers: `A1` (no link syntax)
 > - Do not over-abstract — "any business that needs staff" is too vague
 > - Note where one case's fit is weaker than the other's
->
-> For Phase 2+ patterns, determine the change tag: **Continued** (same as previous phase), **Changed** (shifted in content or intensity), **New** (first appeared in this phase).
 >
 > ---
 >
@@ -87,7 +81,7 @@ This prompt is sent to a single Analyst-Critic subagent after all Narrators comp
 > **3A. Narrator upstream checks:**
 >
 > 1. **Narrator inference check**: Review each Narrator's Purpose entries. Purposes inferred from action patterns must carry a `[推定]` tag with a stated inferential leap. Flag any Purpose that appears to be inferred (not a verbatim quote) but lacks the tag
-> 2. **Narrator situation/experience boundary**: Check whether any Narrator described product experience (what happened after using the product) as a Phase 1 Situation. Phase 1 must contain only pre-Hire conditions
+> 2. **Narrator situation/experience boundary**: Check whether any Narrator described product experience (what happened after using the product) as a Hire前の状況. Hire前の状況 must contain only pre-Hire conditions
 >
 > **3B. Pattern validation (for each pattern from Phase 1-2):**
 >
@@ -98,20 +92,16 @@ This prompt is sent to a single Analyst-Critic subagent after all Narrators comp
 > 3. **Category assignment**: For each pattern, classify as:
 >    - **Situation**: Objective condition observable by a third party
 >    - **Stance**: The person's attitude/approach arising from a Situation. Always note which Situation item it derives from
->    - And assign to the appropriate phase (P1, P2, P3, ...).
->    - For Phase 2+, tag situations AND stances as: **Continued** / **Changed** / **New**
+>    - And assign to **Hire** or **Re-hire**
 >    - Classification test: "Could a third party observe this as an objective condition?" → Yes = Situation, No = Stance
->    - Note: Items that were previously "post-experience changes" (old C category) must be re-classified as either Situation or Stance in the appropriate phase. Example: "ワーカーの質が期待を上回った" = Situation (observable), "安心感を得た" = Stance (subjective)
 > 4. **Redundancy**: Are any patterns listed independently that are actually sub-dimensions of another? Recommend merging or subordinating.
-> 5. **Phase placement**: Are any patterns assigned to the wrong phase? Apply: "At which point in the journey did this condition first become observable?"
+> 5. **Hire/Re-hire assignment**: Are any patterns assigned to the wrong timepoint? Apply: "At which point in the journey did this condition first become observable?"
 > 6. **Evidence strength**: Is each case's evidence based on recorded behavior/quotes, or merely a stated attitude? Flag weak evidence in Discrepancies.
 > 7. **Pattern nature**: Is each entry a "common pattern" (shared across cases) or a "difference description" (contrasting cases)? Differences belong in Discrepancies, not as standalone patterns.
 > 8. **Functional bias check**: Are any patterns presented as purely functional (operational efficiency, cost, speed) that also contain emotional signals (relief, security, liberation from worry) or social signals (identity, peer perception, industry positioning) in the original verbatim quotes? If so, note the emotional/social dimension and recommend whether it should be a separate pattern or an annotation on the existing pattern.
 > 9. **Frame blindness check**: Compare the patterns you extracted in Phase 1-2 against the Frame Awareness section. Specifically:
->    - Are there patterns that ONLY exist because the RQ assumed a particular phase structure? (If the phases were drawn differently, would this pattern dissolve?)
 >    - Are there facts in the Fact Tables that do NOT appear in ANY pattern? These omissions may indicate RQ-driven blind spots
 >    - Do the Purpose entries reveal use cases not anticipated by the RQ? If so, flag as HIGH PRIORITY
-> 10. **Phase boundary check**: Review Narrator outputs for any out-of-phase signals (listed in "フェーズ外のシグナル" sections). If 2 or more Narrators flag the same kind of out-of-phase signal, flag it as a potential phase definition issue and recommend specific revisions to the phase boundaries.
 >
 > Additionally: identify any common patterns the comparison missed, based on your independent reading of the Facts.
 >
@@ -129,10 +119,10 @@ This prompt is sent to a single Analyst-Critic subagent after all Narrators comp
 > **Output structure:**
 >
 > 1. Inventory table (from Phase 1-2)
-> 2. Per-phase cross-case comparison tables: `| Dimension | Case A | Case B | Case C | Common pattern (tentative) | Change tag (Phase 2+) | Notes |`
-> 3. Validation report (Phase 3B): For each pattern → Approve / Revise (with suggestion) / Reject (with reason) + Phase + Layer (Situation/Stance) classification + Change tag (Phase 2+)
+> 2. Per-Hire/Re-hire cross-case comparison tables: `| Dimension | Case A | Case B | Case C | Common pattern (tentative) | Notes |`
+> 3. Validation report (Phase 3B): For each pattern → Approve / Revise (with suggestion) / Reject (with reason) + Hire/Re-hire assignment + Layer (Situation/Stance) classification
 > 4. Completeness gap report (Phase 3C): List of inventory items not reflected in patterns, with disposition
 > 5. Additional proposals: Patterns the comparison missed, identified from independent Fact Table reading
 >
 > Do NOT write the final integrated version yourself — provide comparison tables, validation verdicts, and gap reports only.
-> Do NOT include file paths, plan references, or any external file references in your output — your entire output will be embedded directly into the report and must be fully self-contained.
+> Do NOT include file paths, plan references, or any external file references in your output — your entire output will be written to a temporary analysis file and must be fully self-contained.

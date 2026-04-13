@@ -1,160 +1,144 @@
 # Report Template
 
-Template for the job-discovery report file. Step 0 copies this template to create the report file, then each Step replaces its placeholders with actual data after user confirmation.
+Template for the job-discovery report. Step 0 copies this template to create two files: a main report file and an appendix file. Each subsequent Step replaces its placeholders with actual data after user confirmation.
 
 <!--
 Design principles (apply when writing content into placeholders):
 
 - No JTBD jargon without explanation: Annotate Hire, Re-hire, Push, Pull, etc. with plain-language descriptions on first use
-- Conclusion first: Job hypotheses (most abstract) → supporting patterns → detailed data
-- Traceability throughout: All sections use P*-S*/P*-St*/CF-*/F-XX identifiers
-- Hide internal process: No lens names, Step numbers, or skill-internal terminology in main sections
-- Appendix is collapsible: Use <details> tags for raw data
+- Conclusion first: Common situations (most abstract) → supporting forces → detailed data
+- Traceability throughout: All sections use H-S*/H-St*/R-S*/R-St*/CF-*/F-XX identifiers as plain text
+- Hide internal process: No Step numbers, subagent names, or skill-internal terminology in any section
 - List formatting in tables: Use comma-separated format "A: x, B: y, C: z" for Notion compatibility. Do NOT use <br> tags
-- Anchor formatting (in-page links for traceability):
-  - Definition (identifier first appears in a table's first column): `<span id="ID">ID</span>`
-  - Reference (根拠/出典 columns, parenthesized citations, causal chain prose): `[ID](#ID)`
-  - Range references: `[A3](#A3)-[A5](#A5)` (link start and end points)
-  - Causal chain prose: `[P1-S1](#P1-S1)（description）→ [P1-St1](#P1-St1)（description）`
 -->
 
 ## Placeholder Reference
 
-| Step | Placeholder | Section |
-|------|-------------|---------|
-| brief | `{{TITLE}}`, `{{SOURCE_MATERIAL}}`, `{{ANALYSIS_FOCUS}}`, `{{CASE_TABLE}}`, `{{LEGEND}}`, `{{FRAME_AWARENESS}}` | Header |
-| facts 1 | `{{STEP1_FACT_TABLES}}` | Appendix |
-| facts 2 | `{{STEP2_BACKGROUND_EVENTS}}` | Appendix |
-| facts 3 | `{{STEP2B_PHASE_DEFINITIONS}}` | Appendix |
-| 3a | `{{STEP3A_NARRATOR_OUTPUTS}}` | Appendix |
-| 3b | `{{STEP3B_ANALYST_CRITIC_OUTPUT}}` | Appendix |
-| 3c | `{{STEP3_COMMON_PATTERNS}}` | Section 2 (includes section heading) |
-| 4a | `{{STEP4_PERCASE_FORCES}}` | Appendix |
-| 4b | `{{STEP4_CROSS_FORCES}}`, `{{STEP4_COMMON_NARRATIVE}}` | Section 3 |
-| 5 | `{{STEP5_SUMMARY_INTRO}}`, `{{STEP5_JOB_HYPOTHESES}}`, `{{STEP5_RQ_CONTRAST}}` | Section 1 |
+| Step       | Placeholder                                                                                                     | File | Section                |
+| ---------- | --------------------------------------------------------------------------------------------------------------- | ---- | ---------------------- |
+| brief      | `{{TITLE}}`, `{{SOURCE_MATERIAL}}`, `{{ANALYSIS_FOCUS}}`, `{{CASE_TABLE}}`, `{{LEGEND}}`, `{{FRAME_AWARENESS}}` | 本体 | Header                 |
+| facts 1    | `{{FACT_TABLES}}`                                                                                               | 付録 | ファクトテーブル       |
+| facts 2    | `{{BACKGROUND_EVENTS}}`                                                                                         | 付録 | ケースごとのストーリー |
+| situations | `{{COMMON_SITUATIONS_HIRE}}`, `{{COMMON_SITUATIONS_REHIRE}}`                                                    | 本体 | Section 1              |
+| forces 4a  | `{{PERCASE_FORCES}}`                                                                                            | 付録 | ケースごとの力学分析   |
+| forces 4b  | `{{CROSS_FORCES_HIRE}}`, `{{CROSS_FORCES_REHIRE}}`                                                              | 本体 | Section 2              |
 
 ## Document Skeleton
 
-The content below (after the `---` separator) is copied as-is to create the report file. Lines starting with `>` in the skeleton are not Markdown blockquotes — they are literal content.
+Two files are created from the skeletons below. The `--- appendix ---` separator marks the boundary between the main report and the appendix file.
+
+### Main Report (job-discovery-report.md)
+
+The content below (after the `---` separator) is copied as-is to create the main report file. Lines starting with `>` in the skeleton are not Markdown blockquotes — they are literal content.
 
 ---
 
 <!-- BEGIN TITLE -->
+
 # Job Discovery: {{TITLE}}
+
 <!-- END TITLE -->
 
 <!-- BEGIN SOURCE_MATERIAL -->
+
 - **分析対象**: {{SOURCE_MATERIAL}}
-<!-- END SOURCE_MATERIAL -->
-<!-- BEGIN ANALYSIS_FOCUS -->
+  <!-- END SOURCE_MATERIAL -->
+  <!-- BEGIN ANALYSIS_FOCUS -->
 - **焦点**: {{ANALYSIS_FOCUS}}
 <!-- END ANALYSIS_FOCUS -->
 
 <!-- BEGIN CASE_TABLE -->
+
 {{CASE_TABLE}}
+
 <!-- END CASE_TABLE -->
 
 <!-- BEGIN LEGEND -->
+
 {{LEGEND}}
+
 <!-- END LEGEND -->
 
 <!-- BEGIN FRAME_AWARENESS -->
+
 {{FRAME_AWARENESS}}
+
 <!-- END FRAME_AWARENESS -->
 
 ---
 
-## 1. 発見されたジョブ仮説
+## 1. 共通の状況
 
-「顧客がこのサービスを使う理由」の仮説候補。
-確定版ではなく、議論・検証のための叩き台として複数の視点から生成しています。
+### Hire の状況（需要の急性化 + 手段選択の条件）
 
-<!-- BEGIN STEP5_SUMMARY_INTRO -->
-{{STEP5_SUMMARY_INTRO}}
-<!-- END STEP5_SUMMARY_INTRO -->
+<!-- BEGIN COMMON_SITUATIONS_HIRE -->
 
-<!-- BEGIN STEP5_JOB_HYPOTHESES -->
-{{STEP5_JOB_HYPOTHESES}}
-<!-- END STEP5_JOB_HYPOTHESES -->
+{{COMMON_SITUATIONS_HIRE}}
 
-<!-- BEGIN STEP5_RQ_CONTRAST -->
-{{STEP5_RQ_CONTRAST}}
-<!-- END STEP5_RQ_CONTRAST -->
+<!-- END COMMON_SITUATIONS_HIRE -->
 
----
+### Re-hire の状況（継続の条件）
 
-<!-- BEGIN STEP3_COMMON_PATTERNS -->
-{{STEP3_COMMON_PATTERNS}}
-<!-- END STEP3_COMMON_PATTERNS -->
+<!-- BEGIN COMMON_SITUATIONS_REHIRE -->
+
+{{COMMON_SITUATIONS_REHIRE}}
+
+<!-- END COMMON_SITUATIONS_REHIRE -->
 
 ---
 
-## 3. 共通する意思決定の力学
+## 2. 共通する意思決定の力学
 
-<!-- BEGIN STEP4_CROSS_FORCES -->
-{{STEP4_CROSS_FORCES}}
-<!-- END STEP4_CROSS_FORCES -->
+### Hire 時
 
-### 共通ナラティブ
+<!-- BEGIN CROSS_FORCES_HIRE -->
 
-<!-- BEGIN STEP4_COMMON_NARRATIVE -->
-{{STEP4_COMMON_NARRATIVE}}
-<!-- END STEP4_COMMON_NARRATIVE -->
+{{CROSS_FORCES_HIRE}}
+
+<!-- END CROSS_FORCES_HIRE -->
+
+### Re-hire 時
+
+<!-- BEGIN CROSS_FORCES_REHIRE -->
+
+{{CROSS_FORCES_REHIRE}}
+
+<!-- END CROSS_FORCES_REHIRE -->
+
+--- appendix ---
+
+### Appendix (job-discovery-appendix.md)
+
+The content below (after the `---` separator) is copied as-is to create the appendix file.
 
 ---
 
-## 付録
+<!-- BEGIN TITLE -->
 
-<details>
-<summary>ファクトテーブル（生データ）</summary>
+# 付録: {{TITLE}}
 
-<!-- BEGIN STEP1_FACT_TABLES -->
-{{STEP1_FACT_TABLES}}
-<!-- END STEP1_FACT_TABLES -->
+<!-- END TITLE -->
 
-</details>
+## ファクトテーブル（生データ）
 
-<details>
-<summary>ケースごとのストーリー（時系列）</summary>
+<!-- BEGIN FACT_TABLES -->
 
-<!-- BEGIN STEP2_BACKGROUND_EVENTS -->
-{{STEP2_BACKGROUND_EVENTS}}
-<!-- END STEP2_BACKGROUND_EVENTS -->
+{{FACT_TABLES}}
 
-</details>
+<!-- END FACT_TABLES -->
 
-<details>
-<summary>フェーズ定義</summary>
+## ケースごとのストーリー（時系列）
 
-<!-- BEGIN STEP2B_PHASE_DEFINITIONS -->
-{{STEP2B_PHASE_DEFINITIONS}}
-<!-- END STEP2B_PHASE_DEFINITIONS -->
+<!-- BEGIN BACKGROUND_EVENTS -->
 
-</details>
+{{BACKGROUND_EVENTS}}
 
-<details>
-<summary>ケースごとの状況分析（ナレーター）</summary>
+<!-- END BACKGROUND_EVENTS -->
 
-<!-- BEGIN STEP3A_NARRATOR_OUTPUTS -->
-{{STEP3A_NARRATOR_OUTPUTS}}
-<!-- END STEP3A_NARRATOR_OUTPUTS -->
+## ケースごとの力学分析
 
-</details>
+<!-- BEGIN PERCASE_FORCES -->
 
-<details>
-<summary>クロスケース比較・検証（アナリスト）</summary>
+{{PERCASE_FORCES}}
 
-<!-- BEGIN STEP3B_ANALYST_CRITIC_OUTPUT -->
-{{STEP3B_ANALYST_CRITIC_OUTPUT}}
-<!-- END STEP3B_ANALYST_CRITIC_OUTPUT -->
-
-</details>
-
-<details>
-<summary>ケースごとの力学分析</summary>
-
-<!-- BEGIN STEP4_PERCASE_FORCES -->
-{{STEP4_PERCASE_FORCES}}
-<!-- END STEP4_PERCASE_FORCES -->
-
-</details>
+<!-- END PERCASE_FORCES -->

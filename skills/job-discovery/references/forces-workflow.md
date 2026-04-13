@@ -2,13 +2,11 @@
 
 ## Prerequisites
 
-`{{STEP1_FACT_TABLES}}` and `{{STEP2_BACKGROUND_EVENTS}}` are replaced in the report file. Completion of the context subcommand is NOT required.
-
-Forces analysis units (Hire/Re-hire) are independent of the phase definitions from facts Step 3. Refer to the phase definitions' Switch decision annotations to see which phases contain the Hire/Re-hire decisions.
+`{{FACT_TABLES}}` and `{{BACKGROUND_EVENTS}}` are replaced in the appendix file. Completion of the situations subcommand is NOT required.
 
 ## Owned Placeholders
 
-`{{STEP4_PERCASE_FORCES}}`, `{{STEP4_CROSS_FORCES}}`, `{{STEP4_COMMON_NARRATIVE}}`
+`{{PERCASE_FORCES}}`, `{{CROSS_FORCES_HIRE}}`, `{{CROSS_FORCES_REHIRE}}`
 
 ## Workflow
 
@@ -18,22 +16,20 @@ Forces are about an individual person's decision dynamics — analyze each perso
 
 ### 4a. Per-case Forces diagrams
 
-**Input from report**: appendix Fact Tables + Background/Events only. **Do NOT read Section 2 (common patterns)** to preserve case independence for per-case analysis.
+**Input from appendix**: Fact Tables + Background/Events only. **Do NOT read Section 1 (common situations)** to preserve case independence for per-case analysis.
 
-Launch one subagent per case in parallel. Each subagent receives only its own case's Fact Table + Background, ensuring no cross-case anchoring. The subagent produces a Forces diagram + narrative.
+Launch one subagent per case in parallel. Each subagent receives only its own case's Fact Table + Background from the appendix file, ensuring no cross-case anchoring. The subagent produces a Forces diagram + narrative.
 
-**RQ Isolation Rule**: Per-case Forces subagents analyze Switch dynamics from Fact Tables and Background/Events. The report header contains ANALYSIS_FOCUS and FRAME_AWARENESS — these define the research question, NOT the expected force structure. Subagents must derive Forces from observed behaviors, not from the RQ's assumed demand drivers.
+**RQ Isolation Rule**: Per-case Forces subagents analyze Switch dynamics from Fact Tables and Background/Events. The main report header contains ANALYSIS_FOCUS and FRAME_AWARENESS — these define the research question, NOT the expected force structure. Subagents must derive Forces from observed behaviors, not from the RQ's assumed demand drivers.
 
-**Output containment**: Subagent output must NOT include file paths, plan references, or any external file references. All output will be embedded directly into the report and must be self-contained.
+**Output containment**: Subagent output must NOT include file paths, plan references, or any external file references. All output will be embedded directly into the appendix and must be self-contained.
 
 Per-case output:
 
-> Apply Anchor formatting from report-template.md: reference sites use `[ID](#ID)`.
->
 > **Case [X] Hire時の力学**
 > | 力 | 強さ | 内容 | 根拠 |
 > Push（現状への不満・圧力）/ Pull（新しい選択肢の魅力）/ Anxiety（新しい選択肢への不安）/ Habit（現状維持の慣性） rows
-> 根拠列はリンク形式: `[A2](#A2)-[A5](#A5)`, `[B7](#B7)`
+> 根拠列はプレーンテキスト: `A2-A5`, `B7`
 > **ナラティブ**: [How Forces interacted for this person]
 >
 > **Case [X] Re-hire時の力学**
@@ -51,7 +47,7 @@ Before proceeding to cross-case comparison, verify the per-case Forces:
 
 If inconsistencies are found, revise the 4a outputs before proceeding.
 
-**→ After review, replace `{{STEP4_PERCASE_FORCES}}` in the report file.**
+**→ After review, replace `{{PERCASE_FORCES}}` in the appendix file.**
 
 ### 4b. Cross-case comparison (main conversation, dialogue with user)
 
@@ -62,10 +58,11 @@ Compare 4a's per-case Forces across cases to identify common dynamics:
 3. Record case-specific differences within each Common Force (same direction but different intensity or manifestation)
 4. Forces observed in only 1 case → retain in 4a only; do not include in 4b Common dynamics
 
-**Section 2 reference (use as reference, not ground truth)**: If Section 2 exists, read it and note how Purpose divergence manifests in Force dynamics. However:
-- Section 2 patterns were derived from phases that may reflect RQ assumptions. Do NOT let Section 2's categorization override your independent reading of Forces from the Fact Tables
-- If you observe Force patterns that suggest different purposes or dynamics than Section 2 presents, note them explicitly as "Section 2との乖離"
-- If Section 2 is not yet available, proceed without it — this does not diminish the validity of your Forces analysis
+**Section 1 reference (use as reference, not ground truth)**: If Section 1 (共通の状況) exists, read it and note how H-S*/R-S* situations manifest in Force dynamics. However:
+
+- Section 1 patterns were derived from observations that may reflect RQ assumptions. Do NOT let Section 1's categorization override your independent reading of Forces from the Fact Tables
+- If you observe Force patterns that suggest different dynamics than Section 1 presents, note them explicitly as "Section 1との乖離"
+- If Section 1 is not yet available, proceed without it — this does not diminish the validity of your Forces analysis
 
 Judge relative strength using three axes:
 
@@ -75,31 +72,24 @@ Judge relative strength using three axes:
 
 Output format:
 
-> ### ケース横断比較 (4b)
->
-> Apply Anchor formatting: CF-# column uses `<span id="CF-Push1">CF-Push1</span>`. Fact references in Case columns use link format: `面接コスト大([A2](#A2)-[A5](#A5))`.
->
 > #### Hire時
 >
 > | CF-# | 力 | 共通の力学 | Case A の特徴 | Case B の特徴 |
-> | <span id="CF-Push1">CF-Push1</span> | Push・強 | ... | ...([A2](#A2)-[A5](#A5)) | ...([B4](#B4),[B7](#B7)) |
+> | CF-Push1 | Push・強 | ... | ...(A2-A5) | ...(B4, B7) |
 > **最も強い力**: [Per case and overall]
 >
 > #### Re-hire時
 >
 > | CF-# | 力 | 共通の力学 | Case A の特徴 | Case B の特徴 |
 > [Note data constraints.]
->
-> #### 共通ナラティブ
->
-> **Hire時の共通因果フロー**: [3ケースに共通するForceの相互作用と因果の流れを1段落で記述。各ケースの個別事情ではなく、共通する構造的因果を表現する]
->
-> **Re-hire時の共通因果フロー**: [同上。Hire時からの変化の共通構造を含む]
 
 ## Confirmation Gate
 
-Present for user approval. After approval, replace `{{STEP4_CROSS_FORCES}}` and `{{STEP4_COMMON_NARRATIVE}}` in the report file.
+Present for user approval. After approval:
+
+1. Replace `{{CROSS_FORCES_HIRE}}` in the main report file with the Hire cross-case comparison (including the "最も強い力" summary)
+2. Replace `{{CROSS_FORCES_REHIRE}}` in the main report file with the Re-hire cross-case comparison
 
 ## Single-case Behavior
 
-When only one case exists, skip 4b (cross-case comparison). Produce the per-case Forces diagram (4a) and narrative only. Common Forces (CF-\*) are not generated. Replace `{{STEP4_CROSS_FORCES}}` and `{{STEP4_COMMON_NARRATIVE}}` with a note indicating single-case analysis (e.g., "単一ケース分析のため、クロスケース比較は省略"). Proceed to the jobs subcommand with per-case Forces as the input.
+When only one case exists, skip 4b (cross-case comparison). Produce the per-case Forces diagram (4a) and narrative only. Common Forces (CF-\*) are not generated. Replace `{{CROSS_FORCES_HIRE}}` and `{{CROSS_FORCES_REHIRE}}` with a note indicating single-case analysis (e.g., "単一ケース分析のため、クロスケース比較は省略").
