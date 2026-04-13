@@ -24,6 +24,8 @@ Launch one subagent per case in parallel. Each subagent receives only its own ca
 
 **Output containment**: Subagent output must NOT include file paths, plan references, or any external file references. All output will be embedded directly into the appendix and must be self-contained.
 
+**File-first output rule**: Each subagent writes its result to `_forces_tmp_<case-id>.md` (e.g., `_forces_tmp_A.md`) in the same directory as the report and returns only the file path to the parent. This keeps per-case output out of the main conversation context.
+
 Per-case output:
 
 > **Case [X] Hire時の力学**
@@ -39,7 +41,7 @@ Per-case output:
 
 ### 4a Review (main conversation)
 
-Before proceeding to cross-case comparison, verify the per-case Forces:
+Read per-case outputs from temporary files (`_forces_tmp_<case-id>.md`). Before proceeding to cross-case comparison, verify the per-case Forces:
 
 1. **Category consistency**: Check whether the same Fact (F-XX) has been assigned to different Force categories across cases (e.g., F-A5 as Push in Case A, but a similar fact F-B3 as Pull in Case B). If found, resolve the categorization
 2. **Strength justification**: Confirm that each strength rating (強/中/弱) is grounded in the three axes — scale of action, urgency of expression, and behavioral magnitude — not just impressionistic judgment
@@ -89,6 +91,7 @@ Present for user approval. After approval:
 
 1. Replace `{{CROSS_FORCES_HIRE}}` in the main report file with the Hire cross-case comparison (including the "最も強い力" summary)
 2. Replace `{{CROSS_FORCES_REHIRE}}` in the main report file with the Re-hire cross-case comparison
+3. Delete temporary files (`_forces_tmp_*.md`)
 
 ## Single-case Behavior
 
