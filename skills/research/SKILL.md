@@ -121,11 +121,59 @@ Output: Prioritized question list
 
 ### Step 4: RQ Formulation + Quality Check
 
-Turn the selected questions into specific, researchable question statements.
+Turn the selected questions into specific, researchable question statements through a two-phase process: first sharpen the RQ through dialogue (Phase A), then formally evaluate it (Phase B).
 
-- Ask the user to write an RQ first (rough is fine)
-- Evaluate with [rq-quality-checklist.md](references/rq-quality-checklist.md) and provide feedback
-- Iterate improvements through dialogue until the user is satisfied with the RQ
+#### Phase A: Draft and Sharpen
+
+**A1. Draft**: Ask the user to write an RQ first (rough is fine).
+
+**A2. Refinement Dimensions**: Diagnose which parts of the draft RQ are vague by checking each dimension one at a time:
+
+- Population/target — Who specifically? (e.g., "users" → "active users who use 3+ times per week")
+- Variable(s) — What specifically is being examined? (e.g., "satisfaction" → "task completion rate")
+- Comparison — Compared to what? (only when applicable — skip for purely descriptive RQs)
+- Outcome/measure — How would we know the answer? (e.g., "impact" → "30-day retention rate")
+- Scope/context — In what setting or timeframe? (e.g., "our product" → "mobile app, past 6 months")
+
+Ask one dimension at a time. For each vague dimension, ask a sharpening question and let the user refine.
+
+Note: Refinement Dimensions are diagnostic questions Claude asks to **find problems**. The [PICO framework](references/pico-framework.md) (offered in A5) is a template the user can apply to **build the solution**. They overlap in coverage but serve different purposes.
+
+**A3. Before → After display**: After each round of refinement, show the before and after versions side by side to make the improvement visible:
+
+> Before: "How does onboarding affect retention?"
+> After: "Among first-time mobile app users, how does completing the 3-step onboarding tutorial affect 30-day retention compared to users who skip it?"
+
+**A4. RQ type classification**: Classify the sharpened RQ into one of three types and confirm with the user:
+
+| Type        | What it asks                          | Answer form             |
+| ----------- | ------------------------------------- | ----------------------- |
+| Descriptive | What is happening? What is the state? | Variable description    |
+| Relational  | Is X associated with Y?               | Correlation/association |
+| Causal      | Does X cause Y? How does X affect Y?  | Mechanism/effect        |
+
+- **Caution**: "How should we...?" or "What should be done?" type questions are future-oriented and tend to become policy recommendations, not researchable questions. If detected, prompt the user to reframe toward "why" or "what is" — RQs should target past or present phenomena.
+- Prompt: "This reads as a [type] question — it asks about [description]. Does that match what you want to find out?"
+
+**A5. PICO (conditional)**: For relational or causal RQs only, offer the [PICO framework](references/pico-framework.md) as a structuring tool. For descriptive RQs, skip this step — rely on the Refinement Dimensions from A2 instead.
+
+**A6. FINER diagnostic (fallback)**: If the RQ resists sharpening after 2+ rounds of refinement with no meaningful improvement, apply [FINER criteria diagnostically](references/finer-criteria.md) to identify where the question is structurally weak. A failed criterion becomes an improvement direction.
+
+**A7. Anti-pattern check**: When providing feedback on a draft RQ, reference common failure patterns from [rq-antipatterns.md](references/rq-antipatterns.md) to help the user recognize structural problems.
+
+**Lightweight path for descriptive RQs**: Steps A1-A4 → Phase B (skip A5 PICO; A6 FINER diagnostic only if needed).
+
+**→ "Does this expression of your RQ feel right? Let's run the quality check."**
+
+#### Phase B: Quality Gate
+
+Formally evaluate the sharpened RQ with [rq-quality-checklist.md](references/rq-quality-checklist.md):
+
+1. Stage 1a (Structural Soundness: items 1-3) → Stage 1b (Research Fitness: items 4-7)
+2. Stage 2 (Structural Check: items 8-13)
+3. Iterate improvements through dialogue until the user is satisfied with the RQ
+
+When all items pass, identify the weakest item and explicitly state the rationale for marking it OK.
 
 **→ On completion: "You can also design a plan with /research plan or create an interview guide with /research interview" (optional)**
 

@@ -12,6 +12,7 @@ Can it be investigated with available time, data access, budget, and expertise?
 - Bad example: "Requires tracking all global user behavior for one year"
 
 Evaluation points:
+
 - Can you access the target participants?
 - Is the required data obtainable?
 - Does the team have the necessary skills?
@@ -25,6 +26,7 @@ Will the team and stakeholders care? Will the findings be used in decision-makin
 - Bad example: "Interesting, but won't impact business decisions"
 
 Evaluation points:
+
 - Are there stakeholders waiting for the results?
 - Will the answer lead to concrete actions?
 - Is it a topic that sparks discussion within the team?
@@ -37,6 +39,7 @@ Will it yield new insights? Or will it merely reconfirm known facts?
 - Bad example: "Industry reports already show the same conclusion"
 
 Evaluation points:
+
 - Has existing research or industry reports already provided the answer? (verify via Claude research)
 - Does it add a new angle to known facts?
 - Can new insights be expected because the target audience or context is different?
@@ -64,3 +67,47 @@ Apply FINER criteria as a secondary filter to questions that passed the "3-persp
 3. For questions that partially fall short, discuss with the user whether the gap can be filled
    - Example: Weak on Feasible → Can scoping down make it doable?
    - Example: Weak on Novel → Can changing the angle or target audience add novelty?
+
+## Diagnostic Use in RQ Formulation (Step 4)
+
+In addition to filtering in Step 3, FINER criteria can be used as a diagnostic tool during Step 4 Phase A (Draft and Sharpen) to identify where a rough RQ is structurally weak and guide the sharpening direction.
+
+### When to Apply
+
+Use FINER diagnostically when the RQ resists sharpening through Refinement Dimensions — i.e., after 2+ rounds of refinement with no meaningful improvement. FINER helps identify the root cause of the stall.
+
+### How to Apply
+
+Annotate the current RQ with a brief assessment for each criterion:
+
+**Example annotation**:
+
+- F: Comparison target is concrete and accessible (participants can be recruited from existing user base)
+- I: Team has an active decision pending on this — results will directly inform next sprint
+- N: Goes beyond existing industry surveys by examining usage context, not just frequency
+- E: n/a (standard product research, no vulnerable populations)
+- R: Directly tied to Q2 retention OKR
+
+### Using Failed Criteria as Improvement Directions
+
+When a criterion fails, it becomes an actionable improvement direction:
+
+| Weak criterion | Diagnosis                                                                   | Improvement direction                                                    |
+| -------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| **F** weak     | Target population is too hard to reach, or required data is unavailable     | Narrow the scope, change the target segment, or pick a proxy metric      |
+| **I** weak     | No stakeholder is waiting for the answer; findings won't inform decisions   | Reframe the question to connect to an active business decision           |
+| **N** weak     | Existing research or industry reports already answer this                   | Change the angle, target audience, or context to add novelty             |
+| **E** weak     | Research design could cause harm to participants                            | Modify the approach to protect participants (anonymize, opt-in, etc.)    |
+| **R** weak     | Question is intellectually interesting but disconnected from business goals | Reframe to connect the academic curiosity to a product or business lever |
+
+### Output Format
+
+When applying FINER diagnostically in sparring, present it briefly:
+
+> "Let me check this RQ against FINER criteria to see where it might be stalling:
+>
+> - F: ✓ (accessible population)
+> - I: ✓ (active decision)
+> - N: ✗ — existing competitor analysis already covers this angle
+>
+> The novelty gap might be why we're struggling to sharpen it. What if we narrowed to [specific context] that hasn't been studied?"
