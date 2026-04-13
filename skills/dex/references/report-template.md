@@ -1,6 +1,6 @@
 # Report Template
 
-Template for the job-discovery report. Step 0 copies this template to create two files: a main report file and an appendix file. Each subsequent Step replaces its placeholders with actual data after user confirmation.
+Template for the dex report. Step 0 copies this template to create two files: a main report file and an appendix file. Each subsequent Step replaces its placeholders with actual data after user confirmation.
 
 <!--
 Design principles (apply when writing content into placeholders):
@@ -14,20 +14,20 @@ Design principles (apply when writing content into placeholders):
 
 ## Placeholder Reference
 
-| Step       | Placeholder                                                                                                     | File | Section                |
-| ---------- | --------------------------------------------------------------------------------------------------------------- | ---- | ---------------------- |
-| brief      | `{{TITLE}}`, `{{SOURCE_MATERIAL}}`, `{{ANALYSIS_FOCUS}}`, `{{CASE_TABLE}}`, `{{LEGEND}}`, `{{FRAME_AWARENESS}}` | 本体 | Header                 |
-| facts 1    | `{{FACT_TABLES}}`                                                                                               | 付録 | ファクトテーブル       |
-| facts 2    | `{{BACKGROUND_EVENTS}}`                                                                                         | 付録 | ケースごとのストーリー |
-| situations | `{{COMMON_SITUATIONS_HIRE}}`, `{{COMMON_SITUATIONS_REHIRE}}`                                                    | 本体 | Section 1              |
-| forces 4a  | `{{PERCASE_FORCES}}`                                                                                            | 付録 | ケースごとの力学分析   |
-| forces 4b  | `{{CROSS_FORCES_HIRE}}`, `{{CROSS_FORCES_REHIRE}}`                                                              | 本体 | Section 2              |
+| Step      | Placeholder                                                                                                     | File | Section                |
+| --------- | --------------------------------------------------------------------------------------------------------------- | ---- | ---------------------- |
+| brief     | `{{TITLE}}`, `{{SOURCE_MATERIAL}}`, `{{ANALYSIS_FOCUS}}`, `{{CASE_TABLE}}`, `{{LEGEND}}`, `{{FRAME_AWARENESS}}` | 本体 | Header                 |
+| facts 1   | `{{FACT_TABLES}}`                                                                                               | 付録 | ファクトテーブル       |
+| facts 2   | `{{BACKGROUND_EVENTS}}`                                                                                         | 付録 | ケースごとのストーリー |
+| context   | `{{COMMON_CONTEXT_HIRE}}`, `{{COMMON_CONTEXT_REHIRE}}`                                                          | 本体 | Section 1              |
+| forces 4a | `{{PERCASE_FORCES}}`                                                                                            | 付録 | ケースごとの力学分析   |
+| forces 4b | `{{CROSS_FORCES_HIRE}}`, `{{CROSS_FORCES_REHIRE}}`                                                              | 本体 | Section 2              |
 
 ## Document Skeleton
 
 Two files are created from the skeletons below. The `--- appendix ---` separator marks the boundary between the main report and the appendix file.
 
-### Main Report (job-discovery-report.md)
+### Main Report (dex-report.md)
 
 The content below (after the `---` separator) is copied as-is to create the main report file. Lines starting with `>` in the skeleton are not Markdown blockquotes — they are literal content.
 
@@ -35,7 +35,7 @@ The content below (after the `---` separator) is copied as-is to create the main
 
 <!-- BEGIN TITLE -->
 
-# Job Discovery: {{TITLE}}
+# Dex: {{TITLE}}
 
 <!-- END TITLE -->
 
@@ -71,19 +71,19 @@ The content below (after the `---` separator) is copied as-is to create the main
 
 ### Hire の状況（需要の急性化 + 手段選択の条件）
 
-<!-- BEGIN COMMON_SITUATIONS_HIRE -->
+<!-- BEGIN COMMON_CONTEXT_HIRE -->
 
-{{COMMON_SITUATIONS_HIRE}}
+{{COMMON_CONTEXT_HIRE}}
 
-<!-- END COMMON_SITUATIONS_HIRE -->
+<!-- END COMMON_CONTEXT_HIRE -->
 
 ### Re-hire の状況（継続の条件）
 
-<!-- BEGIN COMMON_SITUATIONS_REHIRE -->
+<!-- BEGIN COMMON_CONTEXT_REHIRE -->
 
-{{COMMON_SITUATIONS_REHIRE}}
+{{COMMON_CONTEXT_REHIRE}}
 
-<!-- END COMMON_SITUATIONS_REHIRE -->
+<!-- END COMMON_CONTEXT_REHIRE -->
 
 ---
 
@@ -107,7 +107,7 @@ The content below (after the `---` separator) is copied as-is to create the main
 
 --- appendix ---
 
-### Appendix (job-discovery-appendix.md)
+### Appendix (dex-appendix.md)
 
 The content below (after the `---` separator) is copied as-is to create the appendix file.
 

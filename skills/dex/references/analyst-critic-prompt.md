@@ -4,10 +4,10 @@ This prompt is sent to a single Analyst-Critic subagent after all Narrators comp
 
 **Data sources:**
 
-- **Fact Tables**: From the appendix file (`job-discovery-appendix.md`), section "ファクトテーブル（生データ）"
+- **Fact Tables**: From the appendix file (`dex-appendix.md`), section "ファクトテーブル（生データ）"
 - **Background/Events**: From the appendix file, section "ケースごとのストーリー（時系列）"
 - **Narrator outputs**: From the temporary file `_narrator_tmp.md` in the same directory
-- **Frame Awareness**: From the main report header (`job-discovery-report.md`)
+- **Frame Awareness**: From the main report header (`dex-report.md`)
 
 ---
 

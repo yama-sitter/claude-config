@@ -28,7 +28,7 @@ Confirm the prerequisites for the analysis.
 Confirm the setup with the user before proceeding. After approval:
 
 1. Copy [report-template.md](report-template.md) to create two files at `~/.agent-memory/<scope>/<date>_<topic>/`:
-   - `job-discovery-report.md` (main report — from the main report skeleton)
-   - `job-discovery-appendix.md` (appendix — from the appendix skeleton)
+   - `dex-report.md` (main report — from the main report skeleton)
+   - `dex-appendix.md` (appendix — from the appendix skeleton)
 2. Replace the header placeholders in the main report with confirmed data, including `{{FRAME_AWARENESS}}` with the frame awareness notes. Replace `{{TITLE}}` in the appendix file as well
 3. Generate the `{{LEGEND}}` content dynamically based on the number of cases (e.g., '3社に共通する' for 3 cases, 'N社に共通する' for N cases)

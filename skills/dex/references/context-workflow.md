@@ -1,4 +1,4 @@
-# Situations Workflow
+# Context Workflow
 
 ## Prerequisites
 
@@ -6,7 +6,7 @@
 
 ## Owned Placeholders
 
-`{{COMMON_SITUATIONS_HIRE}}`, `{{COMMON_SITUATIONS_REHIRE}}`
+`{{COMMON_CONTEXT_HIRE}}`, `{{COMMON_CONTEXT_REHIRE}}`
 
 ## Workflow
 
@@ -78,8 +78,8 @@ Confirm: Are the Situation/Stance classifications appropriate? Is the Hire/Re-hi
 
 After approval:
 
-1. Replace `{{COMMON_SITUATIONS_HIRE}}` in the main report file with the Hire situation tables
-2. Replace `{{COMMON_SITUATIONS_REHIRE}}` in the main report file with the Re-hire situation tables
+1. Replace `{{COMMON_CONTEXT_HIRE}}` in the main report file with the Hire situation tables
+2. Replace `{{COMMON_CONTEXT_REHIRE}}` in the main report file with the Re-hire situation tables
 3. Delete temporary files (`_narrator_tmp.md`, `_analyst_tmp.md`)
 
 ## Single-case Behavior

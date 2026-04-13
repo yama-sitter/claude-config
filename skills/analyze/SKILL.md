@@ -7,7 +7,7 @@ description: |
   Use `/analyze end` to end the session.
   Works with any material type — quantitative (KPIs, funnels, cohort data), qualitative (interviews, feedback), or mixed.
   Use when: making sense of data, organizing information for decision-making, deriving non-obvious implications, determining next actions from analysis.
-  Do not use when: uncovering hidden human motives (→ insight-craft), extracting JTBD from customer behavior (→ job-discovery), designing experiments from hypotheses (→ experiment-discipline), designing research plans or interview guides (→ research).
+  Do not use when: uncovering hidden human motives (→ insight-craft), extracting JTBD from customer behavior (→ dex), designing experiments from hypotheses (→ experiment-discipline), designing research plans or interview guides (→ research).
 user-invocable: true
 args: "[args]"
 ---
@@ -25,12 +25,12 @@ An interactive sparring partner that supports the user's analytical thinking. Th
 
 ## Argument Routing
 
-| Args | Action |
-|---|---|
-| `start [topic]` | → **Start** workflow |
-| `end` | → **End** workflow |
-| `[question]` (any text that is not `start` or `end`) | → **Continue** workflow (launch fresh SA) |
-| (none) | If active session: show status. If not: show usage guide |
+| Args                                                 | Action                                                   |
+| ---------------------------------------------------- | -------------------------------------------------------- |
+| `start [topic]`                                      | → **Start** workflow                                     |
+| `end`                                                | → **End** workflow                                       |
+| `[question]` (any text that is not `start` or `end`) | → **Continue** workflow (launch fresh SA)                |
+| (none)                                               | If active session: show status. If not: show usage guide |
 
 ## Strict Rules
 
@@ -121,6 +121,7 @@ Display: "壁打ちセッションを開始しました。`/analyze [question]` 
 ### 2. Read state
 
 From the session file, extract:
+
 - `## Snapshot` section content → `{snapshot}`
 - `## Recent Rallies` section content → `{recent_rallies}`
 - `topic` from frontmatter → `{topic}`
@@ -138,6 +139,7 @@ Agent(
 ```
 
 Materials section construction rules:
+
 - `materials_mode: full` → include the 素材 section with Read instructions (current behavior)
 - `materials_mode: digest` → include the 素材概要 section with {materials_digest} content inline (no Read needed)
 - No materials → omit the materials section entirely
@@ -268,10 +270,11 @@ You are a digest generator for the analyze skill. Read the materials and create 
 ## SA Prompt Template
 
 Replace template variables with actual values.
+
 - If `{materials_mode}` is `full`: include the 素材 section with Read instructions for {materials_path}
 - If `{materials_mode}` is `digest`: replace the 素材 section with the 素材概要 section containing {materials_digest} inline
 - If no materials: omit the 素材/素材概要 section entirely
-If snapshot indicates session start, the SA should treat it as the first rally.
+  If snapshot indicates session start, the SA should treat it as the first rally.
 
 ```
 あなたは壁打ち相手（スパーリングパートナー）です。
@@ -363,18 +366,20 @@ The session file holds the snapshot (compressed state) and recent rallies (detai
 type: analyze-session
 rally: ongoing | concluded
 topic: "{topic}"
-created: {YYYY-MM-DD}
-last_updated: {YYYY-MM-DD}
-materials_path:                    # optional, omit if no materials provided
+created: { YYYY-MM-DD }
+last_updated: { YYYY-MM-DD }
+materials_path: # optional, omit if no materials provided
   - "{path}"
-materials_mode: full | digest      # optional, omit if no materials. full = SA reads original files each rally. digest = SA uses stored digest
-rally_count: {integer}
+materials_mode: full | digest # optional, omit if no materials. full = SA reads original files each rally. digest = SA uses stored digest
+rally_count: { integer }
 ---
 
-## Materials Digest              # only present when materials_mode is digest
+## Materials Digest # only present when materials_mode is digest
+
 [High-density digest of materials]
 
 ## Snapshot
+
 テーマ: ...
 ユーザーの思考の現在地: ...
 重要な転換点: ...
@@ -383,6 +388,7 @@ rally_count: {integer}
 ## Recent Rallies
 
 ### Rally {n}
+
 **Q**: {question}
 **A**: {sparring reaction}
 ```
@@ -398,5 +404,6 @@ Recent Rallies keeps the last 3 entries. When a 4th is added, the oldest is remo
 ## Completion
 
 This skill is complete when:
+
 - The user has sharpened their thinking through the sparring dialogue
 - Or the user explicitly ends the session with `/analyze end`

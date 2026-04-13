@@ -1,6 +1,6 @@
 # Narrator Prompt (Step 3a)
 
-This prompt is sent to each Narrator subagent (one per case, launched in parallel). Each Narrator reads its own case's data from the appendix file (`job-discovery-appendix.md`).
+This prompt is sent to each Narrator subagent (one per case, launched in parallel). Each Narrator reads its own case's data from the appendix file (`dex-appendix.md`).
 
 **Data sources in the appendix file:**
 
@@ -9,7 +9,7 @@ This prompt is sent to each Narrator subagent (one per case, launched in paralle
 
 **Additional data source:**
 
-- **Case info**: Read from the main report header (`job-discovery-report.md`, top of the file)
+- **Case info**: Read from the main report header (`dex-report.md`, top of the file)
 
 ---
 

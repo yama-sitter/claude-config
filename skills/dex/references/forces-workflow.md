@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-`{{FACT_TABLES}}` and `{{BACKGROUND_EVENTS}}` are replaced in the appendix file. Completion of the situations subcommand is NOT required.
+`{{FACT_TABLES}}` and `{{BACKGROUND_EVENTS}}` are replaced in the appendix file. Completion of the context subcommand is NOT required.
 
 ## Owned Placeholders
 
