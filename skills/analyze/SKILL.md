@@ -67,8 +67,27 @@ Generate slug from topic. Check if `~/.analyze/{today}_{slug}.md` exists with `r
 
 - Use `[topic]` argument as the starting point
 - If materials are available (user mentions files, data, context), read them and summarize. Record their absolute file paths as `materials_path` for the session frontmatter
+- Estimate materials token count (file size ÷ 3 for Japanese, ÷ 4 for English)
+- If estimated tokens > 20K: AskUserQuestion — "素材が大きいです（推定≈{N}Kトークン）。毎ラリーで原文を読み込む（コスト増）か、ダイジェスト化する（コスト削減、具体性は若干低下）か選んでください"
+  - "そのまま使う" → materials_mode: full
+  - "ダイジェスト化する" → materials_mode: digest → proceed to Step 2.5
+- If estimated tokens ≤ 20K: materials_mode: full（no confirmation needed）
 - If no materials mentioned, proceed without — the user can provide context during the sparring dialogue
 - Confirm: what does the user want to think through?
+
+### 2.5. Generate materials digest (only when materials_mode is digest)
+
+Launch a synchronous general-purpose subagent to generate the digest:
+
+```
+Agent(
+  mode: "bypassPermissions",
+  prompt: <Digest SA Prompt Template with {materials_path} filled in>
+)
+```
+
+The SA reads the materials, generates a high-density digest, and returns it.
+The returned digest is passed to the Writer SA in Step 3 as {materials_digest}.
 
 ### 3. Create session file
 
@@ -106,15 +125,22 @@ From the session file, extract:
 - `## Recent Rallies` section content → `{recent_rallies}`
 - `topic` from frontmatter → `{topic}`
 - `materials_path` from frontmatter → `{materials_path}` (empty if not present — backward compatible)
+- `materials_mode` from frontmatter → `{materials_mode}` (default: `full` if materials_path exists, otherwise empty)
+- `## Materials Digest` section content → `{materials_digest}` (empty if not present)
 
 ### 3. Launch fresh SA
 
 ```
 Agent(
   mode: "bypassPermissions",
-  prompt: <SA Prompt Template with {topic}, {snapshot}, {recent_rallies}, {materials_path}, {question} filled in>
+  prompt: <SA Prompt Template with {topic}, {snapshot}, {recent_rallies}, {materials_path}, {materials_mode}, {materials_digest}, {question} filled in>
 )
 ```
+
+Materials section construction rules:
+- `materials_mode: full` → include the 素材 section with Read instructions (current behavior)
+- `materials_mode: digest` → include the 素材概要 section with {materials_digest} content inline (no Read needed)
+- No materials → omit the materials section entirely
 
 The SA returns a synchronous response containing both the sparring reaction and an updated snapshot.
 
@@ -181,8 +207,12 @@ created: {YYYY-MM-DD}
 last_updated: {YYYY-MM-DD}
 materials_path:                    # optional, omit key entirely if no materials with file paths were provided
   - "{path}"
+materials_mode: {full | digest}    # optional, omit if no materials. default: full
 rally_count: 0
 ---
+
+{## Materials Digest — include only when materials_mode is digest}
+{materials_digest content}
 
 ## Snapshot
 テーマ: {topic}
@@ -216,9 +246,32 @@ Path: {session file path}
 
 ---
 
+## Digest SA Prompt Template
+
+Used in Start workflow Step 2.5 to generate a materials digest. Replace `{placeholders}` with actual values.
+
+```
+You are a digest generator for the analyze skill. Read the materials and create a high-density digest.
+
+## Materials
+{materials_path の各パスを箇条書き — Read each file}
+
+## Digest Rules
+- Target size: 5-10K tokens
+- MUST preserve: concrete data points (numbers, ratios, percentages), specific quotes, structural framework, key findings, causal relationships and patterns
+- MUST omit: verbose explanations, repeated context, raw appendix data, methodology descriptions
+- Output the digest directly — no commentary, no metadata
+```
+
+---
+
 ## SA Prompt Template
 
-Replace template variables with actual values. If `{materials_path}` is empty, omit the 素材 section entirely. If snapshot indicates session start, the SA should treat it as the first rally.
+Replace template variables with actual values.
+- If `{materials_mode}` is `full`: include the 素材 section with Read instructions for {materials_path}
+- If `{materials_mode}` is `digest`: replace the 素材 section with the 素材概要 section containing {materials_digest} inline
+- If no materials: omit the 素材/素材概要 section entirely
+If snapshot indicates session start, the SA should treat it as the first rally.
 
 ```
 あなたは壁打ち相手（スパーリングパートナー）です。
@@ -270,9 +323,15 @@ Replace template variables with actual values. If `{materials_path}` is empty, o
   代わりに: ユーザーが自覚していない暗黙の前提を掘り出すか、問いの枠組み自体を転換すること。
   ユーザーを驚かせない反応は、反応として失敗している。
 
+{If materials_mode is full:}
 ## 素材
 以下のファイルに分析対象の原文データがあります。反応する前に Read ツールで読んでください。
 {materials_path の各パスを箇条書き}
+
+{If materials_mode is digest:}
+## 素材概要
+以下は分析対象素材のダイジェストです。原文の具体的数値・引用を含みます。
+{materials_digest}
 
 ## ユーザーの問いかけ
 {question}
@@ -308,8 +367,12 @@ created: {YYYY-MM-DD}
 last_updated: {YYYY-MM-DD}
 materials_path:                    # optional, omit if no materials provided
   - "{path}"
+materials_mode: full | digest      # optional, omit if no materials. full = SA reads original files each rally. digest = SA uses stored digest
 rally_count: {integer}
 ---
+
+## Materials Digest              # only present when materials_mode is digest
+[High-density digest of materials]
 
 ## Snapshot
 テーマ: ...
@@ -325,6 +388,10 @@ rally_count: {integer}
 ```
 
 Recent Rallies keeps the last 3 entries. When a 4th is added, the oldest is removed. Key insights from removed rallies are preserved in the Snapshot.
+
+**Writer SA update operationとの分離**: `## Materials Digest`はStart時に1回書かれ、以降のWriter SA update operationでは一切操作しない。現在のupdateテンプレートは`## Snapshot`置換と`## Recent Rallies`追記のみ行うため、`## Materials Digest`がSnapshotの前にある限り自動的に保護される。
+
+**後方互換**: `materials_mode`キーがないセッションファイル（前回kaizen適用済み）は`full`として扱う。`materials_path`もない古いセッションは素材なしとして従来通り動作。
 
 ---
 
