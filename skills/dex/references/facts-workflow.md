@@ -47,6 +47,17 @@ Identifier format: `{Case}{Number}` (e.g., A1, B1, C1). Case letter = case ident
 
 ### Step 1 Confirmation Gate
 
+**Encoding check**: Before presenting, scan the extracted fact table for `�` (U+FFFD, Unicode Replacement Character).
+
+- `�` is NOT a valid Japanese character. It never appears in normal text. If you see it, it is always a corruption artifact from PDF or other source file reading
+- Do not copy `�` from source material as-is. It is your responsibility to detect and repair it before presenting
+- Repair method: infer the correct character from surrounding context
+  - Example: `方が��かったん` → `方が早かったん` (the subsequent text mentions speed)
+  - Example: `応募���ロ` → `応募ゼロ` (katakana ゼ was corrupted)
+  - Example: `ホーム��初導入` → `ホームで初導入` (particle で was corrupted)
+- If inference is not possible, highlight the affected rows with `[要確認]` and ask the user to verify against the original source
+- If using extraction subagents: apply the same check to the merged result, as subagents can propagate the same issue
+
 Self-review against the source material for completeness, then present the table for user approval. After approval, replace `{{FACT_TABLES}}` in the appendix file.
 
 ---
@@ -84,6 +95,8 @@ Output format:
 For large fact sets (30+ facts): Launch a subagent, then self-review for completeness.
 
 ### Step 2 Confirmation Gate
+
+**Encoding check**: Scan the organized Background/Events output for `�` (U+FFFD). This character is always a corruption artifact — never valid text. Fix any found using the same repair approach as Step 1.
 
 Self-review two things, then present for user approval. After approval, replace `{{BACKGROUND_EVENTS}}` in the appendix file:
 
