@@ -40,7 +40,11 @@ See [analyst-critic-prompt.md](analyst-critic-prompt.md) for the full Analyst-Cr
 
 ### 3c. Integration (main conversation)
 
-Using the Analyst-Critic output (`_analyst_tmp.md`), construct the common situation tables for Hire and Re-hire.
+Integration output must be written to a temporary file (`_integration_tmp.md`) — NOT to the conversation.
+
+#### 3c-i. Construction
+
+Using the Analyst-Critic output (`_analyst_tmp.md`), construct the common situation tables for Hire and Re-hire. Write the result to `_integration_tmp.md` in the same directory as the report.
 
 For each validated common pattern from the Analyst-Critic:
 
@@ -70,9 +74,19 @@ Output format:
 | ----- | ---- | ------------ | -------- |
 | R-St1 | ...  | R-S1         | A14, B18 |
 
+#### 3c-ii. Summary
+
+Display only a count summary + representative pattern names in the conversation. Example:
+
+```
+Hire: 状況 7件（H-S1〜H-S7）、構え 4件（H-St1〜H-St4）
+Re-hire: 状況 7件（R-S1〜R-S7）、構え 4件（R-St1〜R-St4）+ 構造的観察 1件
+→ ファイルで詳細を確認してください: <path>
+```
+
 ## Confirmation Gate
 
-Present the Hire and Re-hire situation tables for user approval.
+Present the summary (from 3c-ii) for user approval. The user reviews full details in `_integration_tmp.md`.
 
 Confirm: Are the Situation/Stance classifications appropriate? Is the Hire/Re-hire assignment correct? Is the abstraction level right? Are any common situations missing?
 
@@ -80,7 +94,7 @@ After approval:
 
 1. Replace `{{COMMON_CONTEXT_HIRE}}` in the main report file with the Hire situation tables
 2. Replace `{{COMMON_CONTEXT_REHIRE}}` in the main report file with the Re-hire situation tables
-3. Delete temporary files (`_narrator_tmp.md`, `_analyst_tmp.md`)
+3. Delete temporary files (`_narrator_tmp.md`, `_analyst_tmp.md`, `_integration_tmp.md`)
 
 ## Single-case Behavior
 
