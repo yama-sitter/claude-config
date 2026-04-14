@@ -1,26 +1,29 @@
 # Report Template
 
-Template for the ctx report. `setup` copies this template to create two files: a main report file and an appendix file. Each subsequent subcommand replaces its placeholders with actual data after user confirmation.
+Template for the ctx report. The `brief` subcommand copies this template to create two files: a main report file and an appendix file. Each subsequent subcommand replaces its placeholders with actual data after user confirmation.
 
 <!--
 Design principles (apply when writing content into placeholders):
 
-- Conclusion first: Common contexts (most abstract) → supporting per-case details
-- Traceability throughout: All sections use CC-*/X-C* identifiers as plain text
-- Hide internal process: No Phase numbers, subagent names, or skill-internal terminology in any section
+- Framework-agnostic: No JTBD, persona, or other framework-specific jargon
+- Structure first, synthesis later: Section 1 (phase-specific patterns, most concrete) → Section 2 (integration across phases)
+- Traceability throughout: All sections use P*-S*/P*-St*/F-XX identifiers as plain text
+- Hide internal process: No subcommand names, subagent names, or skill-internal terminology in any section
 - List formatting in tables: Use comma-separated format "A: x, B: y, C: z" for Notion compatibility. Do NOT use <br> tags
-- No Why / So what: Descriptions must be observational — do not include causal interpretation or significance claims
+- No interpretation: Report observable patterns and their connections only. Do not explain "why" people acted as they did
 -->
 
 ## Placeholder Reference
 
-| Subcommand | Placeholder                                                                                                     | File | Section                    |
-| ---------- | --------------------------------------------------------------------------------------------------------------- | ---- | -------------------------- |
-| setup      | `{{TITLE}}`, `{{SOURCE_MATERIAL}}`, `{{ANALYSIS_FOCUS}}`, `{{CASE_TABLE}}`, `{{LEGEND}}`, `{{FRAME_AWARENESS}}` | 本体 | Header                     |
-| ext 1      | `{{FACT_TABLES}}`                                                                                               | 付録 | ファクトテーブル           |
-| ext 2      | `{{BACKGROUND_EVENTS}}`                                                                                         | 付録 | 時系列整理                 |
-| organize A | `{{CONTEXT_DESCRIPTIONS}}`                                                                                      | 付録 | ケースごとのコンテキスト   |
-| organize B | `{{COMMON_CONTEXTS}}`                                                                                           | 本体 | 共通コンテキスト           |
+| Subcommand | Placeholder                                                                                                     | File | Section                          |
+| ---------- | --------------------------------------------------------------------------------------------------------------- | ---- | -------------------------------- |
+| brief      | `{{TITLE}}`, `{{SOURCE_MATERIAL}}`, `{{ANALYSIS_FOCUS}}`, `{{CASE_TABLE}}`, `{{LEGEND}}`, `{{FRAME_AWARENESS}}` | 本体 | Header                           |
+| facts 1    | `{{FACT_TABLES}}`                                                                                               | 付録 | ファクトテーブル                 |
+| facts 2    | `{{BACKGROUND_EVENTS}}`                                                                                         | 付録 | ケースごとのストーリー           |
+| phases     | `{{PHASE_DEFINITIONS}}`                                                                                         | 本体 | フェーズ定義                     |
+| context    | `{{COMMON_PATTERNS}}`                                                                                           | 本体 | Section 1                        |
+| context    | `{{CASE_NARRATIVES}}`                                                                                           | 付録 | ケースごとのフェーズ別ナラティブ |
+| synthesis  | `{{RQ_CONTRAST}}`, `{{PATTERN_CONNECTIONS}}`, `{{COMMON_NARRATIVE}}`                                            | 本体 | Section 2                        |
 
 ## Document Skeleton
 
@@ -66,13 +69,51 @@ The content below (after the `---` separator) is copied as-is to create the main
 
 ---
 
-## 共通コンテキスト
+## フェーズ定義
 
-<!-- BEGIN COMMON_CONTEXTS -->
+<!-- BEGIN PHASE_DEFINITIONS -->
 
-{{COMMON_CONTEXTS}}
+{{PHASE_DEFINITIONS}}
 
-<!-- END COMMON_CONTEXTS -->
+<!-- END PHASE_DEFINITIONS -->
+
+---
+
+## 1. N社に共通する行動パターン
+
+<!-- BEGIN COMMON_PATTERNS -->
+
+{{COMMON_PATTERNS}}
+
+<!-- END COMMON_PATTERNS -->
+
+---
+
+## 2. 統合
+
+### RQ コントラスト
+
+<!-- BEGIN RQ_CONTRAST -->
+
+{{RQ_CONTRAST}}
+
+<!-- END RQ_CONTRAST -->
+
+### パターン接続
+
+<!-- BEGIN PATTERN_CONNECTIONS -->
+
+{{PATTERN_CONNECTIONS}}
+
+<!-- END PATTERN_CONNECTIONS -->
+
+### 共通ナラティブ
+
+<!-- BEGIN COMMON_NARRATIVE -->
+
+{{COMMON_NARRATIVE}}
+
+<!-- END COMMON_NARRATIVE -->
 
 --- appendix ---
 
@@ -96,7 +137,7 @@ The content below (after the `---` separator) is copied as-is to create the appe
 
 <!-- END FACT_TABLES -->
 
-## 時系列整理（Background / Events）
+## ケースごとのストーリー（時系列）
 
 <!-- BEGIN BACKGROUND_EVENTS -->
 
@@ -104,10 +145,10 @@ The content below (after the `---` separator) is copied as-is to create the appe
 
 <!-- END BACKGROUND_EVENTS -->
 
-## ケースごとのコンテキスト記述
+## ケースごとのフェーズ別ナラティブ
 
-<!-- BEGIN CONTEXT_DESCRIPTIONS -->
+<!-- BEGIN CASE_NARRATIVES -->
 
-{{CONTEXT_DESCRIPTIONS}}
+{{CASE_NARRATIVES}}
 
-<!-- END CONTEXT_DESCRIPTIONS -->
+<!-- END CASE_NARRATIVES -->

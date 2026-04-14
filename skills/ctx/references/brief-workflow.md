@@ -1,4 +1,4 @@
-# Setup Workflow
+# Brief Workflow
 
 ## Prerequisites
 
@@ -12,14 +12,16 @@ None. This is the first subcommand in the workflow.
 
 Confirm the prerequisites for the analysis.
 
-1. **分析対象の素材**: What source material to analyze (interview transcripts, feedback logs, etc.)
-2. **ケース一覧**: Who are the cases? (Name, business type, role)
-3. **分析の焦点（Research Question）**: What are we trying to understand about these cases?
-   - Examples: "潜在顧客が人手不足解決に求めているニーズと期待", "離脱ユーザーの利用前後の状況変化", "初回利用者の導入時の環境条件"
+1. **分析対象の素材**: What source material to analyze (interview transcripts, feedback logs, behavior data, etc.)
+2. **ケース一覧**: Who are the cases? (Name, business type, role, or other identifying attributes)
+3. **分析の焦点（Research Question）**: What are we analyzing, from what angle?
+   - Examples: "導入から定着までの行動変化", "利用を止めた経緯", "意思決定プロセスの比較", "業務課題への対応パターン"
+   - The RQ defines the starting direction, not the expected findings. Analysis may reveal patterns outside the RQ's scope
 4. **フレーム認識**: What does this RQ assume? What might it NOT ask?
-   - Note the implicit assumptions in the RQ's framing
+   - Note the implicit assumptions in the RQ's framing (e.g., assuming a linear progression, assuming a single motivation, assuming all cases share the same context)
    - Record the RQ's implicit assumptions as personal bias awareness notes. These help the analyst stay open to findings that don't match initial expectations
-   - The analysis should answer the RQ, but remain open to contexts the RQ does not anticipate. If the data reveals situational patterns outside the RQ's frame, capture them
+   - The analysis should answer the RQ, but remain open to patterns the RQ does not anticipate. If the data reveals purposes, segments, or dynamics outside the RQ's frame, capture them
+   - Frame awareness is critical — it is the primary defense against confirmation bias throughout the analysis
 5. **注目したい観点**（任意）: Any specific aspects the user wants to explore
 
 ## Confirmation Gate

@@ -22,7 +22,7 @@ On start, check the appendix file for owned placeholders:
 
 **Input from report**: header (case list) + source material paths.
 
-**RQ (分析の焦点) is NOT a filter for fact extraction.** Extract ALL observable behaviors and verbatim quotes from the source material, regardless of whether they appear relevant to the RQ. Omitting facts because they seem "off-topic" destroys the data foundation for discovering demand structures the RQ did not anticipate.
+**RQ (分析の焦点) is NOT a filter for fact extraction.** Extract ALL observable behaviors and verbatim quotes from the source material, regardless of whether they appear relevant to the RQ. Omitting facts because they seem "off-topic" destroys the data foundation for discovering patterns the RQ did not anticipate.
 
 List observable behaviors and verbatim quotes. Separate what happened from why it happened.
 
@@ -68,15 +68,15 @@ Self-review against the source material for completeness, then present the table
 
 Arrange facts from Step 1 chronologically. Separate **Background** (ongoing structural conditions not tied to a specific moment) from **Events** (facts tied to specific time points).
 
-**Temporal origin test** for each Background candidate: "Did this condition exist **before** the Hire decision?"
+**Structural condition test** for each Background candidate: "Is this an ongoing structural condition that exists independently of specific events in the timeline?"
 
-- Yes → Background (e.g., "Zero applicants from Hello Work for months" = pre-Hire structural condition)
-- No → Events (e.g., "Qualified workers are reliable" = post-Hire recognition)
-- Uncertain → Apply: "Could a third party observe this condition before the person used the product?" Yes = Background, No = Events
+- Yes → Background (e.g., "Zero applicants from traditional channels for months" = ongoing structural condition)
+- No → Events (e.g., "Noticed improved quality after trying a new approach" = event tied to a specific moment)
+- Uncertain → Apply: "Could a third party observe this as a persistent condition at any point during the analysis period, independent of specific events?" Yes = Background, No = Events
 
 Output format:
 
-> **前提条件**（サービス利用を決める前から存在していた構造的条件）
+> **前提条件**（分析対象の出来事が始まる前から存在していた構造的条件）
 > ファクト: A1, A3, ...
 > 要約: [構造的条件 — 事業環境、継続的な制約、リソースの限界]
 >

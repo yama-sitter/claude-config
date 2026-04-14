@@ -1,43 +1,44 @@
 ---
 name: ctx
 description: |
-  Extract common contexts from qualitative data (interviews, feedback, behavior logs) using 5W1H structured description.
-  Use when the user provides raw qualitative data and wants to discover shared situational patterns across cases.
-  Framework-agnostic: output can feed into JTBD, persona analysis, customer journey mapping, or other analytical frameworks.
-  Do not use when the user wants to analyze demand forces (Push/Pull/Anxiety/Habit) — use dex instead.
-  Do not use when the user already has structured contexts and wants to interpret Why / So what.
-  Subcommands: setup, extract, organize. No args = progress check.
+  Extract behavioral patterns and their connections from qualitative data using multi-phase analysis.
+  Use when the user provides raw qualitative data (interviews, feedback, behavior logs) and wants to discover shared behavioral patterns across cases.
+  Do not use when the user already has a clear hypothesis and wants to design experiments.
+  Do not use when the user wants to brainstorm or evaluate solutions.
+  Subcommands: brief, facts, phases, context, synthesis. No args = progress check.
 user-invocable: true
 ---
 
 # Ctx — Context Extraction
 
-Extract common contexts from raw qualitative data by structuring facts into 5W1H dimensions and finding cross-case patterns.
+Extract behavioral patterns and their connections from qualitative data by climbing the Ladder of Inference one rung at a time.
 
 ## Prerequisites
 
 - Qualitative data (interview logs, behavior data, feedback) is accessible
-- This skill produces structured descriptions only — Why / So what interpretation is the human's job
+- This skill produces observational analysis only — LLM structures, humans interpret
 
 ## Argument Routing
 
-| Args        | Action                                                                                                                       |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| (none)      | Progress check: detect report → show filled/unfilled placeholders → suggest next subcommand                                  |
-| `setup`     | Define research starting point (focus, cases, frame awareness) → create report files. → [setup-workflow.md](references/setup-workflow.md) |
-| `extract`   | Extract facts and organize chronologically. → [extract-workflow.md](references/extract-workflow.md)                           |
-| `organize`  | Structure facts into 5W1H contexts (per-case) → cross-case comparison → common context extraction. → [organize-workflow.md](references/organize-workflow.md) |
+| Args        | Action                                                                                                                                            |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| (none)      | Progress check: detect report → show filled/unfilled placeholders → suggest next subcommand                                                       |
+| `brief`     | Define research starting point (focus, cases, frame awareness) → create report files. → [brief-workflow.md](references/brief-workflow.md)         |
+| `facts`     | Extract facts and organize chronologically. → [facts-workflow.md](references/facts-workflow.md)                                                   |
+| `phases`    | Define analysis phases interactively with the user. → [phases-workflow.md](references/phases-workflow.md)                                         |
+| `context`   | Extract common patterns across cases per phase (Narrator → Analyst-Critic → Integration). → [context-workflow.md](references/context-workflow.md) |
+| `synthesis` | Integrate patterns: RQ contrast, pattern connections, common narrative. → [synthesis-workflow.md](references/synthesis-workflow.md)               |
 
 Read the linked workflow file and follow its instructions.
 
 ## Report Discovery
 
-When any subcommand other than `setup` is invoked, locate the active report:
+When any subcommand other than `brief` is invoked, locate the active report:
 
 1. Search: `ls ~/.agent-memory/*/ctx-report.md`
 2. If exactly one report found → use it. The appendix file (`ctx-appendix.md`) is always in the same directory
 3. If multiple found → list each report's title line (`# Ctx: ...`) and whether it has unfilled placeholders (in-progress). Prioritize in-progress reports. Ask the user to choose
-4. If none found → tell the user to run `/ctx setup` first
+4. If none found → tell the user to run `/ctx brief` first
 
 When passing file paths to subagents, always pass both the main report path and the appendix path.
 
@@ -45,93 +46,99 @@ When passing file paths to subagents, always pass both the main report path and 
 
 On subcommand start, verify that the prerequisite placeholders are all replaced (no `{{` remaining for those placeholders). If unmet, inform the user which prior subcommand to run.
 
-| Subcommand | Prerequisite placeholders that must be filled                                                                   | Check file |
-| ---------- | --------------------------------------------------------------------------------------------------------------- | ---------- |
-| `setup`    | (none)                                                                                                          | —          |
-| `extract`  | `{{TITLE}}`, `{{SOURCE_MATERIAL}}`, `{{ANALYSIS_FOCUS}}`, `{{CASE_TABLE}}`, `{{LEGEND}}`, `{{FRAME_AWARENESS}}` | 本体       |
-| `organize` | `{{FACT_TABLES}}`, `{{BACKGROUND_EVENTS}}`                                                                      | 付録       |
+| Subcommand  | Prerequisite placeholders that must be filled                                                                   | Check file |
+| ----------- | --------------------------------------------------------------------------------------------------------------- | ---------- |
+| `brief`     | (none)                                                                                                          | —          |
+| `facts`     | `{{TITLE}}`, `{{SOURCE_MATERIAL}}`, `{{ANALYSIS_FOCUS}}`, `{{CASE_TABLE}}`, `{{LEGEND}}`, `{{FRAME_AWARENESS}}` | 本体       |
+| `phases`    | Same as `facts` prerequisites                                                                                   | 本体       |
+| `context`   | `{{FACT_TABLES}}`, `{{BACKGROUND_EVENTS}}`, `{{PHASE_DEFINITIONS}}`                                             | 付録+本体  |
+| `synthesis` | `{{COMMON_PATTERNS}}`                                                                                           | 本体       |
 
 ## Progress Check (default)
 
 When invoked with no arguments:
 
 1. Run Report Discovery
-2. If no report found → display: "分析がまだ開始されていません。`/ctx setup` で開始してください"
+2. If no report found → display: "分析がまだ開始されていません。`/ctx brief` で開始してください"
 3. If report found → run `grep '{{' <report-path> <appendix-path>` to find unfilled placeholders across both files
 4. Map unfilled placeholders to subcommands and display progress:
 
 ```
 ## 進捗: <レポートタイトル>
 
-✅ setup — セットアップ
-✅ extract — ファクト抽出・時系列整理
-⬜ organize — 構造化・共通コンテキスト抽出
+✅ brief — リサーチブリーフ
+✅ facts — 事実抽出・整理
+⬜ phases — フェーズ定義
+⬜ context — 共通パターン抽出
+⬜ synthesis — 統合
 
-→ 次のステップ: `/ctx organize`
+→ 次のステップ: `/ctx phases`
 ```
 
 Next-step suggestion logic:
 
-- setup incomplete → `setup`
-- extract incomplete → `extract`
-- organize incomplete → `organize`
+- brief incomplete → `brief`
+- facts incomplete → `facts`
+- phases incomplete → `phases`
+- context incomplete → `context`
+- synthesis incomplete → `synthesis`
 
 Placeholder → subcommand mapping:
 
-| Placeholder pattern                                                                                             | Subcommand | File |
-| --------------------------------------------------------------------------------------------------------------- | ---------- | ---- |
-| `{{TITLE}}`, `{{SOURCE_MATERIAL}}`, `{{ANALYSIS_FOCUS}}`, `{{CASE_TABLE}}`, `{{LEGEND}}`, `{{FRAME_AWARENESS}}` | setup      | 本体 |
-| `{{FACT_TABLES}}`, `{{BACKGROUND_EVENTS}}`                                                                      | extract    | 付録 |
-| `{{CONTEXT_DESCRIPTIONS}}`                                                                                      | organize   | 付録 |
-| `{{COMMON_CONTEXTS}}`                                                                                           | organize   | 本体 |
+| Placeholder pattern                                                                                             | Subcommand | File      |
+| --------------------------------------------------------------------------------------------------------------- | ---------- | --------- |
+| `{{TITLE}}`, `{{SOURCE_MATERIAL}}`, `{{ANALYSIS_FOCUS}}`, `{{CASE_TABLE}}`, `{{LEGEND}}`, `{{FRAME_AWARENESS}}` | brief      | 本体      |
+| `{{FACT_TABLES}}`, `{{BACKGROUND_EVENTS}}`                                                                      | facts      | 付録      |
+| `{{PHASE_DEFINITIONS}}`                                                                                         | phases     | 本体      |
+| `{{COMMON_PATTERNS}}`, `{{CASE_NARRATIVES}}`                                                                    | context    | 本体+付録 |
+| `{{RQ_CONTRAST}}`, `{{PATTERN_CONNECTIONS}}`, `{{COMMON_NARRATIVE}}`                                            | synthesis  | 本体      |
 
 ## Data Flow
 
-The `setup` subcommand creates two files from the report template ([report-template.md](references/report-template.md)):
+The `brief` subcommand creates two files from the report template ([report-template.md](references/report-template.md)):
 
-- **ctx-report.md** (main report): Analysis results — common contexts
-- **ctx-appendix.md** (appendix): Raw data — fact tables, chronological organization, per-case context descriptions
+- **ctx-report.md** (main report): Analysis results — phase definitions, common patterns, and synthesis
+- **ctx-appendix.md** (appendix): Raw data — fact tables, case stories, per-case phase narratives
 
 Each subsequent subcommand replaces its placeholders (`{{XXX}}`) in the appropriate file after user confirmation. When all subcommands complete, the two files together form the finished deliverable.
 
-- **Read from appendix, write to both**: `organize` reads fact data from the appendix, writes per-case descriptions to the appendix (`{{CONTEXT_DESCRIPTIONS}}`), and writes cross-case common contexts to the main report (`{{COMMON_CONTEXTS}}`).
+- **Read from appendix, write to main report**: `context` reads fact data from the appendix, then writes common patterns to the main report and per-case narratives to the appendix. `synthesis` reads from the main report and writes to the main report.
 - **Replace after confirm**: Each subcommand's output replaces its placeholder(s) after user approval at the confirmation gate. Content is wrapped in HTML comment boundary markers (`<!-- BEGIN XXX -->...<!-- END XXX -->`) for re-replacement if the user requests revisions.
 - **Atomic replacement**: When a subcommand has multiple placeholders, all are replaced together after the confirmation gate. No partial replacement state.
 - **Re-replacement**: If the user requests a revision after confirmation, locate the content between `<!-- BEGIN XXX -->` and `<!-- END XXX -->` markers and replace it with the revised content.
-- **Temporary files**: `organize` uses temporary files for intermediate subagent outputs. These are deleted after the confirmation gate.
-  - Scaffolded route (11+ cases): `_describe_tmp.md` (Phase A per-case outputs) + `_compare_tmp.md` (Phase B cross-case output)
-  - Direct route (2–10 cases): `_compare_tmp.md` only (Phase B output contains both per-case groupings and cross-case comparison)
+- **Temporary files**: `context` uses temporary files (`_narrator_tmp.md`, `_analyst_tmp.md`) for intermediate subagent outputs. These are deleted after the confirmation gate.
 
 ### Section Dependency Map
 
 Cross-section dependencies. Consult this when manually editing or re-running subcommands to identify downstream impact.
 
-| Changed section        | Affected downstream sections          |
-| ---------------------- | ------------------------------------- |
-| FACT_TABLES            | BACKGROUND_EVENTS, organize           |
-| BACKGROUND_EVENTS      | organize                              |
-| CONTEXT_DESCRIPTIONS   | COMMON_CONTEXTS (both generated simultaneously in Direct route) |
-| COMMON_CONTEXTS        | No downstream                         |
+| Changed section                                    | Affected downstream sections                  |
+| -------------------------------------------------- | --------------------------------------------- |
+| FACT_TABLES                                        | BACKGROUND_EVENTS, phases, context, synthesis |
+| BACKGROUND_EVENTS                                  | phases, context, synthesis                    |
+| PHASE_DEFINITIONS                                  | context, synthesis                            |
+| COMMON_PATTERNS                                    | synthesis                                     |
+| RQ_CONTRAST, PATTERN_CONNECTIONS, COMMON_NARRATIVE | No downstream                                 |
 
 ### Re-run for Case Addition
 
 To add cases to an existing analysis, re-run subcommands in this order:
 
-1. `extract`: Append new case's fact table and Background/Events
-2. `organize`: Re-determine route based on updated case count. If route changes (e.g., 9→11 cases crosses threshold), re-run from the new route's starting point.
-   - Direct route: Re-run Phase B with all cases
-   - Scaffolded route: Run Phase A for new case only → Re-run Phase B with all cases (re-replacement)
+1. `facts`: Append new case's fact table and Background/Events
+2. `phases`: Re-evaluate phase definitions with the new case's data (user confirms adjustments)
+3. `context`: Run Narrator for new case only (append to temporary file) → Re-run Analyst-Critic and Integration with all cases (re-replacement)
+4. `synthesis`: Re-run all three steps (re-replacement)
 
 ### Post-hoc Correction
 
 When a missed pattern or error is discovered after a confirmation gate:
 
-**Small correction (no CC-* ID additions/deletions/renames)**:
+**Small correction (no pattern ID additions/deletions/renames)**:
 
 - Edit the affected section directly (re-replace)
 - Consult the dependency map above and verify consistency in **only the downstream sections that reference the changed content**
 
-**Large correction (CC-* IDs added/deleted/renamed)**:
+**Large correction (pattern IDs added/deleted/renamed)**:
 
 - Re-run the affected subcommand (re-replacement) rather than manual patching
 - Manual patching across multiple sections with ID changes is error-prone
@@ -139,7 +146,7 @@ When a missed pattern or error is discovered after a confirmation gate:
 ### Re-replacement Consistency Rule
 
 - ALWAYS: After any re-replacement or manual edit, consult the dependency map and verify consistency in **only the downstream sections that reference the modified content**
-- Verification items: (a) any CC-* added or changed in the edit exists and is correctly referenced downstream, (b) quantitative phrases like "N社に共通する" match the actual case count
+- Verification items: (a) any P\*-S\*/P\*-St\* added or changed in the edit exists and is correctly referenced downstream, (b) quantitative phrases like "N cases" match the actual case count
 - If inconsistencies are found, re-replace the downstream sections as well
 
 Report paths: `~/.agent-memory/<scope>/<date>_<topic>/ctx-report.md` and `ctx-appendix.md`
@@ -147,24 +154,32 @@ Report paths: `~/.agent-memory/<scope>/<date>_<topic>/ctx-report.md` and `ctx-ap
 ## Output Language Rules
 
 - All user-facing output (table headers, section titles, labels) must be written in Japanese
-- 5W1H axis labels (What, When, Where, Who, How) may be used in English as column headers for readability
 - English terminology may be used as-is in subagent prompts for analysis accuracy
-- Established loanwords whose original meaning would be lost in Japanese translation (e.g., コンテキスト) should remain as-is
+- Established loanwords whose original meaning would be lost in Japanese translation (e.g., エビデンス) should remain in English
+
+## Inference Permission Hierarchy
+
+Each subcommand has explicit bounds on what kind of inference is permitted:
+
+| Subcommand                      | Inference level       | Description                                                                                    |
+| ------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------- |
+| facts                           | None                  | Observable behavior and verbatim quotes only                                                   |
+| phases                          | Clustering            | State-transition-based grouping of observable events                                           |
+| context                         | Observable + `[推定]` | Narrator may infer Purpose from action patterns, tagged as `[推定]`                            |
+| synthesis (RQ contrast)         | Contrast              | Compare frame awareness assumptions against findings                                           |
+| synthesis (pattern connections) | Temporal connections  | "A was observed before B" — not causal claims                                                  |
+| synthesis (narrative)           | Prose synthesis       | Connect patterns and Purpose changes into narrative — no interpretation of motives or dynamics |
 
 ## Strict Rules
 
-- Do not write Why or So what — this skill extracts observable contexts only. Causal interpretation is the human's job
-- Do not propose or suggest solutions
-- Do not skip from facts to context organization without data
+- Do not interpret "why" people acted as they did — describe what happened and how patterns connect, not the underlying motives or dynamics
+- Do not propose or suggest solutions — this skill is observational analysis only
+- Do not skip from facts to pattern extraction without data
 - Do not proceed past a confirmation gate (→) without user approval
 - Do not treat customer opinions or stated preferences as behavioral facts
 - Do not score, rank, or prioritize
 - NEVER ask the user to verify completeness — always perform self-review against the source material before presenting results at any confirmation gate
 - RQ is the starting point for analysis, not a filter. Fact extraction is RQ-independent — every observable behavior and verbatim quote must be recorded regardless of apparent relevance to the RQ
-- Inference permissions:
-  - extract: No inference. Observable behavior and verbatim quotes only.
-  - organize per-case grouping (Phase A in Scaffolded route / Step 0 in Direct route): No inference. Observable behavior, verbatim quotes, and observable attitudes (backed by verbatim quotes) only.
-  - organize cross-case comparison (Phase B Step 1–3): Abstraction permitted (grouping concrete instances under a common label). Causal interpretation is NOT permitted.
 - Output written to the report or appendix (subagent output and integration results) must NOT contain file paths, plan references, or any external file references — the report must be a self-contained deliverable
 
 ## Completion
