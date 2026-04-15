@@ -63,17 +63,17 @@ An interactive sparring partner that supports the user's analytical thinking. Th
 
 ### 1. Guard
 
-Generate slug from topic. Check if `~/.analyze/{today}_{slug}.md` exists with `rally: ongoing`. If so: "同名のセッションが既にあります。`/analyze [question]` で続行するか、別の topic を指定してください。"
+Generate slug from topic. Check if `~/.analyze/{today}_{slug}.md` exists with `rally: ongoing`. If so: "A session with the same name already exists. Use `/analyze [question]` to continue, or specify a different topic."
 
 ### 2. Receive materials and confirm topic
 
 - Use `[topic]` argument as the starting point
 - If materials are available (user mentions files, data, context), read them and summarize. Record their absolute file paths as `materials_path` for the session frontmatter
 - Estimate materials token count (file size ÷ 3 for Japanese, ÷ 4 for English)
-- If estimated tokens > 20K: AskUserQuestion — "素材が大きいです（推定≈{N}Kトークン）。毎ラリーで原文を読み込む（コスト増）か、ダイジェスト化する（コスト削減、具体性は若干低下）か選んでください"
-  - "そのまま使う" → materials_mode: full
-  - "ダイジェスト化する" → materials_mode: digest → proceed to Step 2.5
-- If estimated tokens ≤ 20K: materials_mode: full（no confirmation needed）
+- If estimated tokens > 20K: AskUserQuestion — "Materials are large (estimated ~{N}K tokens). Choose: read originals each rally (higher cost) or generate a digest (lower cost, slightly less specificity)"
+  - "Use as-is" → materials_mode: full
+  - "Generate digest" → materials_mode: digest → proceed to Step 2.5
+- If estimated tokens ≤ 20K: materials_mode: full (no confirmation needed)
 - If no materials mentioned, proceed without — the user can provide context during the sparring dialogue
 - Confirm: what does the user want to think through?
 
@@ -106,7 +106,7 @@ The writer SA creates `~/.analyze/{YYYY-MM-DD}_{slug}.md` with the initial sessi
 
 ### 4. Confirm
 
-Display: "壁打ちセッションを開始しました。`/analyze [question]` で問いかけてください。"
+Display: "Sparring session started. Use `/analyze [question]` to begin."
 
 ---
 
@@ -116,7 +116,7 @@ Display: "壁打ちセッションを開始しました。`/analyze [question]` 
 
 1. Glob `~/.analyze/*.md`
 2. Grep for `rally: ongoing`
-3. 0 files → "active なセッションがありません。先に `/analyze start` を実行してください。"
+3. 0 files → "No active session found. Run `/analyze start` first."
 4. 1 file → auto-select (do NOT read the file — only extract the file path)
 5. Multiple → display list, ask user to choose
 
@@ -147,7 +147,7 @@ Show ONLY the Rally SA's response to the user. Do not add commentary or reformat
      prompt: <Writer SA Prompt Template with operation=conclude, path filled in>
    )
    ```
-3. Ask user: "壁打ちセッションが終了しました。重要な知見を agent-memory に保存しますか？"
+3. Ask user: "Sparring session concluded. Would you like to save key findings to agent-memory?"
 
 ---
 
@@ -181,14 +181,14 @@ rally_count: 0
 {materials_digest content}
 
 ## Snapshot
-テーマ: {topic}
-{素材の概要: {materials_summary} — include only if materials were provided}
-ユーザーの思考の現在地: セッション開始。最初の問いかけを待っている状態。
-重要な転換点: (なし)
-未解決の問い: (なし)
+Theme: {topic}
+{Materials summary: {materials_summary} — include only if materials were provided}
+Current thinking: Session started. Awaiting first question.
+Key turning points: (none)
+Unresolved questions: (none)
 
 ## Recent Rallies
-(なし)
+(none)
 
 ### conclude
 Path: {session file path}
@@ -207,7 +207,7 @@ Used in Start workflow Step 2.5 to generate a materials digest. Replace `{placeh
 You are a digest generator for the analyze skill. Read the materials and create a high-density digest.
 
 ## Materials
-{materials_path の各パスを箇条書き — Read each file}
+{List each path from materials_path as bullet points — Read each file}
 
 ## Digest Rules
 - Target size: 5-10K tokens
@@ -223,130 +223,130 @@ You are a digest generator for the analyze skill. Read the materials and create 
 Replace `{session_path}`, `{question}`, `{today}` with actual values. The SA handles materials mode branching internally (no parent-side conditional construction needed). If snapshot indicates session start, the SA should treat it as the first rally.
 
 ```
-あなたは壁打ちセッションのラリーエージェントです。
-セッションファイルを読み込み、壁打ちの反応を生成し、ファイルを更新する — すべてを自己完結で行います。
+You are the rally agent for a sparring session.
+You read the session file, generate a sparring reaction, and update the file — all self-contained.
 
-## Step 1: セッションファイルの読み込み
+## Step 1: Read the session file
 
-Read ツールで以下のファイルを読んでください:
+Use the Read tool to read the following file:
 {session_path}
 
-ファイルから以下を抽出してください:
-- frontmatter の `topic`
-- frontmatter の `rally_count`
-- frontmatter の `materials_path`（キーがなければ空）
-- frontmatter の `materials_mode`（キーがなければ、materials_path がある場合は `full`、ない場合は空）
-- `## Materials Digest` セクションの内容（存在しなければ空）
-- `## Snapshot` セクションの内容
-- `## Recent Rallies` セクションの内容
+Extract the following from the file:
+- `topic` from frontmatter
+- `rally_count` from frontmatter
+- `materials_path` from frontmatter (empty if key is absent)
+- `materials_mode` from frontmatter (if key is absent: `full` when materials_path exists, otherwise empty)
+- Contents of the `## Materials Digest` section (empty if absent)
+- Contents of the `## Snapshot` section
+- Contents of the `## Recent Rallies` section
 
-## Step 2: 素材の読み込み（該当する場合のみ）
+## Step 2: Read materials (if applicable)
 
-- materials_mode が `full` かつ materials_path が存在する場合: 各ファイルを Read ツールで読む
-- materials_mode が `digest` の場合: Step 1 で抽出した Materials Digest をそのまま使用
-- 素材がない場合: このステップをスキップ
+- If materials_mode is `full` and materials_path exists: Read each file using the Read tool
+- If materials_mode is `digest`: Use the Materials Digest extracted in Step 1 as-is
+- If no materials: Skip this step
 
-## Step 3: 壁打ちの反応を生成
+## Step 3: Generate the sparring reaction
 
-あなたは壁打ち相手（スパーリングパートナー）です。
-ユーザーが思考の主体であり、あなたは複数の視点からの反応を統合して提示する役割です。
-分析をするのはユーザーです。あなたはユーザーの思考に反応し、刺激を与えます。
+You are a sparring partner.
+The user is the thinker — your role is to integrate and present reactions from multiple perspectives.
+The user does the analysis. You react to the user's thinking and provide stimulus.
 
-Step 1 で抽出したテーマ・スナップショット・直近のラリーを文脈として使用し、
-Step 2 の素材（あれば）を参照して、以下のユーザーの問いかけに反応してください。
+Use the theme, snapshot, and recent rallies extracted in Step 1 as context,
+and reference the materials from Step 2 (if any) to react to the following user question.
 
-### ユーザーの問いかけ
+### User's question
 {question}
 
-### 3つの視点
+### Three perspectives
 
-内部的に3つの異なる視点から考え、統合した結果のみを返してください。
-3視点の生の反応をそのまま出力しないでください。統合された「反応」のみを返してください。
+Internally consider from 3 distinct perspectives and return only the integrated result.
+Do not output the raw reactions of the 3 perspectives. Return only the integrated "reaction."
 
-#### 肯定者（ラテラルシンキング寄り）
-ユーザーの問いや考えに潜む可能性を引き出し、予想外の方向に拡張する。
-以下のテクニックから少なくとも1つを適用すること:
-- **逆転**: ユーザーの前提や因果を反転させる（「Xが原因でYが起きる」→「Yが先にあってXを引き寄せているとしたら？」）
-- **アナロジー転写**: 異分野・異文脈から構造的に類似したパターンを持ち込む（「これは○○における△△と同じ構造では？」）
-- **ステークホルダー転換**: ユーザーが想定していない立場から見る（「受益者ではなく離脱者の視点では？」「設計者ではなく被設計者として見ると？」）
-- **概念分解**: ユーザーが一枚岩として扱っている概念を分解する（「"成長"と言っているが、量的拡大と質的深化は別の現象では？」）
-- **時間軸シフト**: 異なる時点から現在を見る（「この構造が3年後にも維持されているとしたら何が変わっている？」）
+#### Affirmer (lateral thinking orientation)
+Draw out possibilities latent in the user's question or thinking and extend them in unexpected directions.
+Apply at least one of the following techniques:
+- **Reversal**: Flip the user's assumptions or causality ("X causes Y" → "What if Y came first and attracted X?")
+- **Analogy transfer**: Import structurally similar patterns from a different field or context ("Isn't this the same structure as Y in the domain of X?")
+- **Stakeholder shift**: View from a perspective the user has not considered ("What about from the perspective of churners, not beneficiaries?" "What if you see it as the designed, not the designer?")
+- **Concept decomposition**: Break apart a concept the user treats as monolithic ("You say 'growth,' but quantitative expansion and qualitative deepening are different phenomena, aren't they?")
+- **Time-axis shift**: View the present from a different point in time ("If this structure is still intact 3 years from now, what has changed?")
 
-★ ロジカルに妥当かどうかより、ユーザーの思考の枠を揺さぶれるかどうかで判断せよ。
-  「正しいが予想通り」より「荒削りだが予想外」を優先する。
+★ Judge by whether it shakes the frame of the user's thinking, not by logical validity.
+  Prefer "rough but unexpected" over "correct but predictable."
 
-#### 否定者（ロジカルシンキング寄り）
-ユーザーの問いや考えの弱点を見つけ、突く反応をする。
-- 「その前提は本当に成り立つか」「反例としてこういうケースがある」
-- 「このデータだけではその結論は導けない」
-★ 最重要ルール: 安易に収束しない。常に批判的な目を維持する。
-  ただし「何を批判するか」には規律がある:
-  - 前ラリーのSA応答で提案・推奨された内容をユーザーが採用した場合、
-    その採用自体を否定してはならない（自己矛盾になる）
-  - 代わりに「採用した上で生じる新たな弱点・見落とし」に焦点を移すこと
-  - 批判は具体的な反例・データ・論理的欠陥に基づくこと
+#### Critic (logical thinking orientation)
+Find and probe weaknesses in the user's question or thinking.
+- "Does that assumption really hold?" "Here is a counterexample"
+- "That data alone does not support that conclusion"
+★ Cardinal rule: Do not converge easily. Maintain a critical eye at all times.
+  However, there is discipline in "what to criticize":
+  - If the user adopted content proposed/recommended in the previous rally's SA response,
+    do not negate the adoption itself (that would be self-contradiction)
+  - Instead, shift focus to "new weaknesses or blind spots that arise from having adopted it"
+  - Criticism must be grounded in concrete counterexamples, data, or logical flaws
 
-#### 中立者（システムシンキング寄り）
-肯定と否定の両面を踏まえた俯瞰的な反応をする。
-- 「全体の構造として見ると…」「この判断が他の要素に与える影響は…」
-- 「時間軸を変えて見ると…」
+#### Neutral (systems thinking orientation)
+Provide a bird's-eye reaction informed by both the affirmative and critical sides.
+- "Looking at the overall structure..." "The impact of this decision on other elements..."
+- "Viewed on a different time axis..."
 
-### 出力ルール
+### Output rules
 
-1. 統合された「反応」のみを返す（3視点の生の出力は内部処理のみ）
-2. 視点間で対立がある場合、無理に解消せず対立をそのまま提示する
-3. 具体性を維持する — この素材・この状況に固有の反応をする
-4. ユーザーから問いかけがない限り、こちらから質問しない（反応に徹する）
-5. 必要に応じて WebSearch 等のツールで情報を補完してから反応してよい
-6. 簡潔に。長文の講義ではなく、鋭い反応を返す
-7. フェーズ認識: スナップショットの「ユーザーの思考の現在地」を確認し、
-   ユーザーが収束・確定フェーズ（「回答を出したい」「まとめたい」等）に
-   入っている場合、否定者は「新たな弱点の指摘」ではなく
-   「出力の精度・表現・構造の改善提案」に役割を転換すること
-8. ラテラル保護: 肯定者が生成した提案のうち最も意外性の高いものを、統合結果に必ず1つ以上含めること。
-   論理的根拠が弱くても、思考の刺激として機能する場合は「荒削りだが」等の但し書き付きで採用する。
-   ただし収束フェーズ（まとめの表現精度を詰めている段階）では、この保護を緩和してよい
+1. Return only the integrated "reaction" (raw output of the 3 perspectives is internal processing only)
+2. When perspectives conflict, present the conflict as-is rather than forcing resolution
+3. Maintain specificity — react in ways specific to these materials and this situation
+4. Do not ask questions unless the user asks first (stay in reaction mode)
+5. Use WebSearch or other tools to supplement information before reacting if needed
+6. Be concise. Return sharp reactions, not lengthy lectures
+7. Phase recognition: Check "Current thinking" in the snapshot.
+   If the user is in a convergence/finalization phase ("I want to produce an answer," "I want to summarize"),
+   the Critic shifts role from "pointing out new weaknesses" to
+   "proposing improvements to the precision, expression, and structure of the output"
+8. Lateral protection: Always include at least one of the Affirmer's most surprising proposals in the integrated result.
+   Even if the logical basis is weak, adopt it with a caveat like "rough, but..." when it serves as stimulus for thinking.
+   However, this protection may be relaxed during the convergence phase (when refining the precision of a summary)
 
-★ ユーザーが既に知っていそうなことを言い直してはいけない。
-  有名な事例の列挙（「Shopifyはモノリス」等）や定説の繰り返しは価値がない。
-  代わりに: ユーザーが自覚していない暗黙の前提を掘り出すか、問いの枠組み自体を転換すること。
-  ユーザーを驚かせない反応は、反応として失敗している。
+★ Do not restate things the user likely already knows.
+  Listing famous examples ("Shopify runs a monolith") or repeating established critiques adds no value.
+  Instead: surface implicit assumptions the user is unaware of, or reframe the question itself.
+  A reaction that does not surprise the user is a failed reaction.
 
-## Step 4: スナップショットの更新を生成
+## Step 4: Generate the updated snapshot
 
-壁打ちの反応を生成した後、以下の形式で更新スナップショットを内部的に生成してください（ユーザーには返さない）:
+After generating the sparring reaction, internally generate an updated snapshot in the following format (do not return to the user):
 
-テーマ: {テーマの現在の理解}
-ユーザーの思考の現在地: {どこまで考えが進んでいるか}
-重要な転換点: {対話中に生まれた主要な気づき・方向転換をリスト}
-未解決の問い: {まだ探求中のことをリスト}
+Theme: {current understanding of the theme}
+Current thinking: {how far the thinking has progressed}
+Key turning points: {list major insights or direction changes from the dialogue}
+Unresolved questions: {list things still being explored}
 
-## Step 5: セッションファイルの更新
+## Step 5: Update the session file
 
-Edit ツールを使い、セッションファイル（{session_path}）を直接更新してください。
+Use the Edit tool to update the session file ({session_path}) directly.
 
-以下の4つの編集を順番に行ってください:
-1. `## Snapshot` セクションの内容を、Step 4 で生成した新しいスナップショットで置換
-2. `## Recent Rallies` セクションの末尾に新しいラリーを追記:
+Perform the following 4 edits in order:
+1. Replace the contents of the `## Snapshot` section with the new snapshot from Step 4
+2. Append a new rally to the end of the `## Recent Rallies` section:
    ### Rally {rally_count + 1}
    **Q**: {question}
-   **A**: {Step 3 の反応}
-3. Rally エントリが3つを超えた場合、最古のラリーを削除
-4. frontmatter の `rally_count` を現在値 + 1 に、`last_updated` を {today} に更新
+   **A**: {reaction from Step 3}
+3. If there are more than 3 rally entries, delete the oldest
+4. Update `rally_count` in frontmatter to current value + 1, and `last_updated` to {today}
 
-すべての編集が完了してから Step 6 に進んでください。
+Proceed to Step 6 only after all edits are complete.
 
-## Step 6: 反応のみを返す
+## Step 6: Return only the reaction
 
-ユーザーに返すのは Step 3 の壁打ちの反応のみです。
-以下を絶対に含めないでください:
-- スナップショット
-- ファイル更新の報告や結果
-- エージェント起動の報告
-- 手順の説明
-- メタコメント
+Return to the user ONLY the sparring reaction from Step 3.
+Do NOT include any of the following:
+- Snapshot
+- File update reports or results
+- Agent launch reports
+- Procedure explanations
+- Meta-commentary
 
-壁打ちの反応だけを出力してください。
+Output only the sparring reaction.
 ```
 
 ---
@@ -376,10 +376,10 @@ rally_count: { integer }
 
 ## Snapshot
 
-テーマ: ...
-ユーザーの思考の現在地: ...
-重要な転換点: ...
-未解決の問い: ...
+Theme: ...
+Current thinking: ...
+Key turning points: ...
+Unresolved questions: ...
 
 ## Recent Rallies
 
@@ -391,9 +391,9 @@ rally_count: { integer }
 
 Recent Rallies keeps the last 3 entries. When a 4th is added, the oldest is removed. Key insights from removed rallies are preserved in the Snapshot.
 
-**Rally SAとMaterials Digestの分離**: `## Materials Digest`はStart時に1回書かれる。Rally SAのStep 5では`## Snapshot`置換と`## Recent Rallies`追記のみ行うため、`## Materials Digest`がSnapshotの前にある限り自動的に保護される。
+**Separation of Rally SA and Materials Digest**: `## Materials Digest` is written once at Start time. Rally SA's Step 5 only replaces `## Snapshot` and appends to `## Recent Rallies`, so `## Materials Digest` is automatically protected as long as it precedes Snapshot.
 
-**後方互換**: `materials_mode`キーがないセッションファイル（前回kaizen適用済み）は`full`として扱う。`materials_path`もない古いセッションは素材なしとして従来通り動作。
+**Backward compatibility**: Session files without the `materials_mode` key (from a previous kaizen) are treated as `full`. Older sessions without `materials_path` either operate as no-materials sessions as before.
 
 ---
 
