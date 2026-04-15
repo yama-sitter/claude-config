@@ -311,25 +311,20 @@ Step 2 の素材（あれば）を参照して、以下のユーザーの問い�
 重要な転換点: {対話中に生まれた主要な気づき・方向転換をリスト}
 未解決の問い: {まだ探求中のことをリスト}
 
-## Step 5: セッションファイルの更新（バックグラウンド）
+## Step 5: セッションファイルの更新
 
-Agent ツールを `mode: "bypassPermissions"`, `run_in_background: true` で起動し、ファイル更新を委譲してください。
-起動するエージェントのプロンプトには以下の情報をすべて埋め込むこと:
+Edit ツールを使い、セッションファイル（{session_path}）を直接更新してください。
 
-- ファイルパス: {session_path}
-- 新しいスナップショット: Step 4 で生成した内容（全文をそのまま含める）
-- 新しいラリー: Q={question}, A=Step 3 の反応（全文をそのまま含める）
-- 新しい rally_count: 現在の rally_count + 1
-- last_updated: {today}
+以下の4つの編集を順番に行ってください:
+1. `## Snapshot` セクションの内容を、Step 4 で生成した新しいスナップショットで置換
+2. `## Recent Rallies` セクションの末尾に新しいラリーを追記:
+   ### Rally {rally_count + 1}
+   **Q**: {question}
+   **A**: {Step 3 の反応}
+3. Rally エントリが3つを超えた場合、最古のラリーを削除
+4. frontmatter の `rally_count` を現在値 + 1 に、`last_updated` を {today} に更新
 
-エージェントへの指示内容:
-1. 指定パスのファイルを Read で読む
-2. `## Snapshot` セクションの内容を、渡された新しいスナップショットで置換（Edit）
-3. `## Recent Rallies` セクションに新しいラリーを追記（Edit）
-4. Rally エントリが3つを超えたら最古を削除（Edit）
-5. frontmatter の rally_count と last_updated を更新（Edit）
-
-バックグラウンドエージェントの完了を待たずに、すぐに Step 6 に進んでください。
+すべての編集が完了してから Step 6 に進んでください。
 
 ## Step 6: 反応のみを返す
 
