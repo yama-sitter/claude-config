@@ -38,6 +38,7 @@ Content composition and file writing are delegated to a subagent to keep Write t
      - Specific file paths, function names, and commands
      - Constraints, trade-offs, and open questions
      - Current state and next steps (if applicable)
+     - Tables, numerical data, aggregated results, and query outputs MUST be included verbatim in Markdown table or code block format. NEVER convert them to bullet points, summarize, abbreviate, round, or omit rows.
    - Use `date +%Y-%m-%d` for the current date
 2. **Duplicate check**: Search existing memories to avoid redundancy
    ```bash
@@ -68,6 +69,7 @@ Content composition and file writing are delegated to a subagent to keep Write t
    - Self-contained: a reader with no prior knowledge must understand the note
    - Write for resumption: include decisions, rationale, current state, next steps
    - Keep one topic per file
+   - NEVER summarize, round, or omit any tables, numerical data, or query outputs from Content Key Points. Copy them exactly as provided — the raw data is the value.
 
    ## Instructions
    1. If source memories are specified, read them and embed necessary context into the note
