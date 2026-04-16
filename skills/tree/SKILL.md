@@ -115,16 +115,37 @@ git branch --list '<branch>'
     - **中止** — Cancel the operation
   - Branch exists but not checked out in any worktree → Proceed to Step 3 (hook can checkout the existing branch)
 
+### 2.5. Already-in-worktree detection
+
+Check whether the session is already inside a worktree:
+
+```bash
+git rev-parse --git-dir
+```
+
+- Output is `.git` (main repository) → proceed to Step 3 (normal flow)
+- Output is an absolute path (inside a worktree) → get the current worktree root and compare:
+
+  ```bash
+  git rev-parse --show-toplevel
+  ```
+
+  Compare this output with the `worktree` path line from the `git worktree list --porcelain` output in Step 2:
+  - **Match** → notify "既にこの worktree 内にいます。セットアップを検証します。" and **skip Step 3**, proceed directly to Step 4
+  - **No match** → report "別の worktree 内にいます（現在: `<current>`）。先に `/tree exit` で抜けてください。" and **stop**
+  - **No existing worktree found in Step 2** → report "worktree 内にいますが、対象の worktree ではありません。先に `/tree exit` で抜けてください。" and **stop**
+
 ### 3. Enter or create
 
 1. If `branch` contains `/`, always write override file (regardless of exists/not-exists):
    `Bash: printf '%s\n' '<branch>' > ".git/claude-worktree-branch-override"`
 2. **Exists** → `EnterWorktree(name: "<name>")`
 3. **Not exists** → `EnterWorktree(name: "<name>")`
+4. **Defensive fallback**: If EnterWorktree returns "Already in a worktree session" error → execute the Step 2.5 detection logic (`git rev-parse --git-dir` → `--show-toplevel` → path comparison) and follow the same branches. Normally Step 2.5 covers this case, so reaching here indicates an unexpected scenario.
 
 ### 4. Verify setup
 
-After entering, verify setup:
+After entering (or confirming already inside), verify setup:
 
 0. **Branch name verification** (only when `branch` contains `/`):
    Run `git rev-parse --abbrev-ref HEAD` and compare with the expected `branch` (slash form).
