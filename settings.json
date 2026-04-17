@@ -34,6 +34,7 @@
       "Bash(gh run view *)",
       "Bash(gh search *)",
       "Bash(gh api *)",
+      "Bash(gh issue view *)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:npmjs.org)",
       "mcp__sequential-thinking__*",
