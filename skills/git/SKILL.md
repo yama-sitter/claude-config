@@ -126,7 +126,19 @@ Review the diff content and group changed files by purpose (one logical intent p
   3. If the user selects a group → proceed with only those files
   4. If a single file contains changes for multiple purposes → note this and suggest `! git add -p` for that file
 
-### 4. Stage and commit
+### 4. Pre-commit verification
+
+If the project has a `CLAUDE.md` or `AGENTS.md` with a **Verification** section, run the commands listed there that are relevant to the changed files before committing.
+
+- Read the project's `CLAUDE.md` / `AGENTS.md` and locate the Verification section
+- Match the changed file types against the verification rules (e.g., "TS/TSX を触ったら `yarn lint`")
+- Execute matching commands. If any command fails:
+  - Report the errors to the user
+  - Do **not** proceed to commit
+  - Suggest fixes or ask the user how to proceed
+- If the project has no Verification section, skip this step
+
+### 5. Stage and commit
 
 - Stage only the selected files with `git add <file>...` (never `git add -A` or `git add .`)
 - Draft a commit message following Git Guidelines:
