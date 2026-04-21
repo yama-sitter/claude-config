@@ -16,7 +16,7 @@ args: "[subcommand] [args]"
 # Tree Skill
 
 Create and manage worktrees using Claude Code's built-in EnterWorktree/ExitWorktree tools.
-WorktreeCreate hook automatically handles branch naming, dependency installation, and .env copying.
+WorktreeCreate hook automatically handles branch naming, dependency installation, .env copying, and `.claude/settings.local.json` copying (so PreToolUse hooks apply in worktrees too).
 
 ## Subcommands
 
@@ -149,7 +149,6 @@ After entering (or confirming already inside), verify setup:
 
 0. **Branch name verification** (only when `branch` contains `/`):
    Run `git rev-parse --abbrev-ref HEAD` and compare with the expected `branch` (slash form).
-
    - Match → proceed
    - Mismatch → warn: "ブランチ名が期待と異なります（期待: `<branch>`, 実際: `<actual>`）。hookのフォールバックが発生した可能性があります"
      AskUserQuestion:
@@ -188,6 +187,7 @@ Generate a branch name from a natural language work description, get user approv
 Analyze the description and generate a branch name following git-guidelines (`<type>/<summary>` format):
 
 **Type selection:**
+
 - バグ修正、エラー対応 → `fix`
 - 新機能追加、新規作成 → `feature`
 - 既存コード改善、リファクタリング → `refactor`
@@ -197,10 +197,12 @@ Analyze the description and generate a branch name following git-guidelines (`<t
 - 見た目・スタイル変更 → `style`
 
 **Summary rules:**
+
 - snake_case, English, concise (max ~30 chars)
 - Capture the essence of the work
 
 **Examples:**
+
 - "ログイン画面のバグ修正" → `fix/login_screen_bug`
 - "ユーザープロフィール編集機能の追加" → `feature/user_profile_edit`
 - "テストカバレッジの改善" → `test/improve_coverage`
@@ -237,9 +239,11 @@ Look back in this session's conversation history for the most recent `EnterWorkt
 
 - **Found** → `EnterWorktree(name: "<name>")` with the same name
 - **Not found** → Fall back to worktree list:
+
   ```bash
   git worktree list --porcelain
   ```
+
   - 1 worktree → Enter it
   - Multiple → AskUserQuestion to select
   - None → Report "このセッションでworktreeを使っていません。`/tree <branch>` で作成できます。"
@@ -518,7 +522,7 @@ List all worktrees (excluding main) with AskUserQuestion.
 ## Notes
 
 - **Branch naming**: Slash format `<type>/<summary>` (e.g., `feature/login_bug`) is supported. The worktree name (directory) uses hyphen form `<type>-<summary>`, while the git branch preserves the original slash form.
-- **WorktreeCreate hook**: Automatically handles branch creation (no `worktree-` prefix), dependency installation, and .env copying.
+- **WorktreeCreate hook**: Automatically handles branch creation (no `worktree-` prefix), dependency installation, .env copying, and `.claude/settings.local.json` copying.
 - **Do NOT call ExitWorktree proactively** — only via `/tree exit` or explicit user request.
-- **Fallback**: If WorktreeCreate hook is not configured, suggest `! pnpm install --frozen-lockfile && cp <repo-root>/.env* .` after entering.
+- **Fallback**: If WorktreeCreate hook is not configured, suggest `! pnpm install --frozen-lockfile && cp <repo-root>/.env* . && cp <repo-root>/.claude/settings.local.json .claude/` after entering.
 - **Deprecation**: `/tree <branch>` (without `checkout` keyword) is deprecated. It still works via backward compatibility fallback but displays a deprecation notice. Use `/tree checkout <branch>` or `/tree start` instead.

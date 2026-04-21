@@ -123,4 +123,16 @@ find "$REPO_ROOT" \
   fi
 done
 
+# --- .claude/settings.local.json をコピー（個人設定・hook を worktree に伝播） ---
+# gitignored のため git worktree add では複製されないが、
+# hook （PreToolUse の knip チェック等）は worktree でも発火させたいので明示コピー
+CLAUDE_LOCAL="$REPO_ROOT/.claude/settings.local.json"
+if [ -f "$CLAUDE_LOCAL" ]; then
+  dest="$WORKTREE_PATH/.claude/settings.local.json"
+  if [ ! -f "$dest" ]; then
+    mkdir -p "$(dirname "$dest")"
+    cp "$CLAUDE_LOCAL" "$dest"
+  fi
+fi
+
 echo "$WORKTREE_PATH"
