@@ -1,6 +1,6 @@
 # Artifact Consistency Checklist
 
-Run this checklist when an RQ is modified or before outputting an interview guide.
+Run this checklist when an RQ is modified, before outputting an interview guide, or before outputting a survey question set.
 
 ## 1. RQ Text and Hypothesis Chain Alignment
 
@@ -32,3 +32,13 @@ Run this checklist when an RQ is modified or before outputting an interview guid
 
 - [ ] Does the content comply with constraints listed in `constraints.md` in agent-memory (if it exists)?
 - [ ] Are problem patterns identified in previous criticize sessions not reintroduced?
+
+## 6. RQ ↔ SQ Alignment (for survey artifacts)
+
+Run this section when checking a survey question (SQ) set against its parent RQs.
+
+- [ ] Is every Construct from the RQ's operationalization covered by at least one SQ Indicator?
+- [ ] Is every SQ traceable back to a named Construct (no orphan SQs)?
+- [ ] If validated scales (NPS, SUS, SERVQUAL, ACSI, CSAT, etc.) are adopted, is the original wording preserved verbatim?
+- [ ] If any adaptation was applied to a validated scale, is the change and its rationale documented in `constraints.md`?
+- [ ] After an RQ revision, has the affected SQ wording, scale design, and order been re-checked?

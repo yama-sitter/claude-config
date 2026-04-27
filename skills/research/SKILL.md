@@ -10,6 +10,7 @@ description: |
     - `rq`: Research Question construction sparring
     - `plan`: Research plan design
     - `interview`: Interview guide creation
+    - `survey`: Survey question design
 user-invocable: true
 ---
 
@@ -19,7 +20,7 @@ A skill that supports the "design" phase of research through collaborative sparr
 
 ## Common Principles
 
-- **RQ ≠ Interview Question**: An RQ is "what you want to know"; an interview question is "how you ask it." Asking the RQ directly causes participants to guess the "expected answer"
+- **RQ ≠ Asked Question (IQ / SQ)**: An RQ is "what you want to know"; an interview question (IQ) or survey question (SQ) is "how you ask it." Asking the RQ directly causes participants to guess the "expected answer" (IQ) or pick the implied option (SQ)
 - **Dialogue style**: Hybrid. Guide through dialogue while weaving in external research and domain knowledge
 - **One question at a time**: Never ask multiple questions at once. Reduce cognitive load on the user
 - **Weaving in research**: Present Claude's research not as "answers" but as material naturally woven into the sparring dialogue
@@ -32,6 +33,7 @@ A skill that supports the "design" phase of research through collaborative sparr
 | `rq`        | → RQ construction workflow                                            |
 | `plan`      | → Research plan workflow                                              |
 | `interview` | → Interview guide workflow                                            |
+| `survey`    | → Survey design workflow                                              |
 
 **Default behavior (no argument)**:
 
@@ -40,6 +42,7 @@ A skill that supports the "design" phase of research through collaborative sparr
 > - `rq` — Research Question construction
 > - `plan` — Research plan design
 > - `interview` — Interview guide creation
+> - `survey` — Survey question design
 
 ---
 
@@ -286,22 +289,159 @@ Output: Interview guide with explicit RQ mapping for each question
 
 ---
 
+## `/research survey` — Survey Question Design
+
+### Entry Gate
+
+"What do you want to clarify through this survey? Who are the respondents?"
+
+| User's state                                                                | Response                                                                  |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Has RQ + nature (exploratory/confirmatory) declared + sampling concept | Proceed directly → Step 1                                                 |
+| Has RQ but nature unclear                                                   | Confirm RQ nature (exploratory vs confirmatory) in 1-2 exchanges → Step 1 |
+| Has RQ only                                                                 | Briefly confirm respondent profile and survey context → Step 1            |
+| Vague explanation                                                           | Confirm purpose and respondents in 1-2 exchanges → Step 1                 |
+| "I don't know"                                                              | Suggest `/research rq` (no RQ) or `/research plan` (no overall design)    |
+
+**Minimum thresholds for "proceed directly"** (avoid stalling on missing detail):
+
+- **RQ**: One sentence that names target population and the phenomenon to measure. Sharpness (PICO-level specificity, exact metric definitions) is *not* required here — it is handled inside Step 1. If the RQ is purely conversational, run `/research rq` instead.
+- **Nature declared**: The user has indicated direction — either confirmatory (hypothesis to test, comparison expected) or exploratory ("we don't know yet, want to see distributions"). Explicit framing words are not required if the wording makes the direction obvious.
+- **Sampling concept**: Target population is named and an order-of-magnitude N is given (e.g., "around 100 active users", "~200 returning users"). Detailed recruitment criteria, screening rules, and sampling frame are *not* required — those belong to `/research plan`.
+
+**What this does NOT do**: Sampling design, distribution planning, or post-fielding analysis (delegate to `/research plan`); full RQ construction (delegate to `/research rq`); cognitive-interview technique detail (delegate to `/research interview`).
+
+**Lightweight path** (validated-scale-only surveys: NPS, single CSAT, SUS):
+
+- (a) Step 1 confirms only that the validated scale matches the construct
+- (b) Step 3b locks the wording verbatim from the original
+- (c) Skips Step 2 detailed selection and Step 4a bias checklist
+- (d) Phase B applies only contextual fit and validated-scale fidelity items
+
+### Step 1: Operationalization
+
+Core principle: **RQ ≠ SQ (Survey Question)**
+
+For each RQ, decompose abstract constructs into measurable indicators in two steps:
+
+1. **RQ → Construct**: Identify the abstract concepts the RQ refers to (e.g., engagement, perceived value)
+2. **Construct → Indicator**: Decompose each construct into observable items
+
+For each construct, decide single-indicator vs multi-item scale, and whether to adopt a validated scale (NPS, SUS, SERVQUAL, ACSI, CSAT) verbatim.
+
+See [survey-design.md](references/survey-design.md) for RQ → SQ conversion principles and validated-scale guidance.
+
+Output: Construct × Indicator mapping table
+
+| RQ  | Construct | Indicator | Validated scale? | Single / Multi-item |
+| --- | --------- | --------- | ---------------- | ------------------- |
+
+When multiple RQs share constructs, list them in the same table — repeat the RQ column or group rows under each RQ. There is no need to split by RQ unless they target disjoint constructs.
+
+**→ "Does this operationalization cover what the RQ needs to measure?"**
+
+### Step 2: Question Type Selection
+
+Match each indicator to an appropriate question type.
+
+| Indicator characteristic           | Recommended type                  |
+| ---------------------------------- | --------------------------------- |
+| Continuous attitude / satisfaction | Likert / VAS                      |
+| Binary judgment                    | Single-select (Yes/No)            |
+| Multiple applicable options        | Multi-select                      |
+| Preference order                   | Ranking                           |
+| Open opinion                       | Open-text                         |
+| Quantity                           | Numeric input                     |
+| Recommendation likelihood          | NPS (10-point)                    |
+| Multiple items on the same scale   | Matrix (with straight-lining caveat) |
+
+Output: Indicator × Question Type table
+
+**→ "Are these question types appropriate for each indicator?"**
+
+### Step 3: Scale + Wording + Order Design
+
+#### 3a. Scale design (rating items only)
+
+Walk the decision tree for points (5/7/10), midpoint policy, N/A handling, and anchor labels.
+
+See [scale-decision-tree.md](references/scale-decision-tree.md).
+
+#### 3b. Wording design
+
+For each draft SQ:
+
+1. Ask the user to write a draft (rough is fine)
+2. Diagnose against anti-patterns one at a time: leading, double-barreled, loaded, double negation, jargon, embedded assumption
+3. Display **Before → After** to make the improvement visible
+
+See [wording-antipatterns.md](references/wording-antipatterns.md).
+
+#### 3c. Order design
+
+- Funnel (general → specific) vs inverted funnel (specific → general): pick one with rationale
+- Place sensitive items late (after rapport / trust is built)
+- For confirmatory surveys, decide on order randomization within blocks
+
+**→ "Are the scale, wording, and order decisions sound?"**
+
+### Step 4: Bias Mitigation + Cognitive Interview Plan
+
+#### 4a. Response Bias checklist
+
+Walk the SQ list against typical biases (Acquiescence, Social Desirability, Central Tendency, Recall, Extreme Response). For each detected risk, apply a mitigation or accept the risk explicitly.
+
+See [response-bias-checklist.md](references/response-bias-checklist.md).
+
+Output: Bias annotation table
+
+| SQ  | Detected biases | Applied mitigations | Residual risk |
+| --- | --------------- | ------------------- | ------------- |
+
+#### 4b. Cognitive Interview plan
+
+Pretest the survey via cognitive interviewing before fielding:
+
+- **Technique**: Think-aloud (concurrent or retrospective) + probing — reuses techniques from `/research interview`
+- **Iterative design**: 3 rounds × 5-9 participants is more effective than a single 27-person pass
+- **Detection focus**: Comprehension issues, ambiguous interpretation, recall difficulty, fatigue points
+
+**→ "Is the bias mitigation and cognitive interview plan complete?"**
+
+### Phase B: Quality Gate
+
+Formally evaluate the SQ set with [survey-quality-checklist.md](references/survey-quality-checklist.md):
+
+1. Stage 1 (Structural Soundness: items 1-5)
+2. Stage 2 (Implementation Quality: items 6-11)
+3. Iterate improvements through dialogue until the user is satisfied
+
+When all applicable items pass, identify the weakest item and explicitly state the rationale for marking it OK.
+
+**→ On completion: "You can finalize sampling and analysis with `/research plan`, or pilot via cognitive interviewing using `/research interview` techniques" (optional)**
+
+---
+
 ## Responsibility Boundaries
 
-|                                  | rq  | plan | interview |
-| -------------------------------- | --- | ---- | --------- |
-| Full RQ construction (4 steps)   | Yes | No   | No        |
-| Brief directional confirmation   | -   | Yes  | Yes       |
-| Research method selection        | No  | Yes  | No        |
-| Full participant definition      | No  | Yes  | No        |
-| Brief participant confirmation   | No  | -    | Yes       |
-| IQ design                        | No  | No   | Yes       |
-| Redirect when context is lacking | -   | Yes  | Yes       |
+|                                  | rq  | plan | interview | survey |
+| -------------------------------- | --- | ---- | --------- | ------ |
+| Full RQ construction (4 steps)   | Yes | No   | No        | No     |
+| Brief directional confirmation   | -   | Yes  | Yes       | Yes    |
+| Research method selection        | No  | Yes  | No        | No     |
+| Full participant definition      | No  | Yes  | No        | No     |
+| Brief participant confirmation   | No  | -    | Yes       | Yes    |
+| IQ design                        | No  | No   | Yes       | No     |
+| SQ design                        | No  | No   | No        | Yes    |
+| Cognitive interview planning     | No  | No   | -         | Yes    |
+| Redirect when context is lacking | -   | Yes  | Yes       | Yes    |
 
 ## Downstream Skill Connections
 
-- `/research rq` → Starting point for conducting interviews
+- `/research rq` → Starting point for conducting interviews or surveys
+- `/research survey` → Pilot via cognitive interviewing (`/research interview` for technique reuse)
 - Interview logs → `/dex` (JTBD extraction) / `/insight-craft` (insight discovery)
+- Survey results → `/insight-craft` (quantitative insight discovery) / `/analyze` (KPI / funnel sense-making)
 - Insights / JTBD → `/experiment-discipline` (experiment design)
 
 ## Artifact Management
@@ -316,7 +456,7 @@ Constraints discovered during dialogue (e.g., via criticize, such as "hypothetic
 
 ### Consistency Check Gate
 
-When an RQ is modified or before outputting an interview guide, run a consistency check by referring to [artifact-consistency-checklist.md](references/artifact-consistency-checklist.md).
+When an RQ is modified or before outputting an interview guide or survey questions, run a consistency check by referring to [artifact-consistency-checklist.md](references/artifact-consistency-checklist.md).
 
 ## Strict Rules
 
@@ -332,6 +472,7 @@ When an RQ is modified or before outputting an interview guide, run a consistenc
 10. When an RQ, hypothesis, or guide is modified, run a consistency check based on [artifact-consistency-checklist.md](references/artifact-consistency-checklist.md)
 11. Save constraints discovered during dialogue to constraints.md in agent-memory, and re-read them when updating artifacts
 12. Do not rank exploratory RQs and hypothesis-driven RQs — propose the appropriate type based on the user's knowledge state
+13. When adopting a validated scale (NPS, SUS, SERVQUAL, ACSI, CSAT, etc.) in `/research survey`, do not modify the original wording or use a partial subset of items — comparability and benchmarking depend on exact, full replication. If response burden is too high, drop the validated scale and design a custom multi-item scale instead, or move that construct to a separate study. Adaptations strictly necessary for translation must be documented with rationale
 
 ## Completion Criteria
 
@@ -350,3 +491,10 @@ When an RQ is modified or before outputting an interview guide, run a consistenc
 - Interview questions are designed for all RQs
 - A 4-part interview guide is complete
 - The user has agreed to the guide
+
+### `/research survey`
+
+- All SQs have passed Stage 1 of the survey quality checklist
+- The SQ set has been reviewed against typical response biases
+- A cognitive interview plan exists
+- The user has agreed to the SQ set
