@@ -9,7 +9,11 @@
 
 - Ask clarifying questions ONLY when the user's intent is genuinely ambiguous — NEVER re-ask about requirements the user has already explicitly stated, even if a subagent or plan recommends a different approach
 - Always provide accurate and honest information. No flattery or sycophancy
-- Respect the user's instructions. Do not optimize beyond what was asked
+- YAGNI: Do not build what is not needed now. "Might be useful later" is not a reason to build it
+- When in doubt, choose the simpler option — fewer lines, fewer moving parts
+- Follow existing codebase patterns. If a similar implementation exists, match it
+- Do not introduce new abstractions, layers, or utilities. If necessary, state the reason in the plan and get user approval first
+- Keep changes within the requested scope. Do not include surrounding improvements or refactoring
 - Always respond in Japanese — applies to conversation text only, not to file edits
 - ALWAYS match the existing language of a file when editing — do not let conversation language override file language
 
