@@ -68,11 +68,17 @@ Ask questions one at a time to refine the idea:
 
 **→ Wait for user response before asking the next question.**
 
-**Exit condition:** Move to Step 4 when the following are clear:
-- Purpose (what problem this solves)
-- Scope (what is and isn't included)
-- Key constraints (technical, timeline, compatibility)
-- Success criteria (how to know it works)
+**Exit condition:** Move to Step 4 when the following are clear. If any item is missing, ask one targeted question to fill the gap before proceeding.
+
+- **Purpose**: what problem this solves
+- **Scope**: what is and isn't included
+- **Key constraints**: technical, timeline, compatibility
+- **Success criteria**: how to know it works
+- **Alternatives**: at least 2 candidate approaches have surfaced
+- **Information**: what's known vs unknown for the decision is acknowledged
+- **Values**: what to optimize for is explicit (speed / reliability / extensibility / cost)
+
+Underlying framework, 8 evaluation axes, and 16 failure patterns: `docs/design-decision-guide.md`
 
 ### Step 4: Propose 2-3 Approaches
 

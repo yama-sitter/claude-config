@@ -81,6 +81,19 @@ Define acceptance criteria as a table. A separate evaluator (`/verify`) uses thi
 
 Omit this section if there are no meaningful risks.
 
+#### Failure Pattern Self-Check
+
+Before finalizing Risks, check whether the design matches any of these common failure patterns. If a concern applies, transfer it to the Risks table above.
+
+- **早すぎる抽象化**: Is abstraction being introduced when only one use case exists?
+- **制約の後付け**: Are known constraints already baked into the Approach?
+- **隣を見ない再実装**: Have you verified no equivalent exists in adjacent code or dependencies?
+- **見切り発車**: Are you proceeding to implementation while high-uncertainty assumptions remain?
+- **砂上の依存**: Are you relying on dependencies whose reliability is unverified?
+- **牛刀をもって鶏を割く**: Is the tooling overkill for the problem scale?
+
+Full pattern list and the 8 evaluation axes: `docs/design-decision-guide.md`
+
 ### 7. Investigation Scope
 
 #### Files read

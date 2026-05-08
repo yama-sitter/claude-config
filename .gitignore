@@ -23,6 +23,10 @@
 !skills/**/references/
 !skills/**/references/**
 
+# 設計参考資料（root 直下の .md のみ。docs/superpowers/ 等のサブディレクトリは除外を維持）
+!docs/
+!docs/*.md
+
 # フック
 !hooks/
 !hooks/**/*.sh
