@@ -143,7 +143,6 @@ Invoke `EnterPlanMode` to transition to implementation planning. When entering P
 
 ## Skill Connections
 
-- **Upstream**: `multi-lens` (multi-perspective evaluation of approaches) can feed into this skill when the design space is large or contentious
 - **Downstream**: This skill transitions to Plan Mode (`EnterPlanMode`), which produces an implementation plan following `plan-template.md`
 
 ## Completion

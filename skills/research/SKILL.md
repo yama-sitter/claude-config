@@ -4,7 +4,7 @@ description: |
   Support research design — building Research Questions (RQs), designing research plans, and creating interview guides.
   Built on the "Product Research Rules" 4-step framework, layered with FINER criteria, Known/Unknown matrix, and more.
   Use when: designing research (what to investigate and how)
-  Do not use when: analyzing collected data (use insight-craft / dex), designing experiment hypotheses (use experiment-discipline)
+  Do not use when: analyzing collected data (use dex)
   Subcommands:
     - (default): Subcommand guide
     - `rq`: Research Question construction sparring
@@ -16,7 +16,7 @@ user-invocable: true
 
 # Research — Research Design Skill
 
-A skill that supports the "design" phase of research through collaborative sparring. Self-contained, and can connect to downstream skills (insight-craft, dex, experiment-discipline).
+A skill that supports the "design" phase of research through collaborative sparring. Self-contained, and can connect to downstream skills (dex).
 
 ## Common Principles
 
@@ -440,9 +440,8 @@ When all applicable items pass, identify the weakest item and explicitly state t
 
 - `/research rq` → Starting point for conducting interviews or surveys
 - `/research survey` → Pilot via cognitive interviewing (`/research interview` for technique reuse)
-- Interview logs → `/dex` (JTBD extraction) / `/insight-craft` (insight discovery)
-- Survey results → `/insight-craft` (quantitative insight discovery) / `/analyze` (KPI / funnel sense-making)
-- Insights / JTBD → `/experiment-discipline` (experiment design)
+- Interview logs → `/dex` (JTBD extraction)
+- Survey results → `/analyze` (KPI / funnel sense-making)
 
 ## Artifact Management
 

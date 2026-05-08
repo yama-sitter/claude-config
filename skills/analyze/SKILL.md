@@ -7,7 +7,7 @@ description: |
   Use `/analyze end` to end the session.
   Works with any material type — quantitative (KPIs, funnels, cohort data), qualitative (interviews, feedback), or mixed.
   Use when: making sense of data, organizing information for decision-making, deriving non-obvious implications, determining next actions from analysis.
-  Do not use when: uncovering hidden human motives (→ insight-craft), extracting JTBD from customer behavior (→ dex), designing experiments from hypotheses (→ experiment-discipline), designing research plans or interview guides (→ research).
+  Do not use when: extracting JTBD from customer behavior (→ dex), designing research plans or interview guides (→ research).
 user-invocable: true
 args: "[args]"
 ---
