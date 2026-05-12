@@ -210,6 +210,35 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/check-bilingual-sync.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/check-bilingual-sync.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/check-bilingual-sync.sh"
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
@@ -229,5 +258,7 @@
     "sentry@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
     "hookify@claude-plugins-official": true
-  }
+  },
+  "theme": "dark",
+  "skipAutoPermissionPrompt": true
 }

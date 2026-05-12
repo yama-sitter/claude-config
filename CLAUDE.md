@@ -17,6 +17,10 @@
 - Always respond in Japanese — applies to conversation text only, not to file edits
 - ALWAYS match the existing language of a file when editing — do not let conversation language override file language
 
+## Bilingual Document Management
+
+See `rules/skill-bilingual.md` for the policy on bilingual document management (English primary + Japanese mirror).
+
 ## Plan Mode Rules
 
 - Follow the plan structure defined in plan-template.md when writing plans (unless superpowers flow is active)
