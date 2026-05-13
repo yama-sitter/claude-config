@@ -1,287 +1,300 @@
 ---
 name: dry-run-prompt
-description: agent 向けテキスト指示（プロンプト / slash command / CLAUDE.md 節 / コード生成指示）および既存スキル（SKILL.md + サブファイル）を、バイアスを排した実行者に動かしてもらい、両面（実行者の自己申告 + 指示側メトリクス）で評価して反復改善する手法。改善が頭打ちになるまで回す。プロンプトや skill を新規作成・大幅改訂した直後、trigger 精度や自己完結性を動的に検証したいとき、またはエージェントの挙動が期待通りにならない原因を指示側の曖昧さに求めたいときに使う。スキルの新規作成そのもの（構造設計・A/B ベンチ）は skill-creator を使う。
+description: Empirically tune agent-facing text instructions (prompts / slash commands / CLAUDE.md sections / code-gen directives) and existing skills (SKILL.md + subfiles) by having a bias-free executor run them and evaluating both sides (executor self-report + caller-side metrics), iterating until improvement plateaus. Use immediately after creating or substantially revising a prompt or skill to dynamically verify trigger accuracy and self-containedness. Also use when agent behavior diverges from intent and the cause may be ambiguity in the instruction side. For creating a new skill from scratch (structure design, A/B bench), use skill-creator instead.
 ---
 
 # Empirical Prompt Tuning
 
-プロンプトの品質は書いた本人には分からない。書き手が「明瞭だ」と思うものほど、別エージェントが読むと詰まる。**バイアスを排した実行者に実際に動かしてもらい、両面で評価して反復する** のが本 skill の核。改善が頭打ちになるまで止めない。
+The quality of a prompt is invisible to its author. The more "clear" it seems to the writer, the more likely a different agent will get stuck on it. The core of this skill is to **have a bias-free executor actually run it, evaluate both sides, and iterate** until improvement plateaus.
 
-## いつ使うか
+## When to Use
 
-- skill / slash command / タスクプロンプトを新規作成・大幅改訂した直後
-- エージェントが期待通り動かず、原因を指示側の曖昧さに求めたいとき
-- 重要度の高い指示（頻繁に使う skill、自動化の中核プロンプト）を堅牢化したいとき
-- 既存スキルの trigger 精度（合致発話で dispatch されるか / 近接発話で誤発火しないか）を動的に検証したいとき
-- 既存スキルの自己完結性（SKILL.md 本体のみで標準タスクを解けるか）を検証したいとき
+- Immediately after creating or substantially revising a skill / slash command / task prompt
+- When an agent is not behaving as expected and the cause may be ambiguity in the instruction
+- When hardening a high-importance instruction (frequently used skill, automation-critical prompt)
+- When verifying the trigger accuracy of an existing skill (does it dispatch on matching utterances? does it avoid misfiring on near-matches?)
+- When verifying the self-containedness of an existing skill (can it complete a standard task with SKILL.md alone?)
 
-使わない場面:
-- 一回限りの使い捨てプロンプト（評価コストが割に合わない）
-- 成功率の改善が目的ではなく、書き手の主観的好みを反映したいだけのとき
-- スキルの新規作成そのもの（構造設計・A/B ベンチ）→ `skill-creator` を使う
+Do not use when:
+- The prompt is a one-off throwaway (evaluation cost not worth it)
+- The goal is to reflect the author's subjective preference, not to improve success rate
+- Creating a new skill from scratch (structure design, A/B bench) → use `skill-creator`
 
-## 対象モードと入力形式
+## Modes and Input Formats
 
-本 skill は 2 つのモードで動作する。入力形式から自動判定し、曖昧な場合のみ対話確認する。
+This skill operates in 2 modes. Auto-detect from input; confirm interactively only when ambiguous.
 
-**入力形式とモード判定**:
+**Input formats and mode selection:**
 
-- **第一候補（推奨）: スキル名のみ** — 例: `/dry-run-prompt arch-review`。`~/.claude/skills/<name>/SKILL.md` を解決して **スキル評価モード** で起動
-- フォールバック入力:
-  - ディレクトリパス / `SKILL.md` パス（例: `skills/arch-review/`）→ 同じくスキル評価モード
-  - テキスト段落 / `.md` 以外のファイル → **プロンプト評価モード**（従来）
-  - 引数なし → 対話で確認（どのスキル / どの指示文を対象にするか）
-- **解決対象はユーザースキル（`~/.claude/skills/`）のみ**。plugin skills（`~/.claude/plugins/`）は対象外（plugin は別ライフサイクルで管理されており、ユーザーが自由に書き換える前提がないため）。plugin 名を渡されたら user skills に存在しない旨を返して対話確認する
-- 解決できない場合は subagent を dispatch せずユーザーに確認を返す
-- 曖昧な場合（パスが user skills 外を指す / テキスト引数がスキル名と誤解される可能性がある）は冒頭で subagent にモード確認させる
+- **Primary input (recommended): skill name only** — e.g., `/dry-run-prompt arch-review`. Resolves `~/.claude/skills/<name>/SKILL.md` and launches in **skill evaluation mode**
+- Fallback inputs:
+  - Directory path / `SKILL.md` path (e.g., `skills/arch-review/`) → skill evaluation mode
+  - Plain text paragraph / non-`.md` file → **prompt evaluation mode** (classic)
+  - No argument → ask interactively (which skill / which instruction to target)
+- **Resolution target is user skills (`~/.claude/skills/`) only.** Plugin skills (`~/.claude/plugins/`) are out of scope (plugins follow a separate lifecycle and are not meant to be freely modified by the user). If given a plugin name, return that it is not in user skills and ask interactively
+- If the input cannot be resolved, do not dispatch a subagent — return a confirmation to the user
+- If ambiguous (path points outside user skills, text argument might be mistaken for a skill name), have a subagent confirm the mode at the start
 
-**モード差分**: プロンプト評価モードとスキル評価モードの違いは、**シナリオ設計の型** と **[critical] テンプレ** のみ。骨格（両面評価・収束判定・赤旗）は共通。
+**Mode differences:** The only differences between prompt evaluation mode and skill evaluation mode are the **scenario design pattern** and the **[critical] template**. The skeleton (dual-side evaluation, convergence judgment, red flags) is shared.
 
-## ワークフロー
+## Workflow
 
-0. **Iteration 0 — description と body の整合チェック**（静的、dispatch 不要）
-   - frontmatter `description` が謳う trigger / 用途を読む
-   - body がカバーする範囲を読む
-   - 乖離があれば iter 1 に進む前に description か body を合わせる
-   - 例: description「navigation / form filling / data extraction」と書いてあるが body は `npx playwright test` の CLI ref のみ、のような乖離を検出
-   - これを飛ばすと、subagent は description に合わせて body を「再解釈」し、実質 skill が要件を満たしていないのに精度が出る（false positive）
-   - **スキル評価モード時の追加観点**:
-     - description が謳う trigger 語彙（動詞・名詞）と body のカバー範囲に語彙乖離はないか
-     - サブファイル（`references/`, `axes/`, `templates/` 等）参照規律が body 内で明示されているか（いつ読むか / 何を読むかの指針）
-     - サブコマンドがある場合、routing 条件が文字列マッチ / 正規表現レベルで厳密か（「X の場合」レベルの曖昧表現は避ける）
-   - **注記**: これは静的審査（テキストレベルのチェック、dispatch 不要）。動的検証（新規 subagent の dispatch 判断や実行挙動への乖離の出方）は Step 1 のスキル評価モード用 [critical] 4・5 が担う。静的/動的の両輪で、「書面上は整合しているが subagent が迷う」「書面上は乖離があるが subagent は正しく補完する」のいずれも拾える
+0. **Iteration 0 — description / body consistency check** (static, no dispatch needed)
+   - Read the trigger / purpose stated in the frontmatter `description`
+   - Read the scope covered by the body
+   - If there is a discrepancy, reconcile the description or body before proceeding to iteration 1
+   - Example discrepancy: description says "navigation / form filling / data extraction" but body contains only `npx playwright test` CLI reference
+   - Skipping this step lets subagents "re-interpret" the body to match the description, producing false-positive accuracy even when the skill does not actually meet the requirement
+   - **Additional checks in skill evaluation mode:**
+     - Are the trigger vocabulary (verbs / nouns) in the description covered by the body?
+     - Is the subfile reference discipline (`references/`, `axes/`, `templates/`, etc.) explicitly stated in the body (when to read, what to read)?
+     - If there are subcommands, are the routing conditions precise at the string-match / regex level? (Vague expressions like "in case of X" should be avoided)
+   - **Note:** This is a static audit (text-level check, no dispatch). Dynamic verification (dispatch decision / behavioral deviation) is handled by [critical] items 4 and 5 of the skill evaluation mode checklist in Step 1. Together, both static and dynamic catch both "textually aligned but subagent still uncertain" and "textually divergent but subagent compensates correctly"
 
-1. **ベースライン準備**: 対象プロンプトを確定し、次の 2 つを用意する。
-   - **評価シナリオ** 2 〜 3 種(中央値 1 + edge 1 〜 2)。現実に起こりうるタスクで、対象プロンプトを実際に適用する場面を想定する。
-   - **要件チェックリスト**（精度算出のため）。シナリオごとに「成果物が満たすべき要件」を 3 〜 7 項目で列挙する。精度 % = 満たした項目数 / 全項目数。事前に固定すること（後から動かさない）。
+1. **Baseline preparation**: Confirm the target prompt, then prepare:
+   - **Evaluation scenarios**: 2–3 variants (1 median + 1–2 edges). Use realistic tasks that represent actual usage of the target prompt.
+   - **Requirements checklist** (for accuracy calculation): list 3–7 requirements the output must satisfy per scenario. Accuracy % = satisfied items / total items. Fix the checklist upfront — do not change it mid-run.
 
-   **スキル評価モード時のバリアント**:
+   **Skill evaluation mode variant:**
 
-   シナリオ型（3 本推奨）:
-   - **中央値シナリオ**: description が明らかに合致する標準的な発話
-   - **境界シナリオ (positive)**: 合致するが表現が婉曲・類義（trigger 再現率の検査）
-   - **境界シナリオ (negative)**: 近接するが description 範囲外の発話（誤発火の検査）
+   Scenario types (3 recommended):
+   - **Median scenario**: a standard utterance that clearly matches the description
+   - **Boundary scenario (positive)**: matches, but with indirect or synonymous phrasing (tests trigger recall)
+   - **Boundary scenario (negative)**: adjacent but outside the description's scope (tests misfire resistance)
 
-   スキル評価モード用チェックリスト（5 項目、うち **[critical] タグ付き 3 項目**。1〜3 は最低ライン = skill が破綻していないことの保証、4〜5 は通常項目 = 部分的許容ありの品質観点。全項目判定文言レベルで定量化済み）:
+   Skill evaluation mode checklist (5 items, **3 marked [critical]**. Items 1–3 are the minimum bar = proof the skill is not broken; 4–5 are quality items with partial acceptance. All items are quantified at the judgment-statement level):
 
-   1. [critical] **trigger 精度**: 中央値シナリオ + 境界 positive シナリオの **両方** で subagent が「この skill を使う」と判断したら ○、片方でも「使わない」判断なら ×
-   2. [critical] **誤発火抑止**: 境界 negative シナリオで subagent が「この skill を使わない」と判断したら ○、「使う」と誤判断したら ×
-   3. [critical] **自己完結性**: **`dispatch 判断=使う` シナリオ間のみで比較**（= 中央値 + 境界 positive、境界 negative は実行されないため除外）。各シナリオの `tool_uses` が **中央値シナリオの 3 倍以内** なら ○（後述「`tool_uses` の質的解釈」節の閾値「3-5 倍以上 → 自己完結性が低いサイン」と方向一致）
-   4. **Frontmatter 整合**: description 冒頭 1 文から抽出した trigger 語彙（名詞 3〜5 個）のうち、**body で定義・言及されていないものが 0〜1 個なら ○、2 個以上なら ×**（Step 0 の静的審査を動的シナリオ上で検証）
-   5. **サブファイル参照規律**: body が `references/` を指す箇所で subagent の読み込みファイル数が **指示された想定範囲以内** なら ○、範囲外探索が発生したら ×
+   1. [critical] **Trigger accuracy**: If the subagent decides "use this skill" for **both** the median and boundary-positive scenarios, mark ○. If it decides "do not use" for either, mark ×
+   2. [critical] **Misfire resistance**: If the subagent decides "do not use this skill" for the boundary-negative scenario, mark ○. If it decides "use", mark ×
+   3. [critical] **Self-containedness**: **Compare only among scenarios where `dispatch decision = use`** (i.e., median + boundary-positive; exclude boundary-negative since it is not executed). If `tool_uses` for each scenario stays within **3× the median scenario**, mark ○ (consistent with the threshold "3–5× or more → low self-containedness signal" in the `tool_uses` section below)
+   4. **Frontmatter alignment**: Extract the trigger vocabulary (3–5 nouns) from the first sentence of the description. If **0–1 of them are not defined or mentioned in the body**, mark ○; if 2 or more are missing, mark × (dynamic verification of the static audit in Step 0)
+   5. **Subfile reference discipline**: If the subagent's file read count at the `references/` locations indicated in the body is **within the expected range**, mark ○; if it goes beyond the indicated scope, mark ×
 
-   **静的/動的の両輪**: Step 0 は静的審査（テキスト整合性の書面チェック、dispatch 不要）、[critical] 4 は動的検証（新規 subagent の dispatch 判断や実行挙動に語彙乖離が出ていないかの検証）。両輪で評価することで書面と挙動のどちらの乖離も拾える。
-2. **バイアス排除読み**: 指示を「白紙」の実行者に読ませる。Task tool で **新規 subagent を dispatch** する。自己再読で済ませない（直前に書いた文章を客観視することは構造的に不可能）。並列で複数シナリオを同時実行する場合は単一メッセージ内で複数 Agent 呼び出しを並べる。dispatch 不能環境の扱いは「環境制約」節を参照。
-3. **実行**: 後述の **subagent 起動契約** に従ったプロンプトを subagent に渡し、シナリオを実行させる。実行者は実装や出力を生成し、最後に自己申告レポートを返す。
-4. **両面評価**: 戻ってきた結果から次を記録する。
-   - **実行者の自己申告**（subagent のレポート本文から抽出）: 不明瞭点 / 裁量補完 / テンプレ適用で詰まった箇所
-   - **指示側の計測**（判定規則は本節で一元定義、他箇所は本節を参照する）:
-     - 成功/失敗: `[critical]` タグの付いた要件が **全て ○** のときのみ成功（○）。うち 1 つでも × または部分的なら失敗（×）。ラベルは ○ / × の 2 値のみ。
-     - 精度（要件チェックリストの達成率 %。○ = 満点、× = 0、部分的 = 0.5 で合算、全項目数で割る）
-     - ステップ数（Task tool の戻り値に付く usage メタの `tool_uses` をそのまま使う。Read / Grep も含める、除外しない）
-     - 所要時間（Task tool の usage メタの `duration_ms`）
-     - 再試行回数（subagent が同じ判断をやり直した回数。subagent の自己申告レポートから抽出、指示側では測れない）
-     - **失敗時は「どの [critical] 項目が落ちたか」を提示フォーマットの "不明瞭点" 節に 1 行添える**（原因追跡のため）
-   - 要件チェックリストには `[critical]` タグ付き項目を **最低 1 つ** 含めること（0 件だと成功判定が vacuous になる）。事後に [critical] の付け外しをしない。
-5. **差分適用**: 不明瞭点を潰す最小修正をプロンプトに入れる。1 イテレーション 1 テーマ（関連する複数修正は OK、無関係な修正は次回に回す）。
-   - **修正前に「この修正が要件チェックリスト / 判定文言のどの項目を満たすか」を明示する**（軸名から推測した修正は届かないことが多い。後述「修正の波及パターン」節）。
-6. **再評価**: 新しい subagent で再度 2 → 5 を回す（同一 agent は再利用しない: 前回の改善を学習している）。並列度はイテレーションを進めても改善が頭打ちにならない場合に増やす。
-7. **収束判定**: 目安「連続 2 イテレーションで新規の不明瞭点ゼロ かつ メトリクス改善が閾値以下（後述）」で停止。重要度が高いプロンプトは 3 連続にする。
+   **Static + dynamic dual coverage:** Step 0 is a static audit (text alignment, no dispatch). [critical] item 4 is dynamic verification (does vocabulary divergence appear in subagent dispatch decisions or execution behavior?). Together they catch both types of divergence.
 
-## 評価軸
+2. **Bias-free reading**: Have the instruction read by an "blank slate" executor. **Dispatch a new subagent via the Task tool.** Do not self-re-read (objectively re-reading something just written is structurally impossible). When running multiple scenarios in parallel, place multiple Agent calls in a single message. See "Environment constraints" for dispatch-unavailable environments.
 
-| 軸 | 取り方 | 意味 |
+3. **Execution**: Pass a prompt following the **subagent launch contract** below to the subagent, which runs the scenario, produces an output, and returns a self-report at the end.
+
+4. **Dual-side evaluation**: From the returned result, record:
+   - **Executor self-report** (extracted from subagent's report body): unclear points / discretionary fills / template application sticking points
+   - **Caller-side measurement** (judgment rules defined here — other sections reference this section):
+     - Pass/fail: passes only when **all `[critical]`-tagged requirements are ○**. Any single × or partial → fail. Label is ○ / × only (2-value).
+     - Accuracy (% of requirements checklist satisfied. ○ = full marks, × = 0, partial = 0.5, divided by total items)
+     - Step count (`tool_uses` from Task tool usage metadata, including Read / Grep — do not exclude)
+     - Duration (`duration_ms` from Task tool usage metadata)
+     - Retry count (how many times the subagent redid the same decision, extracted from the self-report — cannot be measured on the caller side)
+     - **On failure, add 1 line to the "unclear points" field in the presentation format: which [critical] item failed** (for root-cause tracing)
+   - The requirements checklist must include **at least 1 [critical]-tagged item** (0 items makes the pass judgment vacuous). Do not add or remove [critical] tags after the fact.
+
+5. **Apply diff**: Apply the minimum fix to address the unclear points. One theme per iteration (related fixes in one batch is fine; unrelated fixes go in the next iteration).
+   - **Before applying, state explicitly which requirements checklist item / judgment statement this fix satisfies.** Fixes inferred from axis names alone often fail to reach the judgment text. (See "Fix propagation patterns" below.)
+
+6. **Re-evaluate**: Run steps 2–5 with a new subagent (do not reuse the previous one — it has learned from the prior improvement).  Increase parallelism if improvement has not plateaued after multiple iterations.
+
+7. **Convergence judgment**: Stop when, for 2 consecutive iterations, **all** of the following hold:
+   - New unclear points: 0
+   - Accuracy improvement from previous: ≤ 3 percentage points (saturation)
+   - Step count change from previous: ±10% or less
+   - Duration change from previous: ±15% or less
+   - **Over-fit check**: At convergence, add 1 hold-out scenario not used before and evaluate. If accuracy drops ≥ 15 points from the recent average, the model is over-fit — return to baseline scenario design and add more edges
+   - **Additional condition for skill evaluation mode only**: boundary-negative scenario produces "do not use" decision ([critical] item 2 is ○) for **2 consecutive iterations**. Including precision (do not use when you shouldn't) alongside recall (use when you should) prevents false convergence caused by trigger bias
+
+## Evaluation Axes
+
+| Axis | How measured | Meaning |
 |---|---|---|
-| 成功/失敗 | 実行者が意図した成果物を出したか（二値） | 最低ライン |
-| 精度 | 成果物が要件を何 % 満たしたか | 部分成功の程度 |
-| ステップ数 | 実行者が使ったツール呼び出し / 判断ステップ数 | 指示の無駄遣いの指標 |
-| 所要時間 | 実行者の duration_ms | 認知負荷の代替指標 |
-| 再試行回数 | 同じ判断を何度やり直したか | 指示の曖昧さのシグナル |
-| 不明瞭点（自己申告） | 実行者が箇条書きで列挙 | 質的な改善材料 |
-| 裁量補完箇所（自己申告） | 指示で決まっていなかった判断 | 暗黙の仕様の炙り出し |
+| Pass/fail | Did the executor produce the intended output? (binary) | Minimum bar |
+| Accuracy | What % of requirements did the output satisfy? | Degree of partial success |
+| Step count | Tool calls / decision steps the executor used | Indicator of instruction overhead |
+| Duration | Executor's `duration_ms` | Proxy for cognitive load |
+| Retry count | How many times the executor redid the same decision | Signal of instruction ambiguity |
+| Unclear points (self-report) | Bullet list from the executor | Qualitative improvement material |
+| Discretionary fills (self-report) | Decisions not specified in the instruction | Surfaces implicit specs |
 
-**重み付け**: 質的（不明瞭点・裁量補完）を主、量的（時間・ステップ数）を補助とする。時間短縮だけ追いかけるとプロンプトが痩せすぎる。
+**Weighting:** Qualitative (unclear points, discretionary fills) is primary; quantitative (time, step count) is supplementary. Chasing only time reduction causes the prompt to become too sparse.
 
-### `tool_uses` の質的解釈
+### Qualitative Interpretation of `tool_uses`
 
-精度だけ見ると skill の問題が隠れる。`tool_uses` を **シナリオ間の相対値** として使うと構造的欠陥が見える:
+Accuracy alone can hide skill problems. Using `tool_uses` as a **relative value across scenarios** reveals structural flaws:
 
-- シナリオ間で他シナリオ比 **3-5 倍以上** なら、その skill は **decision-tree index 寄りで自己完結性が低い** サイン。実行者が references descent を強いられている
-- 典型例: 全シナリオ `tool_uses` が 1-3 なのに 1 シナリオだけ 15+ → そのシナリオ用の recipe が skill 内に無く、references/ を横断探索している
-- 対処: iter 2 で「最小完成例 inline」や「いつ references を読むかの指針」を SKILL.md 冒頭に追加すると `tool_uses` は大幅低下する
+- If one scenario is **3–5× or more** compared to others, that skill is **decision-tree indexed with low self-containedness** — the executor is forced to descend through references
+- Typical example: all scenarios have `tool_uses` of 1–3, but one has 15+ → no recipe for that scenario exists in the skill, and the executor cross-searches `references/`
+- Fix: in iteration 2, add a "minimum complete example inline" or "when to read references" guideline near the top of SKILL.md — `tool_uses` drops significantly
 
-精度 100% でも `tool_uses` の偏りがあれば iter 2 発動の根拠になる。「精度のみで判断して打ち切り」は構造的欠陥を見逃しがち。
+Even at 100% accuracy, imbalanced `tool_uses` justifies starting iteration 2. "Only checking accuracy and stopping" tends to miss structural flaws.
 
-### 修正の波及パターン (保守 / 上振れ / ゼロ振れ)
+### Fix Propagation Patterns (Conservative / Upside / Zero)
 
-修正→効果は線形ではない。事前見積もりは次の 3 パターンが起こりうる:
+Fix → effect is not linear. Three patterns can occur:
 
-- **保守的に振れる** (見積もり > 実測): 1 修正で複数軸狙ったが 1 軸しか動かなかった。「複数軸狙いは外しがち」
-- **上振れ** (見積もり < 実測): 1 つの構造的な情報 (例: コマンド + 設定 + 期待出力の組合せ) が複数軸の判定文言を同時に満たした。「情報の組合せが構造的に多軸に効く」
-- **ゼロ振れ** (見積もり > 0、実測 = 0): 軸名から推測した修正が、判定文言のどれにも届かなかった。「軸名と判定文言は別物」
+- **Conservative** (estimate > actual): 1 fix targeted multiple axes but only moved 1. "Multi-axis targeting tends to miss"
+- **Upside** (estimate < actual): 1 structural piece of information (e.g., command + config + expected output together) simultaneously satisfied multiple judgment statements. "Information combinations can structurally cover multiple axes"
+- **Zero** (estimate > 0, actual = 0): A fix inferred from the axis name failed to reach any judgment statement. "Axis names and judgment statements are different things"
 
-これを安定させるには **差分適用前に subagent に「この修正が判定文言のどれを満たすか」を言語化させる**。閾値文言レベルで紐付けないと見積もり精度が出ない。評価軸を新設するときも、各点の判定基準を閾値文言レベルまで具体化しておくこと（「全部明示」「動く最小構成全文」のように、何があれば 2 点になるか subagent が判定できる粒度）。
+To stabilize this: **before applying a fix, have the subagent state which judgment statement the fix satisfies**. Linking at the threshold-statement level is required to get reliable estimates. When introducing a new evaluation axis, specify each point's judgment criteria at the threshold-statement level (e.g., "all fields explicit", "full text of minimum working example") so the subagent can determine the score.
 
-## subagent 起動契約
+## Subagent Launch Contract
 
-実行者に渡すプロンプトは次の構造を取る。これが「両面評価」の入力契約。
+The prompt passed to the executor takes this structure — this is the input contract for "dual-side evaluation":
 
 ```
-あなたは <対象プロンプト名> を白紙で読む実行者です。
+You are an executor reading <target prompt name> with a blank slate.
 
-## 対象プロンプト
-<対象プロンプトの本文を全文貼る or Read で読ませるパスを指定>
+## Target Prompt
+<paste the full text of the target prompt, or specify the path for the executor to Read>
 
-## シナリオ
-<シナリオの状況設定 1 段落>
+## Scenario
+<1-paragraph situation description>
 
-## 要件チェックリスト（成果物が満たすべき項目）
-1. [critical] <最低ラインに含む項目>
-2. <通常項目>
-3. <通常項目>
+## Requirements checklist (what the output must satisfy)
+1. [critical] <minimum-bar item>
+2. <standard item>
+3. <standard item>
 ...
-（判定規則は「ワークフロー 4. 両面評価 / 指示側の計測」節に一元定義。[critical] は最低 1 つ必須。）
+(Judgment rules are defined centrally in "Workflow step 4". [critical] requires at least 1.)
 
-## タスク
-1. 対象プロンプトに従ってシナリオを実行し、成果物を生成する。
-2. 終了時に下記レポート構造で返答する。
+## Task
+1. Follow the target prompt to execute the scenario and produce an output.
+2. At the end, return your response in the report structure below.
 
-## レポート構造
-- 成果物: <生成物 or 実行結果サマリ>
-- 要件達成: 各項目について ○ / × / 部分的（理由付き）
-- 不明瞭点: 対象プロンプトで詰まった箇所、解釈に迷った文言（箇条書き）
-- 裁量補完: 指示で決まっておらず自分の判断で埋めた箇所（箇条書き）
-- 再試行: 同じ判断をやり直した回数とその理由
+## Report structure
+- Output: <produced artifact or execution result summary>
+- Requirements met: for each item, ○ / × / partial (with reason)
+- Unclear points: parts of the target prompt where you got stuck, phrasing you had to interpret (bullet list)
+- Discretionary fills: decisions not specified in the instruction that you filled in yourself (bullet list)
+- Retries: how many times you redid the same decision and why
 ```
 
-呼び出し側はレポートから自己申告部分を抽出し、`tool_uses` / `duration_ms` を Agent tool の usage メタから取得して評価軸表を埋める。
+The caller extracts the self-report portion and fills the evaluation axis table using `tool_uses` / `duration_ms` from the Agent tool's usage metadata.
 
-### スキル評価モード用バリアント
+### Skill Evaluation Mode Variant
 
-スキル評価モード時は、対象が「指示文」ではなく「スキル（SKILL.md + サブファイル）」になるため、契約を次の構造に差し替える。
+In skill evaluation mode, the target is a "skill (SKILL.md + subfiles)" rather than an "instruction text." Replace the contract with this structure:
 
 ```
-あなたは <対象スキル名> を白紙で読む実行者です。
+You are an executor reading <target skill name> with a blank slate.
 
-## 対象スキル
-<スキル名から解決したディレクトリパス `~/.claude/skills/<name>/`。SKILL.md とサブファイルを Read で読ませる>
+## Target skill
+<directory path resolved from skill name: `~/.claude/skills/<name>/`. Have the executor Read SKILL.md and subfiles>
 
-## シナリオ
-<シナリオの状況設定 1 段落。ユーザーの自然発話形式で>
+## Scenario
+<1-paragraph situation description in natural user utterance form>
 
-## 要件チェックリスト（判定規則は「ワークフロー 4.」節に一元定義）
-1. [critical] trigger 精度: ...
-2. [critical] 誤発火抑止: ...
-3. [critical] 自己完結性: ...
-4. Frontmatter 整合: ...
-5. サブファイル参照規律: ...
-（ワークフロー Step 1 のスキル評価モード用チェックリスト 5 項目を丸ごと貼る）
+## Requirements checklist (judgment rules defined centrally in "Workflow step 4")
+1. [critical] Trigger accuracy: ...
+2. [critical] Misfire resistance: ...
+3. [critical] Self-containedness: ...
+4. Frontmatter alignment: ...
+5. Subfile reference discipline: ...
+(Paste the full 5-item checklist from Workflow Step 1's skill evaluation mode variant)
 
-## タスク
-1. **まず判断**: このシナリオで <対象スキル名> を呼び出すべきか判断する。判断理由を 1 行で返す
-2. 「使う」と判断した場合のみ、対象スキルの指示に従ってシナリオを実行する
-3. 終了時にレポート構造で返答する
+## Task
+1. **Decide first**: determine whether to invoke <target skill name> for this scenario. Return your reasoning in 1 line
+2. Only if you decide "use": follow the skill's instructions to execute the scenario
+3. At the end, return your response in the report structure below
 
-## レポート構造
-- dispatch 判断: 使う / 使わない + 理由 1 行（★ 既存フォーマットへの追加フィールド）
-- 成果物: <生成物（使うと判断した場合のみ） or "dispatch 対象外">
-- 要件達成: 各項目について ○ / × / 部分的（理由付き）
-- 不明瞭点: 対象スキルで詰まった箇所、解釈に迷った文言（箇条書き）
-- 裁量補完: 指示で決まっておらず自分の判断で埋めた箇所（箇条書き）
-- 再試行: 同じ判断をやり直した回数とその理由
+## Report structure
+- Dispatch decision: use / do not use + 1-line reason (★ new field added to the base format)
+- Output: <produced artifact (only if "use") or "not dispatched">
+- Requirements met: for each item, ○ / × / partial (with reason)
+- Unclear points: parts of the skill where you got stuck, phrasing you had to interpret (bullet list)
+- Discretionary fills: decisions not specified in the instruction that you filled in yourself (bullet list)
+- Retries: how many times you redid the same decision and why
 ```
 
-呼び出し側は `dispatch 判断` フィールドを [critical] 1 / 2 の判定入力として使い、`tool_uses` を **`dispatch 判断=使う` シナリオ間のみで** 比較して [critical] 3 を埋める（境界 negative は実行されないため比較対象外）。
+The caller uses the `dispatch decision` field as input for [critical] items 1 / 2, and compares `tool_uses` **only among scenarios where `dispatch decision = use`** to evaluate [critical] item 3 (boundary-negative is excluded since it is not executed).
 
-## 環境制約
+## Environment Constraints
 
-新規 subagent を dispatch できない環境（既に subagent として動作している、Task tool が無効化されている等）では、本 skill は **適用しない**。
-- 代替案 1: 親セッションのユーザーに別 Claude Code セッションを起動して依頼してもらう
-- 代替案 2: 評価を諦め、ユーザーに「empirical evaluation skipped: dispatch unavailable」と明示報告する
-- **NG**: 自己再読で代替する(バイアスが入るので評価結果を信じてはいけない)
+In environments where dispatching a new subagent is not possible (already running as a subagent, Task tool is disabled, etc.), this skill **does not apply**.
 
-**構造審査モード**: empirical 評価ではなく、skill / プロンプトの **記述の整合性・明瞭性だけ** をチェックしたい場合は、構造審査モードとして明示的に切り分ける。subagent への依頼プロンプトに「今回は構造審査モード: 実行ではなくテキスト整合性チェック」と明記する。これにより subagent は環境制約節の skip 動作に引っかからず、静的レビューを返せる。構造審査は empirical の代替ではなく補助（連続クリア判定には使えない）。
+- Alternative 1: Ask the user to start a separate Claude Code session and run the evaluation there
+- Alternative 2: Skip empirical evaluation and report "empirical evaluation skipped: dispatch unavailable" to the user
+- **Prohibited:** substituting with self-re-reading (results are not trustworthy — bias is introduced)
 
-## 反復の打ち切り基準
+**Structure-audit mode:** If the goal is only to check **textual consistency and clarity** of a skill / prompt without empirical evaluation, explicitly label it as structure-audit mode. Include "This run is structure-audit mode: text consistency check only, not execution" in the subagent's prompt. This prevents the environment-constraint skip behavior from triggering and lets the subagent return a static review. Structure audit is a supplement to empirical evaluation, not a substitute (it cannot count toward consecutive convergence).
 
-- **収束（停止）**: 連続 2 回で次を **全て** 満たす:
-  - 新規不明瞭点: 0 件
-  - 精度の前回比改善: +3 ポイント以下（5% → 8% のような飽和）
-  - ステップ数の前回比変動: ±10% 以内
-  - duration の前回比変動: ±15% 以内
-  - **過適合チェック**: 収束判定時に、これまで使っていない hold-out シナリオ 1 本を追加して評価。精度が直近平均から 15 ポイント以上落ちたら過適合。baseline シナリオ設計に戻って edge を足す。
-  - **スキル評価モード限定の追加条件**: 境界 negative シナリオで「skill を使わない」判断 = [critical] 2 が ○ を **連続 2 回** クリア。recall（使うべき時に使う = [critical] 1）だけでなく precision（使うべきでない時に使わない = [critical] 2）も収束条件に組み込むことで、trigger 偏りによる偽収束を防ぐ。
-- **発散（設計を疑う）**: 3 回以上イテレーションしても新規不明瞭点が減らない → プロンプトの設計方針自体が間違っている可能性。修正パッチで直すのをやめ、構造を書き直す
-- **リソース打ち切り**: 重要度と改善コストが釣り合わなくなったら止める（80 点で出す判断）
+## Termination Criteria
 
-## 提示フォーマット
+- **Convergence (stop):** 2 consecutive iterations where **all** of the following hold:
+  - New unclear points: 0
+  - Accuracy improvement from previous: ≤ 3 percentage points (saturation like 5% → 8%)
+  - Step count change from previous: ±10% or less
+  - Duration change from previous: ±15% or less
+  - **Over-fit check:** At convergence, add 1 previously unused hold-out scenario. If accuracy drops ≥ 15 points from the recent average, the model is over-fit — return to baseline scenario design and add more edge cases
+  - **Skill evaluation mode only:** boundary-negative scenario produces "do not use" ([critical] item 2 is ○) for **2 consecutive iterations**. This prevents false convergence from trigger bias by requiring both recall ([critical] 1) and precision ([critical] 2) to converge
+- **Divergence (question the design):** If new unclear points do not decrease after 3+ iterations → the prompt's structural design itself may be wrong. Stop patching and rewrite from scratch
+- **Resource cutoff:** Stop when the importance/improvement-cost ratio no longer makes sense (shipping at 80 points is a valid call)
 
-各イテレーションで次の形で記録・ユーザーに提示する:
+## Presentation Format
+
+Record and present to the user in the following format for each iteration:
 
 ```
 ## Iteration N
 
-### 変更点（前回差分）
-- <修正内容 1 行>
+### Changes (diff from previous)
+- <1-line description of the fix>
 
-### 実行結果（シナリオ別）
-| シナリオ | 成功/失敗 | 精度 | steps | duration | retries |
+### Execution results (per scenario)
+| Scenario | Pass/fail | Accuracy | steps | duration | retries |
 |---|---|---|---|---|---|
 | A | ○ | 90% | 4 | 20s | 0 |
 | B | × | 60% | 9 | 41s | 2 |
 
-### 不明瞭点（今回新出）
-- <シナリオ B>: [critical] 項目 N が × — <落ちた理由 1 行>   # 失敗時は必ず添える
-- <シナリオ B>: <その他の指摘 1 行>
-- <シナリオ A>: （新出なし）
+### Unclear points (new this iteration)
+- <Scenario B>: [critical] item N is × — <1-line reason for failure>   # always include on failure
+- <Scenario B>: <other new finding>
+- <Scenario A>: (none new)
 
-### 裁量補完（今回新出）
-- <シナリオ B>: <補完内容>
+### Discretionary fills (new this iteration)
+- <Scenario B>: <fill content>
 
-### 次の修正案
-- <最小修正 1 行>
+### Next fix
+- <1-line minimum fix>
 
-### 収束判定（今回）
-| 条件 | 前回値 → 今回値 | 判定 |
+### Convergence judgment (this iteration)
+| Condition | Previous → Current | Judgment |
 |---|---|---|
-| 新規不明瞭点 0 件 | 2 → 0 | ✓ |
-| 精度 前回比 +3pt 以下 | 70% → 75% (+5pt) | ✗ |
-| ステップ数 前回比 ±10% 以内 | 6.5 → 6.5 (0%) | ✓ |
-| duration 前回比 ±15% 以内 | 30s → 30.5s (+2%) | ✓ |
-| 境界 negative で [critical] 2 が ○（連続 2 回）※ スキル評価モードのみ | ✓ → ✓ | ✓ |
+| New unclear points: 0 | 2 → 0 | ✓ |
+| Accuracy improvement ≤ 3pt | 70% → 75% (+5pt) | ✗ |
+| Step count change ≤ ±10% | 6.5 → 6.5 (0%) | ✓ |
+| Duration change ≤ ±15% | 30s → 30.5s (+2%) | ✓ |
+| Boundary-negative [critical] 2 ○ (2 consecutive) ※ skill eval mode only | ✓ → ✓ | ✓ |
 
-（収束判定: 連続 X 回クリア / 停止条件まであと Y 回）
-（※ 最終行はスキル評価モード時のみ含める。プロンプト評価モードでは削除）
+(Convergence: X consecutive / Y more iterations until stop condition)
+(※ Include last row only in skill evaluation mode; omit in prompt evaluation mode)
 ```
 
-## Red flags（合理化に注意）
+## Red Flags
 
-| 出てくる合理化 | 実態 |
+| Rationalization | Reality |
 |---|---|
-| 「自分で読み直せば同じ効果がある」 | 直前に書いた文章を "客観視" はできない。必ず新規 subagent を dispatch する。 |
-| 「1 シナリオで充分」 | 1 シナリオは過適合する。最低 2、できれば 3。 |
-| 「不明瞭点ゼロが 1 回出たから終わり」 | 偶然なこともある。連続 2 回で確定判定。 |
-| 「複数の不明瞭点を一気に潰そう」 | 何が効いたか分からなくなる。1 イテレーション 1 テーマ。 |
-| 「関連する微修正も純粋に 1 件ずつ別 iter に分けよう」 | 逆方向の罠。"1 テーマ" は意味単位。関連する 2-3 件の微修正は 1 iter にまとめて良い。分けすぎると iter 数が爆発する。 |
-| 「メトリクスが良いから質的フィードバックは無視」 | 時間短縮は痩せすぎのサインにもなる。質的を主に。 |
-| 「書き直した方が早い」 | 3 回以上不明瞭点が減らないなら正解。それ以前の段階では逃げ。 |
-| 「同じ subagent を使い回そう」 | 前回の改善を学習している。毎回新規に dispatch する。 |
+| "Re-reading myself has the same effect" | You cannot objectively re-read something you just wrote. Always dispatch a new subagent. |
+| "1 scenario is enough" | 1 scenario over-fits. Minimum 2, ideally 3. |
+| "Unclear points were 0 once, so we're done" | May be coincidence. Require 2 consecutive for a confirmed judgment. |
+| "Let's fix all unclear points at once" | You won't know what worked. 1 theme per iteration. |
+| "Related micro-fixes should each be a separate iteration" | The opposite trap. "1 theme" is a semantic unit. 2–3 related micro-fixes in 1 iteration is fine — over-splitting causes iteration count to explode. |
+| "Metrics look good so ignore qualitative feedback" | Time reduction can also be a sign of over-thinning. Qualitative is primary. |
+| "Rewriting from scratch is faster" | Correct after 3+ iterations with no decrease in unclear points. At earlier stages, it's avoidance. |
+| "Reuse the same subagent" | It has learned from the prior improvement. Dispatch a new one every time. |
 
-## よくある失敗
+## Common Failures
 
-- **シナリオが楽すぎる / 難しすぎる**: どちらもシグナルが出ない。現実の使用場面の中央値を 1 つ、edge を 1 つ
-- **メトリクスだけ見る**: 時間短縮しか追わないと、重要な説明が削られて脆くなる
-- **イテレーションごとに変更多すぎ**: 「あのときの修正のどれが効いたか」が追えなくなる。1 修正 1 イテレーション
-- **シナリオを修正に合わせてチューニング**: 不明瞭点が潰れたように見せるため、シナリオ側を簡単にする → 本末転倒
+- **Scenario too easy / too hard**: either produces no signal. Use 1 median real-world case + 1 edge
+- **Only watching metrics**: chasing time alone strips out important instructions, making the prompt brittle
+- **Too many changes per iteration**: "which of those changes worked?" becomes unanswerable. 1 fix per iteration
+- **Tuning the scenario to match the fix**: makes unclear points seem resolved by simplifying the scenario — defeats the purpose
 
-## 関連
+## Related
 
-### `skill-creator`（プラグイン）との棲み分け
+### Distinction from `skill-creator` (plugin)
 
-| 使う場面 | 適切なツール |
+| Situation | Right tool |
 |---|---|
-| 指示の曖昧さ・矛盾の質的検出 / 指示テキストの反復改善 | **dry-run-prompt**（本 skill） |
-| assertion ベースの客観的採点、pass_rate / token / duration の variance 分析、2 バージョンの blind 比較、description の trigger eval 大量実行 | **skill-creator**（プラグイン） |
-| 本 skill で不明瞭点が 3 連続で減らない | 構造の書き直し or skill-creator の blind 比較に切り替え |
+| Qualitative detection of ambiguity / contradictions / iterative improvement of instruction text | **dry-run-prompt** (this skill) |
+| Objective scoring with assertions, pass_rate / token / duration variance analysis, blind A/B comparison of 2 versions, bulk trigger evaluation from description | **skill-creator** (plugin) |
+| Unclear points not decreasing after 3 consecutive iterations with dry-run-prompt | Switch to structural rewrite or skill-creator's blind comparison |
 
-**フロー連携**: dry-run-prompt で不明瞭点が収束した後、再現性や variance を確認したい場合は skill-creator の評価パイプラインに接続する使い分けが可能。前者で「指示の曖昧さを潰す」→ 後者で「客観メトリクスで A/B 確認」の順が自然。
+**Flow integration:** After unclear points converge with dry-run-prompt, use skill-creator's evaluation pipeline to verify reproducibility and variance. The natural order is: "eliminate instruction ambiguity" with dry-run-prompt → "confirm with objective metrics via A/B" with skill-creator.

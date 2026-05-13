@@ -1,228 +1,229 @@
 ---
 name: arch-review
 description: |
-  設計品質を 4 軸 (凝集度 / 結合度 / シンプルさ / テスタビリティ) で深く評価する。
-  current branch または PR の diff を対象に、軸ごとの並列サブエージェントが独立に分析し、confidence 付きのレポートに統合する。
-  Use when: 設計レビュー / アーキテクチャ評価 / design review / arch review を行いたいとき。PR 前のセルフレビュー、他人の PR の設計面のレビューに向く。
-  Do not use when: バグ検出・セキュリティ・規約違反の検出 (-> /review, /ultrareview)、既存コードの監査 (diff が無いと動かない)。
+  Evaluate design quality across 4 axes (cohesion / coupling / simplicity / testability).
+  Analyzes the diff of the current branch or a PR using parallel subagents per axis, then consolidates results into a confidence-annotated report.
+  Use when: performing a design review / architecture evaluation before a PR, or reviewing another engineer's PR for design quality.
+  Do not use when: detecting bugs, security issues, or convention violations (-> /review, /ultrareview), or auditing existing code without a diff.
 user-invocable: true
-args: "[PR番号 | branch名]"
+args: "[PR number | branch name]"
 ---
 
-# arch-review — 設計品質の 4 軸深掘りレビュー
+# arch-review — 4-Axis Design Quality Review
 
-設計を 4 軸で評価するポータブルスキル。バグではなく **設計健全性** を見る。
+A portable skill that evaluates design across 4 axes. Focuses on **design health**, not bugs.
 
-## 4 軸
+## 4 Axes
 
-| 軸                 | 観点                                                      |
-| ------------------ | --------------------------------------------------------- |
-| **凝集度**         | コロケーション / SRP / 責務の物理表現                     |
-| **結合度**         | 依存方向 / コロケーション / 循環依存 / リーク             |
-| **シンプルさ**     | YAGNI / 未使用 export / 過剰抽象 / 早期最適化             |
-| **テスタビリティ** | DI / 副作用の局所化 / テストの存在 / 純粋関数と副作用境界 |
+| Axis | Perspective |
+| --- | --- |
+| **Cohesion** | Co-location / SRP / physical expression of responsibility |
+| **Coupling** | Dependency direction / co-location / circular deps / leaks |
+| **Simplicity** | YAGNI / unused exports / over-abstraction / premature optimization |
+| **Testability** | DI / side-effect isolation / test existence / pure functions vs. side-effect boundaries |
 
-※ 可読性は独立軸にはせず、他軸の結果として総括コメントに統合する。
+Readability is not a standalone axis — it is integrated into the summary comment as a consequence of the other axes.
 
-## ワークフロー
+## Workflow
 
-### Step 1: base branch を検出する
+### Step 1: Detect the base branch
 
 ```bash
 git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|refs/remotes/origin/||'
 ```
 
-失敗したら `main` → `master` → `develop` → `trunk` の順で `git rev-parse --verify origin/<name>` を試す。どれも無ければ「base branch を特定できません。リモートの HEAD を設定するか、既知の基幹ブランチ (main/master/develop/trunk) を用意してください」と報告して終了する。
+If that fails, try `git rev-parse --verify origin/<name>` in order: `main` → `master` → `develop` → `trunk`. If none succeed, report "Cannot determine base branch. Set the remote HEAD or ensure a known trunk branch (main/master/develop/trunk) exists" and stop.
 
-以降 `<base>` は検出したブランチ (例: `origin/master`)。
+`<base>` hereafter refers to the detected branch (e.g., `origin/master`).
 
-### Step 2: diff 対象を決める
+### Step 2: Determine the diff target
 
-引数判定は厳密に:
+Parse the argument strictly:
 
-- **引数なし** → `git diff <base>...HEAD --name-status --diff-filter=ACMRT`
-- **引数が正規表現 `^[0-9]+$` に一致 (PR 番号)** → `gh pr diff <N> --name-only`。`--name-only` 未対応の古い gh では `gh pr view <N> --json files -q '.files[].path'` にフォールバック
-- **それ以外** → branch 名として扱う。`git rev-parse --verify origin/<arg>` または `git rev-parse --verify <arg>` のどちらかが成功すれば `git diff <base>...<arg> --name-status --diff-filter=ACMRT`。両方失敗なら「branch `<arg>` が見つかりません」とエラー終了
-- 引数が 2 つ以上渡された場合は**最初の 1 つのみ**を採用
+- **No argument** → `git diff <base>...HEAD --name-status --diff-filter=ACMRT`
+- **Argument matching `^[0-9]+$` (PR number)** → `gh pr diff <N> --name-only`. Fall back to `gh pr view <N> --json files -q '.files[].path'` for older gh versions that do not support `--name-only`
+- **Anything else** → treat as a branch name. Use `git diff <base>...<arg> --name-status --diff-filter=ACMRT` if `git rev-parse --verify origin/<arg>` or `git rev-parse --verify <arg>` succeeds. If both fail, exit with "branch `<arg>` not found"
+- If two or more arguments are given, use only the first
 
-**出力解釈 (引数なし / branch 名ルート):**
+**Interpreting output (no-argument / branch-name route):**
 
-- `M <path>` / `A <path>` / `C <path>` / `T <path>` → `<path>` を変更ファイルとして扱う
-- `R100 <old> <new>` (rename) → **新パス `<new>`** を変更ファイルとして扱い、`<old>` は finding の location 併記用に保持。finding では `<old> → <new>` の形式で場所を示す
+- `M <path>` / `A <path>` / `C <path>` / `T <path>` → treat `<path>` as a changed file
+- `R100 <old> <new>` (rename) → use **new path `<new>`** as the changed file; retain `<old>` for the `location` field in findings as `<old> → <new>`
 
-PR 番号ルートでは `--name-only` 系で rename 情報が取れないため、rename 併記はスキップ可。
+For PR-number routes, `--name-only`-style output does not carry rename info, so rename annotation may be omitted.
 
-### Step 3: diff が空なら終了
+### Step 3: Exit if diff is empty
 
-変更ファイルが 0 件なら「diff が空です。`<base>` と差分のあるブランチで実行してください」と報告して終了。
+If there are zero changed files, report "Diff is empty. Run this from a branch that has changes relative to `<base>`" and stop.
 
-### Step 4: ファイル数過多のガード
+### Step 4: Guard against excessive file count
 
-変更ファイル数が **20 を超えたら**「cross-cutting な変更と判断しました。immediate parent directory でグルーピングして分割評価します」と宣言。
+If more than **20 files** changed, declare "Detected as a cross-cutting change. Grouping by immediate parent directory for split evaluation."
 
-グルーピングルール:
+Grouping rules:
 
-- 各変更ファイルの **1 階層上のパス** でグループを作る
-- **グループ数が 5 を超えたら** 2 階層上のパスに繰り上げて再グルーピング (5 以下に収束するまで段階的に繰り上げる)
-- **リポルートまで繰り上げても 5 以下にならない**稀ケースは、**全体を 1 グループとして扱い** `## Group: <repo root>` セクションで 4 軸並列評価する (分割評価モードは維持、fast path は無効)
-- **各グループに対して独立に繰り返すのは Step 5 / 9 / 10 / 11 のみ**。Step 6 (規約 auto-read) / Step 7 (axes 読込) は **全体で 1 回**。Step 8 (fast path 判定) は **分割評価モードでは無効化** (既に大規模と判定済みのため、グループ単位でも 4 軸並列で評価する)
-- 最終レポートは `## Group: <path>` で区切って出す
-- 軸間トレードオフはグループ内で reconciliation (グループをまたぐ矛盾は report 末尾「全グループ横断の全体総括」に俯瞰コメントとして残す)
+- Group each changed file by its **1-level parent path**
+- If there are **more than 5 groups**, re-group by the 2-level parent path (repeat until 5 or fewer groups)
+- If re-grouping all the way to repo root still yields more than 5 groups, treat everything as **1 group** under `## Group: <repo root>` (split-evaluation mode is maintained; fast path is disabled)
+- Only Steps 5 / 9 / 10 / 11 repeat per group; Step 6 (convention auto-read) and Step 7 (axes load) run **once** for the whole review; Step 8 (fast path) is **disabled in split-evaluation mode**
+- Output the final report separated by `## Group: <path>`
+- Reconcile cross-axis trade-offs within each group; leave cross-group contradictions as a top-level summary comment at the end of the report
 
-### Step 5: 近傍ファイル一覧を取得する
+### Step 5: Collect neighbor files
 
-各変更ファイル (rename なら**新パスのみ使用**。旧パス側のディレクトリは `ls` の対象にしない) に対し、同ディレクトリ内のファイル一覧を `ls <dir>` で取得。**パスのリストのみ**を保持し、中身は開かない (subagent が必要時に自分で open する)。
+For each changed file (use only the **new path** for renames), list all files in its directory with `ls <dir>`. Retain only the path list — do not open the files (subagents open what they need).
 
-近傍ファイルの扱い:
+Neighbor file usage rules:
 
-- ✅ **シグナル源としては利用する**: 変更ファイルの凝集度・結合度を判定するため、近傍にどんなファイルがあるか (種類のバラつき、対応テストの有無、関連 hook の別置き等) を参照する
-- ❌ **finding の対象にはしない**: 近傍ファイル**そのもの**への指摘は出さない (例:「近傍の `utilA.ts` が責務過多」は × — 対象が変更ファイルに含まれていないため)。finding の location は**必ず変更ファイルを指す**
+- ✅ **Use as signal**: reference which types of files are co-located (variety, presence of corresponding tests, separately placed hooks, etc.) when evaluating cohesion and coupling
+- ❌ **Do not include in findings**: never issue a finding against a neighbor file that is not in the changed-file list (e.g., "the neighboring `utilA.ts` has too many responsibilities" is invalid). Every finding's `location` must point to a changed file
 
-### Step 6: リポ規約を auto-read する
+### Step 6: Auto-read repository conventions
 
-存在すれば以下を読む。無ければスキップ。**Step 6 全体の上限: `CLAUDE.md` 1 ファイル + `docs/` 配下 3 ファイル = 計最大 4 ファイル、各先頭 200 行まで**:
+Read the following if they exist; skip otherwise. **Total limit for Step 6: 1 `CLAUDE.md` file + 3 files under `docs/` = at most 4 files, first 200 lines each:**
 
-- `CLAUDE.md` の先頭 200 行 (1 ファイル枠)
-- `docs/` 配下で filename に `architecture` / `coding-standard` / `design` / `convention` を含むファイル (最大 3 ファイル、各先頭 200 行まで、超過分は無視)
-- `@`-import / nested CLAUDE.md は **追従しない** (初版)
+- First 200 lines of `CLAUDE.md` (counts as 1 file slot)
+- Files under `docs/` whose name contains `architecture`, `coding-standard`, `design`, or `convention` (at most 3 files, first 200 lines each; ignore any beyond the limit)
+- Do **not** follow `@`-imports or nested CLAUDE.md files (initial version)
 
-規約は **参考コンテキスト** 扱い。軸判定は独立させる (規約に引きずられない)。
+Treat conventions as **reference context only** — axis judgments remain independent (do not let conventions override axis results).
 
-### Step 7: references/axes/\*.md を読み込む
+### Step 7: Load `references/axes/*.md`
 
-parent Claude が以下 4 ファイルを Read (skill ベースディレクトリ `~/.claude/skills/arch-review/` 配下):
+The parent Claude reads the following 4 files (under skill base directory `~/.claude/skills/arch-review/`):
 
 - `references/axes/cohesion.md`
 - `references/axes/coupling.md`
 - `references/axes/simplicity.md`
 - `references/axes/testability.md`
 
-各ファイルの内容を文字列として保持。subagent はスキルファイルを自動継承しないため、prompt に逐語的に埋め込む。
+Hold each file's content as a string. Because subagents do not inherit skill files automatically, embed the content verbatim in each subagent prompt.
 
-### Step 8: 小規模 diff の fast path 判定
+### Step 8: Fast-path check for small diffs
 
-**分割評価モード (Step 4 発動) ではこのステップをスキップして Step 9 へ進む。**
+**Skip this step if split-evaluation mode (Step 4) was triggered — proceed to Step 9.**
 
-LoC 取得コマンドは Step 2 の分岐に対応:
+LoC command depends on Step 2 routing:
 
-- **引数なし** → `git diff --shortstat <base>...HEAD`
-- **PR 番号** → `gh pr diff <N> --stat | tail -1` (出力末尾の `X insertions(+), Y deletions(-)` を解釈)
-- **branch 名** → `git diff --shortstat <base>...<branch>`
+- **No argument** → `git diff --shortstat <base>...HEAD`
+- **PR number** → `gh pr diff <N> --stat | tail -1` (interpret the trailing `X insertions(+), Y deletions(-)`)
+- **Branch name** → `git diff --shortstat <base>...<branch>`
 
-insertions + deletions ≤ 50 **かつ** 変更ファイル数 ≤ 2 なら fast path:
+If insertions + deletions ≤ 50 **and** changed files ≤ 2, use the fast path:
 
-- 1 本の `Explore` subagent に **4 軸定義をまとめて渡して** シーケンシャル評価
-- 4 並列の overhead を避ける
-- **出力形式は Step 9 の共通テンプレと同一**: 4 軸それぞれの findings を `## 凝集度` `## 結合度` `## シンプルさ` `## テスタビリティ` の 4 セクションに分けて返す (subagent 内部ではシーケンシャルに評価するが出力構造は parallel 時と同じ)
+- Send all 4 axis definitions to a single `Explore` subagent for sequential evaluation
+- Avoids the overhead of 4 parallel subagents
+- **Output format is identical to Step 9's shared template**: return findings in 4 sections `## Cohesion`, `## Coupling`, `## Simplicity`, `## Testability` (evaluation is sequential internally, but output structure matches the parallel form)
 
-上記に該当しなければ次ステップへ。
+Otherwise, proceed to Step 9.
 
-### Step 9: 4 軸の subagent を並列起動する
+### Step 9: Launch 4 axis subagents in parallel
 
-以下 4 本の `Explore` subagent を **同一メッセージ内で並列に** Task 呼び出しで起動:
+Dispatch the following 4 `Explore` subagents **in a single message**:
 
-| subagent       | description                            | prompt の中身                                            |
-| -------------- | -------------------------------------- | -------------------------------------------------------- |
-| 凝集度         | "Cohesion analysis for arch-review"    | references/axes/cohesion.md の内容 + 共通テンプレ (下記) |
-| 結合度         | "Coupling analysis for arch-review"    | references/axes/coupling.md の内容 + 共通テンプレ        |
-| シンプルさ     | "Simplicity analysis for arch-review"  | references/axes/simplicity.md の内容 + 共通テンプレ      |
-| テスタビリティ | "Testability analysis for arch-review" | references/axes/testability.md の内容 + 共通テンプレ     |
+| Subagent | Description | Prompt content |
+| --- | --- | --- |
+| Cohesion | "Cohesion analysis for arch-review" | `references/axes/cohesion.md` content + shared template (below) |
+| Coupling | "Coupling analysis for arch-review" | `references/axes/coupling.md` content + shared template |
+| Simplicity | "Simplicity analysis for arch-review" | `references/axes/simplicity.md` content + shared template |
+| Testability | "Testability analysis for arch-review" | `references/axes/testability.md` content + shared template |
 
-**共通テンプレ (各 prompt の末尾に付与する情報):**
+**Shared template (append to the end of each prompt):**
 
 ```
 ---
 
-## 評価対象
+## Target
 
-変更ファイル (これらに対する findings を出す):
-<変更ファイルのパス一覧>
+Changed files (issue findings against these):
+<list of changed file paths>
 
-近傍ファイル (参考コンテキスト。パス一覧のみ。必要なら自分で Read する。findings の評価対象にはしない):
-<近傍ファイルのパス一覧>
+Neighbor files (reference context — path list only; open them yourself if needed; do not issue findings against them):
+<list of neighbor file paths>
 
-## リポ規約 (参考。軸判定は独立させる)
+## Repository conventions (reference only — axis judgments remain independent)
 
-<Step 6 で読んだ内容、存在すれば>
+<content read in Step 6, if any>
 
-## 出力形式
+## Output format
 
-references/templates/report.md に準拠した構造化 Markdown で、findings を列挙してください。各 finding に以下を必ず含める:
+Output structured Markdown conforming to `references/templates/report.md`, listing all findings. Each finding must include:
 
-- **軸タグ (観点タグ)**: 本軸の標準セットから選ぶ
-  - 凝集度: `コロケーション` / `SRP` / `責務表現` / `export粒度` / `細切れ過多`
-  - 結合度: `依存方向` / `循環依存` / `過剰re-export` / `横断依存` / `import過多` / `depth`
-  - シンプルさ: `YAGNI` / `未使用export` / `早期抽象` / `早期generics` / `過剰defensive` / `1箇所抽象`
-  - テスタビリティ: `テスト不在` / `副作用の局所化` / `DI` / `純粋関数分離` / `過剰DI`
-  - **標準セット外のタグは作らない**。該当する概念が無ければ最寄りのタグを選び、finding の所見本文で具体的に補足する (タグの語彙を揺らがせないため)
+- **Axis tag (perspective tag)**: choose from the standard set for this axis
+  - Cohesion: `co-location` / `SRP` / `responsibility-expression` / `export-granularity` / `over-fragmentation`
+  - Coupling: `dep-direction` / `circular-dep` / `over-re-export` / `cross-cutting-dep` / `import-overload` / `depth`
+  - Simplicity: `YAGNI` / `unused-export` / `premature-abstraction` / `premature-generics` / `over-defensive` / `single-use-abstraction`
+  - Testability: `test-absence` / `side-effect-isolation` / `DI` / `pure-fn-separation` / `over-DI`
+  - **Do not create tags outside the standard set.** If no tag fits precisely, choose the closest one and clarify the specific concern in the finding body (to keep tag vocabulary stable)
 - **confidence**: high / mid / low
-- **direction**: add (分離/抽象化を要求) / simplify (統合/削除を要求) / neutral (方向性なし)
-- **location**: `<file:line>` または `<file>` (ファイル全体指摘)。rename の場合は `<旧path> → <新path>` で併記
-- 所見 1-3 行 + 推奨アクション 1-2 行 (コード例は不要)
+- **direction**: add (requests separation/abstraction) / simplify (requests consolidation/deletion) / neutral (no direction)
+- **location**: `<file:line>` or `<file>` (whole-file finding). For renames, use `<old-path> → <new-path>`
+- Observation 1-3 lines + recommended action 1-2 lines (no code examples)
 
-確信が持てない事項は confidence: low にして「判定保留 (著者の意図次第)」として列挙すること。コードから断言できることだけ high にする。
+List items you cannot assert confidently as confidence: low with "judgment deferred (depends on author intent)".
+Only mark something high if the code alone supports the assertion.
 ```
 
-### Step 10: subagent 失敗のフォールバック
+### Step 10: Handle subagent failures
 
-いずれかの軸 subagent が失敗・タイムアウトした場合、該当軸セクションを `## <軸名>\n\nN/A (analysis failed: <reason>)` と明示し、他 3 軸のレポートを完成させる。skill 全体は止めない。
+If any axis subagent fails or times out, include `## <Axis>\n\nN/A (analysis failed: <reason>)` in that section. Complete the report for the remaining 3 axes — do not abort the whole skill.
 
-### Step 11: 軸間トレードオフの reconciliation
+### Step 11: Reconcile cross-axis trade-offs
 
-4 軸の Markdown 結果を parent Claude が merge:
+The parent Claude merges the 4 axis Markdown results:
 
-**突合キーのルール**:
+**Match key rules:**
 
-- finding の location 部分から `<file>` パスのみを抜き出す (行番号 `:line` があれば除去)
-- rename 併記 `<old> → <new>` は **新パス `<new>`** を突合キーとして扱う
-- 同一ファイルで突合が成立した finding 同士のうち、以下の条件を見る:
+- Extract only the `<file>` path from each finding's `location` (strip `:line` if present)
+- For rename annotations `<old> → <new>`, use the **new path `<new>`** as the match key
+- Among findings matched to the same file path:
 
-1. 全 findings を収集し、軸ごとにセクション化
-2. 同一 file path で confidence: high の finding を洗い出し
-3. **direction: add と direction: simplify の組み合わせ** があれば「軸間トレードオフ」セクションに抽出 (両方のオリジナル findings も参照できる形で記載)
-4. neutral 同士・mid/low の矛盾は各軸セクション内に留める
+1. Collect all findings and group them by axis section
+2. Identify findings with confidence: high under the same file path
+3. If any **`direction: add` and `direction: simplify` combination** exists for the same file, extract it into a "Cross-axis trade-offs" section (keep references to both original findings)
+4. Leave neutral pairs and mid/low contradictions in their respective axis sections
 
-### Step 12: 優先度付け (改善提案のランク付け)
+### Step 12: Prioritize findings
 
-各 finding に **P1-P4** の優先度ラベルを付与し、レポート冒頭「優先改善提案」セクションに並べる。**新しいメタデータは追加しない** (既存の confidence / direction / 軸の組合せだけで導出する)。
+Assign each finding a **P1-P4** priority label and list them in a "Priority improvements" section at the top of the report. **Do not add new metadata** — derive priority from existing combinations of confidence / direction / axis only.
 
-**ランク付けルール (上から順に判定、最初に当たるバケットに入れる)**:
+**Ranking rules (evaluate in order; place in the first matching bucket):**
 
-- **P1 (最優先 / Must fix)**: confidence: high の finding が **2 軸以上で同一 location を指摘** している。設計の根幹に関わるため、他の修正より先に判断すべき
-  - 突合キーは Step 11 と同じ (`<file>` パスのみ、rename は新パス)。ただし `direction` が **add と simplify の両方を含む組合せ** は P1 に入れず、「軸間トレードオフ」セクションに留める (単純に最優先として並べると誤誘導になるため)
-- **P2 (優先 / Should fix)**: confidence: high の単独軸 finding。ただし `direction: neutral` は P3 に落とす (命名・可読性指摘など設計健全性への影響が限定的なもの)
-- **P3 (推奨 / Nice to have)**: confidence: mid の全 finding、および P2 から落ちてきた neutral な high finding
-- **P4 (判定保留 / 要確認)**: confidence: low の全 finding (既存の「判定保留」セクションと同じ内容を優先度観点で再提示)
+- **P1 (must fix)**: A confidence: high finding where **2 or more axes point to the same location**. Represents a fundamental design concern that should be addressed before other fixes
+  - Use the same match key as Step 11 (`<file>` path only; rename → new path). However, if findings include **both `add` and `simplify` directions**, do not place in P1 — leave them in the "Cross-axis trade-offs" section (listing them as top priority would be misleading)
+- **P2 (should fix)**: A confidence: high finding from a single axis. Demote to P3 if `direction: neutral` (naming/readability issues with limited design-health impact)
+- **P3 (nice to have)**: All confidence: mid findings, plus neutral high findings demoted from P2
+- **P4 (judgment deferred / check with author)**: All confidence: low findings (same content as the existing "Deferred" section, re-presented from a priority perspective)
 
-**並び順**:
+**Sort order:**
 
-- P1 → P2 → P3 → P4 の降順
-- 同一バケット内は **file path の辞書順**。同一 path 内で複数 finding がある場合は **軸名の辞書順** (凝集度 → 結合度 → シンプルさ → テスタビリティ)
-- P1 では複数軸の finding を **1 行にまとめず、軸ごとに独立行** で列挙する (各軸の指摘根拠が消えないように)
+- Descending: P1 → P2 → P3 → P4
+- Within the same bucket: **file path alphabetically**; multiple findings in the same path: **axis name alphabetically** (cohesion → coupling → simplicity → testability)
+- In P1, list each axis's finding on a **separate line** — do not merge them (to preserve each axis's rationale)
 
-**出力ルール**:
+**Output rules:**
 
-- 優先改善提案セクションは **冒頭サマリの直下** に置く (Step 13 のテンプレ構造参照)
-- 各 finding は軸セクションと **同じ 1 行プレフィックス形式** (`[軸][観点タグ][confidence][direction] <location>`) を使い、先頭に `[P1]`-`[P4]` を追加
-- 各 finding の詳細 (所見・推奨アクション) は軸セクションに残したまま、優先改善提案セクションでは **1 行要約のみ** 併記する (重複記載で冗長化しないため)
-- 軸間トレードオフ・判定保留セクションは **そのまま残す**。優先改善提案はあくまで「最初に読むべき一覧」で、詳細は既存セクションに委ねる
+- Place the "Priority improvements" section **immediately below the opening summary** (see Step 13 template structure)
+- Use the same 1-line prefix format as axis sections (`[axis][tag][confidence][direction] <location>`), prepending `[P1]`–`[P4]`
+- Each finding's details (observation + recommended action) remain in their axis section; the priority section includes only a **1-line summary** (avoid duplication)
+- Keep the "Cross-axis trade-offs" and "Deferred" sections as-is — the priority section is a "first-read index", not a replacement for axis detail
 
-### Step 13: レポート出力
+### Step 13: Output the report
 
-`references/templates/report.md` の構造に従って最終レポートをコンソールに出力。ファイル書き出しはしない (初版)。
+Output the final report to the console following the structure in `references/templates/report.md`. Do not write to a file (initial version).
 
-## 安全弁まとめ
+## Safety Guards Summary
 
-- diff 空 → 警告して終了
-- ファイル数 > 20 → ディレクトリ分割評価
-- subagent 失敗 → 該当軸のみ N/A、他軸は継続
-- 近傍ファイルは参照のみ、findings の評価対象にはしない
-- rename/move (`--diff-filter=R`) → 新パスを neighbor 起点、finding では「旧 → 新」併記
-- 小規模 diff → 4 並列ではなく 1 本の subagent に集約
+- Empty diff → warn and stop
+- File count > 20 → split evaluation by directory
+- Subagent failure → mark that axis N/A, continue with remaining 3
+- Neighbor files → reference only, never the subject of findings
+- Rename/move (`--diff-filter=R`) → use new path for neighbor lookup; show `old → new` in findings
+- Small diff → consolidate into 1 subagent instead of 4 parallel
 
-## 重要な姿勢
+## Key Principles
 
-- **軸判定はコードから断言できる範囲で**。意図次第で OK な指摘は confidence: low に。
-- **規約は参考**。軸判定を規約に引きずられない。
-- **修正コード例は書かない**。推奨アクションは 1-2 行の文章まで。
-- **バグや型エラーの指摘はしない**。それは別スキルの領分。設計健全性だけに集中する。
+- **Assert only what the code proves.** Mark intent-dependent findings as confidence: low.
+- **Conventions are context, not authority.** Do not let them override axis judgments.
+- **No code examples in recommendations.** Keep recommended actions to 1-2 sentences.
+- **No bug or type-error findings.** Those belong to other skills. Focus solely on design health.

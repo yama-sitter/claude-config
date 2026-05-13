@@ -16,10 +16,11 @@
 !commands/
 !commands/**/*.md
 
-# スキル（SKILL.mdとreferencesのみ、ランタイムデータは除外）
+# スキル（SKILL.md / SKILL-ja.md / references配下のみ、ランタイムデータは除外）
 !skills/
 !skills/*/
 !skills/**/SKILL.md
+!skills/**/SKILL-ja.md
 !skills/**/references/
 !skills/**/references/**
 
