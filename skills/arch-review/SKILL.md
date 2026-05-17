@@ -1,5 +1,6 @@
 ---
 name: arch-review
+context: fork
 description: |
   Evaluate design quality across 4 axes (cohesion / coupling / simplicity / testability).
   Analyzes the diff of the current branch or a PR using parallel subagents per axis, then consolidates results into a confidence-annotated report.
