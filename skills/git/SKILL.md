@@ -6,7 +6,7 @@ description: |
   Use for "commit", "push", "create PR", "create branch", "clean up branches", etc.
   Do not use for worktree operations — use the tree skill instead.
 user-invocable: true
-args: "[subcommand] [args]"
+args: "subcommand [subcommand...] [args]"
 allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*), Bash(git diff:*), Bash(git log:*), Bash(git branch:*), Bash(git push:*), Bash(git rev-parse:*), Bash(git fetch:*), Bash(git worktree:*), Bash(gh pr create:*), Read, AskUserQuestion
 ---
 
