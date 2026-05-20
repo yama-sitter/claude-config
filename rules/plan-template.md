@@ -45,29 +45,29 @@ Optional sub-item: "Conditions for this plan to hold" — include only when prec
 
 #### Summary table
 
-| Operation | File | What changes | Why |
-|---|---|---|---|
+| Operation            | File           | What changes    | Why                    |
+| -------------------- | -------------- | --------------- | ---------------------- |
 | Create/Modify/Delete | `path/to/file` | Specific change | Reason for this change |
 
 #### Affected surrounding areas
 
-| File | Impact |
-|------|--------|
+| File           | Impact                                                         |
+| -------------- | -------------------------------------------------------------- |
 | `path/to/file` | How this file is affected (no change needed, but worth noting) |
 
 #### Not changing
 
-| Target | Reason |
-|--------|--------|
+| Target              | Reason                   |
+| ------------------- | ------------------------ |
 | `component/feature` | Why this is out of scope |
 
 ### 5. Verification
 
 Define acceptance criteria as a table. A separate evaluator (`/verify`) uses this table to confirm the implementation.
 
-| # | Criterion | Command | Expected |
-|---|-----------|---------|----------|
-| 1 | [What to verify] | `[command]` or `Manual` | [What success looks like] |
+| #   | Criterion        | Command                 | Expected                  |
+| --- | ---------------- | ----------------------- | ------------------------- |
+| 1   | [What to verify] | `[command]` or `Manual` | [What success looks like] |
 
 - At least 2 criteria required, at least 1 must have an automated command
 - Commands must be runnable from the project root
@@ -75,8 +75,8 @@ Define acceptance criteria as a table. A separate evaluator (`/verify`) uses thi
 
 ### 6. Risks and Mitigations (table, optional)
 
-| Risk | Mitigation |
-|------|------------|
+| Risk                | Mitigation        |
+| ------------------- | ----------------- |
 | What could go wrong | How to address it |
 
 Omit this section if there are no meaningful risks.
@@ -98,15 +98,15 @@ Full pattern list and the 8 evaluation axes: `docs/design-decision-guide.md`
 
 #### Files read
 
-| File | Description |
-|------|-------------|
+| File           | Description                           |
+| -------------- | ------------------------------------- |
 | `path/to/file` | What this file is and why it was read |
 
 #### Files not read but potentially affected
 
-| File | Potential impact | Action needed | Reason |
-|------|-----------------|---------------|--------|
-| `path/to/file` | How it might be affected | Yes/No | Why action is or isn't needed |
+| File           | Potential impact         | Action needed | Reason                        |
+| -------------- | ------------------------ | ------------- | ----------------------------- |
+| `path/to/file` | How it might be affected | Yes/No        | Why action is or isn't needed |
 
 - Catch-all entries ("other files", "remaining modules", etc.) are prohibited. List specific file paths
 
@@ -115,6 +115,19 @@ Full pattern list and the 8 evaluation axes: `docs/design-decision-guide.md`
 Detailed breakdown per file: specific changes, reference patterns, and ordering constraints (only when order matters).
 
 This section supplements the summary table. Place it after Investigation Scope to keep the main plan scannable.
+
+## Self-Containment Rule
+
+- NEVER reference a research/analysis/test-plan custom ID (e.g. `U\d+`, `S-?\d+`, `RQ\d+`, `X-?\d+`, `i-?\d+`, `Y-?\w+`) without including its body text in the same plan file. Reason: the plan file must be independently understandable after the originating conversation is compacted or lost.
+  - Bad: "観点 A 対応 Unknown: U11, U13, U14, U15" (本文なし)
+  - Good: 同じ plan file 内に「## Unknowns」セクションを設け、U11/U13/U14/U15 の本文を列挙
+- ALWAYS expand all such ID references inline before saving the plan to agent-memory. Reason: agent-memory 経由保存後は会話履歴を参照できない。
+
+### Out of scope
+
+- Code identifiers (e.g. function names like `useFoo`, class names like `Builder`)
+- File paths (e.g. `src/features/...`)
+- External IDs (e.g. Notion ID, GitHub issue number, Linear ticket) — cite URL alongside instead
 
 ## Scaling
 

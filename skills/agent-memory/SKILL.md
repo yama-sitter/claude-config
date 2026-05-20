@@ -39,16 +39,21 @@ Content composition and file writing are delegated to a subagent to keep Write t
      - Constraints, trade-offs, and open questions
      - Current state and next steps (if applicable)
      - Tables, numerical data, aggregated results, and query outputs MUST be included verbatim in Markdown table or code block format. NEVER convert them to bullet points, summarize, abbreviate, round, or omit rows.
+   - **Self-containment check**: If Content Key Points reference any ID/symbol (e.g. U1, S-3, RQ3, X-2, i-1, Y-a) without inline body text, expand each ID to include its body text. NEVER pass ID-only references to the subagent — the subagent has no access to the originating conversation.
+     - Scope: research/analysis/test-plan custom IDs only (e.g. `U\d+`, `S-?\d+`, `RQ\d+`, `X-?\d+`, `i-?\d+`, `Y-?\w+`). Excluded: code identifiers, file paths, external IDs (Notion/GitHub/Linear — cite URL instead).
    - Use `date +%Y-%m-%d` for the current date
 2. **Duplicate check**: Search existing memories to avoid redundancy
+
    ```bash
    rg "^summary:.*<keyword>" ~/.agent-memory/ --no-ignore --hidden -i
    ```
+
    - If a closely related memory exists, decide whether to update it or create a new file (ask the user if unclear)
    - Pass `mode: new` or `mode: update` (with the existing file path) to Step 3
+
 3. **Delegate to subagent**: Launch a `general-purpose` subagent via the Agent tool with the following prompt template. Replace `{placeholders}` with actual values from Steps 1-2.
 
-   ````
+   ```
    You are a memory writer agent for the agent-memory system.
 
    ## Save Parameters
@@ -70,6 +75,7 @@ Content composition and file writing are delegated to a subagent to keep Write t
    - Write for resumption: include decisions, rationale, current state, next steps
    - Keep one topic per file
    - NEVER summarize, round, or omit any tables, numerical data, or query outputs from Content Key Points. Copy them exactly as provided — the raw data is the value.
+   - NEVER write ID-only references (e.g. "U11, U13" without their body text). If the Content Key Points include such ID-only references without body text, return `status: failure` with `reason: "ID references lack body text — main agent must re-extract"`. The subagent has no access to the originating conversation and cannot resolve them.
 
    ## Instructions
    1. If source memories are specified, read them and embed necessary context into the note
@@ -77,7 +83,7 @@ Content composition and file writing are delegated to a subagent to keep Write t
    3. Compose the full markdown file: frontmatter + expanded prose from the key points
    4. Write the file (Write tool creates parent directories automatically)
    5. Return ONLY: status (success | failure), path, summary, reason (if failure)
-   ````
+   ```
 
 4. **Confirm**: Display the result based on the subagent's return:
    - `success`: display the saved path and summary to the user
