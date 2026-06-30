@@ -41,7 +41,7 @@ If questioning was extensive or the change scope is large, recommend option 2 or
 
 ## Strict Rules
 
-- Ask only one question per message
+- Ask only one question per message — asking multiple questions at once is bewildering
 - Do not ask questions answerable by exploring the codebase — explore it yourself
 - Do not produce design documents or formal specs (use brainstorm for that)
 - Do not proceed to the next question without the user's response
