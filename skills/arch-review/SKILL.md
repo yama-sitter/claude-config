@@ -64,8 +64,8 @@ If more than **20 files** changed, declare "Detected as a cross-cutting change. 
 Grouping rules:
 
 - Group each changed file by its **1-level parent path**
-- If there are **more than 5 groups**, re-group by the 2-level parent path (repeat until 5 or fewer groups)
-- If re-grouping all the way to repo root still yields more than 5 groups, treat everything as **1 group** under `## Group: <repo root>` (split-evaluation mode is maintained; fast path is disabled)
+- If there are **more than 3 groups**, re-group by the 2-level parent path (repeat until 3 or fewer groups)
+- If re-grouping all the way to repo root still yields more than 3 groups, treat everything as **1 group** under `## Group: <repo root>` (split-evaluation mode is maintained; fast path is disabled)
 - Only Steps 5 / 9 / 10 / 11 repeat per group; Step 6 (convention auto-read) and Step 7 (axes load) run **once** for the whole review; Step 8 (fast path) is **disabled in split-evaluation mode**
 - Output the final report separated by `## Group: <path>`
 - Reconcile cross-axis trade-offs within each group; leave cross-group contradictions as a top-level summary comment at the end of the report
@@ -153,7 +153,7 @@ Output structured Markdown conforming to `references/templates/report.md`, listi
 - **Axis tag (perspective tag)**: choose from the standard set for this axis
   - Cohesion: `co-location` / `SRP` / `responsibility-expression` / `export-granularity` / `over-fragmentation`
   - Coupling: `dep-direction` / `circular-dep` / `over-re-export` / `cross-cutting-dep` / `import-overload` / `depth`
-  - Simplicity: `YAGNI` / `unused-export` / `premature-abstraction` / `premature-generics` / `over-defensive` / `single-use-abstraction`
+  - Simplicity: `YAGNI` / `unused-export` / `premature-abstraction` / `premature-generics` / `single-use-abstraction`
   - Testability: `test-absence` / `side-effect-isolation` / `DI` / `pure-fn-separation` / `over-DI`
   - **Do not create tags outside the standard set.** If no tag fits precisely, choose the closest one and clarify the specific concern in the finding body (to keep tag vocabulary stable)
 - **confidence**: high / mid / low

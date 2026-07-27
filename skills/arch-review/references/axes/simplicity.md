@@ -30,19 +30,13 @@ This axis is **centered on `simplify`-direction findings** — YAGNI is about re
 - **Unnecessary configuration options**: Multiple props or options, but always called with the same values.
 - **Over-parameterized**: A function with many optional arguments that are all called with their defaults.
 
-### 3. Over-defensive / Error Handling
-
-- **Null checks that cannot happen**: Null checks added after the value has already been initialized immediately before.
-- **Meaningless try/catch swallow**: Silently swallowing errors as if nothing happened (silent failure — another skill's concern too, but "unnecessary try/catch" impairs simplicity from a design perspective).
-- **Redundant type guards**: Redundant checks on a value that TypeScript has already narrowed.
-
-### 4. Premature Abstraction
+### 3. Premature Abstraction
 
 - **"Generic" class or function with only one use case**: Named `GenericFoo` or `BaseBar` but with only one derived type.
 - **Config file extracted for a single entry**: Split out as "might grow later" but currently has only one element.
 - **Interface over implementation over-applied**: An interface is defined, but there is only one implementation with no plan to swap it.
 
-### 5. Mistaken DRY Pre-emption
+### 4. Mistaken DRY Pre-emption
 
 - Do not confuse with DRY (the opposite of YAGNI). **Actually necessary DRY consolidation is a separate matter.** Flag only cases where **code has not yet been duplicated in two places, but has been abstracted because "it might be used in multiple places later."**
 
@@ -64,10 +58,6 @@ This axis is **centered on `simplify`-direction findings** — YAGNI is about re
 
 - **direction: simplify** — "Of the exports `helperA` and `helperB` from `Foo.ts`, `helperB` is referenced nowhere. Delete it or make it internal."
 
-### Over-defensive
-
-- **direction: simplify** — "`items ?? []` is used even though `items` is guaranteed to be an array immediately before. Remove the noise and use `items` directly."
-
 ### Neutral case (not a YAGNI violation)
 
 - **direction: neutral** — "The name `handleClick` handles multiple click types. Splitting into `handleSaveClick` / `handleCancelClick` would clarify intent (this is naming, not responsibility separation)."
@@ -76,7 +66,7 @@ This axis is **centered on `simplify`-direction findings** — YAGNI is about re
 
 - **Cohesion, coupling, and testability concerns** belong to other axes. Focus only on YAGNI (premature abstractions, unused code, over-extensibility).
 - **Do not flag DRY concerns.** Consolidating duplication is the opposite direction from YAGNI. This axis actually says "don't abstract yet even if duplication exists."
-- **Do not flag bugs or runtime errors.** Removing defensive code is justified only when "removing it would not change behavior." If uncertain, drop to low confidence.
+- **Do not flag bugs or runtime errors.**
 - **Do not write code examples.**
 
 ## Assigning Confidence
