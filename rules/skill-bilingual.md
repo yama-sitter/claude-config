@@ -1,3 +1,10 @@
+---
+paths:
+  - "skills/**/*.md"
+  - "CLAUDE.md"
+  - "rules/*.md"
+---
+
 # Bilingual Document Management
 
 ## When
@@ -5,8 +12,9 @@
 Apply when creating or editing any of the following files in this repository:
 - `skills/*/SKILL.md`
 - `CLAUDE.md`
-- `rules/*.md`
 - Subfiles under `skills/*/` (references, axes, templates, etc.)
+
+`rules/*.md` is excluded from mirroring — see the note under Naming Convention below.
 
 ## Naming Convention
 
@@ -16,8 +24,9 @@ Every Claude-read document has an English primary file. A Japanese mirror (`-ja.
 |---|---|---|
 | Skill | `skills/<name>/SKILL.md` | `skills/<name>/SKILL-ja.md` |
 | Global instructions | `CLAUDE.md` | `CLAUDE-ja.md` |
-| Rules | `rules/<topic>.md` | `rules/<topic>-ja.md` |
 | Subfiles | `references/foo.md` | `references/foo-ja.md` (when needed) |
+
+**Rules do NOT get a `-ja.md` mirror.** Files in `rules/` load into every session with no `paths` frontmatter, or into every session touching matching files with it — either way a `-ja.md` sibling would load right alongside the primary and be wasted context every time, since Claude does not read it. Keep `rules/<topic>.md` English-only. If a rule needs human-facing rationale, put it in the rule body itself (Claude can read background prose; it's the duplicate mirror file that's wasteful) rather than in a sibling mirror.
 
 ## Subfile Selection
 
