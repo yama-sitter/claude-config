@@ -27,7 +27,7 @@ Invoked when a failure is detected. A subagent performs analysis → idea genera
 - ALWAYS save improvement records to agent-memory after implementation
 - ALWAYS deduplicate: merge into existing rules instead of adding redundant new ones
 - NEVER propose improvement ideas with ICE score below 700 — they are noise, not signal
-- ALWAYS use `dangerouslyDisableSandbox: true` parameter on every Bash tool call that runs `git add` or `git commit` in the commit subcommand — without this parameter, sandbox blocks `.git/index.lock` creation and the commit fails
+- Use `dangerouslyDisableSandbox: true` on Bash calls that run `git add` or `git commit` in the commit subcommand — without it, sandbox blocks `.git/index.lock` creation and the commit fails
 
 ## Argument Routing
 
@@ -303,7 +303,7 @@ Commit kaizen changes to the claude-config repository.
    - Follow the Commit Messages format defined in `rules/git-guidelines.md`
    - Source: Phase 3 improvement record if in conversation, otherwise diff output
    - NEVER invent a custom format (e.g., `kaizen(scope): ...` is prohibited)
-4. Commit — **CRITICAL: every Bash call MUST include `dangerouslyDisableSandbox: true`** (sandbox blocks `.git/index.lock` creation when claude-config is not the primary working directory):
+4. Commit — include `dangerouslyDisableSandbox: true` on each Bash call (sandbox blocks `.git/index.lock` creation when claude-config is not the primary working directory):
    - `git add`: `Bash(command: "cd <path> && git add <files>", dangerouslyDisableSandbox: true)`
    - `git commit`: `Bash(command: "cd <path> && git commit -m '<message>'", dangerouslyDisableSandbox: true)`
 5. If the commit fails, present the equivalent `!` command for the user to execute
