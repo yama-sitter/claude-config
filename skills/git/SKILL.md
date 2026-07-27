@@ -14,8 +14,6 @@ allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*), Bash(git
 
 Git operations with automatic guideline enforcement.
 
-Follow the [Git Guidelines](@../../rules/git-guidelines.md).
-
 ## Subcommands
 
 | Command                     | Description                             |
@@ -318,7 +316,7 @@ Report the results.
 
 ## Notes
 
-- **Guideline enforcement**: This skill always loads Git Guidelines via the `@` reference. Every subcommand operates under these rules.
 - **No force operations**: This skill never uses `--force` on push or destructive git operations.
+- **No rebase**: Never run `git rebase` / `rebase --continue` / `rebase --abort` via Bash — a PreToolUse hook (`hooks/block-git-rebase.sh`) blocks these because the sandbox can't create `.git/rebase-merge/` dotfiles, which corrupts rebase state. Ask the user to run `! git rebase <args>` instead.
 - **Worktree operations**: Use the `/tree` skill for worktree management. `/git branch` only creates branches in the current repository.
 - **No unnecessary `cd`**: Bash tool preserves the working directory between calls. Do not prepend `cd <path> &&` to git commands when the current working directory is already within the target repository. Only use `cd` when the user explicitly requests an operation on a different repository.
