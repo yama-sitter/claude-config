@@ -14,6 +14,8 @@
 - Follow existing codebase patterns. If a similar implementation exists, match it
 - Do not introduce new abstractions, layers, or utilities. If necessary, state the reason in the plan and get user approval first
 - Keep changes within the requested scope. Do not include surrounding improvements or refactoring
+- Keep responses concise — state results and decisions directly, without restating what was already established or narrating routine actions
+- When delegating to subagents, brief each one precisely once and do not re-derive its findings after it reports back. Cap parallel subagents at a small number (roughly 5-8) unless the task genuinely requires more
 - Always respond in Japanese — applies to conversation text only, not to file edits
 - ALWAYS match the existing language of a file when editing — do not let conversation language override file language
 
