@@ -225,6 +225,18 @@ Organize memories when needed:
 7. **Use `related` for discoverability**: Always include directory/file paths in the `related`
    field. This enables reverse lookup by path: `rg "^related:.*keyword" ~/.agent-memory/`
 
+### Saving Plans
+
+Do not automatically save plans to agent-memory. Save only when the user explicitly instructs it.
+
+When instructed:
+
+- Scope: the current repository name
+- Directory name: `<YYYY-MM-DD>_<task-description>-plan`
+- File name: `plan.md`
+- Include: task goal, implementation approach, key files, verification steps
+- If a related plan memory already exists, update it instead of creating a new one
+
 ### Content Reference
 
 When writing detailed memories, consider including:

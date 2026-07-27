@@ -1,3 +1,13 @@
+---
+paths:
+  - "**/*.test.*"
+  - "**/*.spec.*"
+  - "**/*_test.*"
+  - "**/__tests__/**"
+  - "**/test/**"
+  - "**/tests/**"
+---
+
 # Test Guidelines
 
 ## Before Writing Tests

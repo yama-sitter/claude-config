@@ -521,6 +521,8 @@ List all worktrees (excluding main) with AskUserQuestion.
 
 ## Notes
 
+- **Setup failures block, not skip**: If step 4's dependency or `.env` checks find anything missing, do not proceed with the task — this is a setup problem to fix, not an expected state. Never skip tests or report them as passing due to missing dependencies or config, and never report "tests cannot run but OK".
+- **Never checkout a worktree branch in the main repository**: Always use EnterWorktree to work inside the worktree.
 - **Branch naming**: Slash format `<type>/<summary>` (e.g., `feature/login_bug`) is supported. The worktree name (directory) uses hyphen form `<type>-<summary>`, while the git branch preserves the original slash form.
 - **WorktreeCreate hook**: Automatically handles branch creation (no `worktree-` prefix), dependency installation, .env copying, and `.claude/settings.local.json` copying.
 - **Do NOT call ExitWorktree proactively** — only via `/tree exit` or explicit user request.
