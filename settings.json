@@ -151,6 +151,15 @@
             "command": "bash ~/.claude/hooks/block-git-rebase.sh"
           }
         ]
+      },
+      {
+        "matcher": "EnterPlanMode",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/plan-template-inject.sh"
+          }
+        ]
       }
     ],
     "Notification": [
