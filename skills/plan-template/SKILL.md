@@ -1,3 +1,11 @@
+---
+name: plan-template
+description: |
+  Plan structure and writing rules for Plan Mode.
+  ALWAYS load this skill before writing any plan in Plan Mode.
+  Defines required sections, verification criteria format, self-containment rules, and design decision points.
+---
+
 # Plan Template
 
 ## Writing Style
