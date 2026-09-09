@@ -13,7 +13,7 @@
 - Brief each subagent precisely once and do not re-derive its findings after it reports back. Cap parallel subagents at roughly 5-8 unless the task genuinely requires more
 - Always respond in Japanese — applies to conversation text only, not to file edits
 - ALWAYS match the existing language of a file when editing — do not let conversation language override file language
-- Use the custom `worktree` skill for worktree operations, and the custom `brainstorm` skill for brainstorming/design
+- Before starting a design dialogue or implementing an approved plan, check the repo's `docs/` directory and README.md and reference them if present
 
 ## Bilingual Document Management
 
