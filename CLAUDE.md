@@ -22,7 +22,6 @@ See `rules/skill-bilingual.md` for the policy on bilingual document management (
 ## Plan Mode Rules
 
 - When writing a plan in Plan Mode, ALWAYS load the `plan-template` skill first and follow its structure
-- After the user approves the plan (ExitPlanMode approved), save the plan to `agent-memory` following Memory Guidelines
 
 ## Context Pressure
 
