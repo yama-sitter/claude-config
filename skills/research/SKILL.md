@@ -124,13 +124,37 @@ Output: Prioritized question list
 
 ### Step 4: RQ Formulation + Quality Check
 
-Turn the selected questions into specific, researchable question statements through a two-phase process: first sharpen the RQ through dialogue (Phase A), then formally evaluate it (Phase B).
+Turn the selected questions into specific, researchable question statements through a two-phase process: first raise and then sharpen the RQ through dialogue (Phase A), then formally evaluate it (Phase B).
+
+Phase A moves in two directions, in this order. **Raise first** (A2): a draft whose subject is a feature can only produce findings about that feature, so lift the frame to the level of practice. **Sharpen second** (A3 onward): make the RQ under that frame specific enough to research. Skipping the raise and going straight to sharpening is the most common failure in this step.
 
 #### Phase A: Draft and Sharpen
 
 **A1. Draft**: Ask the user to write an RQ first (rough is fine).
 
-**A2. Refinement Dimensions**: Diagnose which parts of the draft RQ are vague by checking each dimension one at a time:
+**A2. Altitude Check**: Before sharpening, check whether the draft is stuck at the feature level and raise it to the level of practice.
+
+Apply [altitude-ladder.md](references/altitude-ladder.md). The operation is to **remove one premise from the question**, not to use bigger words. Four premises are removable:
+
+| Lever | Signal in the draft | Removal question |
+| ----- | ------------------- | ---------------- |
+| Negation | "Why do users **not** ...", "barriers", "blockers" | What **is** this act, to the person performing it? |
+| Feature ★ | A product noun is the subject ("the rating UI") | What practice is this feature embedded in, and where does it sit inside it? |
+| Individual | The unit is one person's attitude at a time | What tacit norms are forming **among** this group? |
+| Time | Stated entirely in the present tense | How was this practice remade when the surrounding arrangement changed? |
+
+Procedure:
+
+1. Name which premises the draft carries. Ask about one lever at a time — never present all four at once.
+2. Apply the Feature lever by default. It is the one that makes the question hold for people who never touch the feature, which is where functional equivalents come from: "What else are they using to accomplish what this feature accomplishes?"
+3. Judge each framing question produced against **both bounds in one pass** — never make this two separate rounds of dialogue:
+   - **Floor Test**: if answered, would a group come into view, or only an account of particular individuals? Only individuals → too low; apply the Individual lever.
+   - **Ceiling Test**: would it hold unchanged for an unrelated service (e-commerce reviews, home-sharing)? Yes → too high; drop back one level. Offer the Time lever only for long-horizon research, and state that it cannot inform a next-quarter decision.
+4. Record the surviving framing question **alongside** the RQ. It does not replace the RQ. If answering it needs behavior observed and not only accounts heard, note that beside it so `/research plan` carries the requirement into its Evidence Coverage Gate.
+
+**→ "Does this framing question bring a group into view, while still keeping enough of your context to rule out unrelated services?"**
+
+**A3. Refinement Dimensions**: Diagnose which parts of the draft RQ are vague by checking each dimension one at a time:
 
 - Population/target — Who specifically? (e.g., "users" → "active users who use 3+ times per week")
 - Variable(s) — What specifically is being examined? (e.g., "satisfaction" → "task completion rate")
@@ -140,14 +164,14 @@ Turn the selected questions into specific, researchable question statements thro
 
 Ask one dimension at a time. For each vague dimension, ask a sharpening question and let the user refine.
 
-Note: Refinement Dimensions are diagnostic questions Claude asks to **find problems**. The [PICO framework](references/pico-framework.md) (offered in A5) is a template the user can apply to **build the solution**. They overlap in coverage but serve different purposes.
+Note: Refinement Dimensions are diagnostic questions Claude asks to **find problems**. The [PICO framework](references/pico-framework.md) (offered in A6) is a template the user can apply to **build the solution**. They overlap in coverage but serve different purposes.
 
-**A3. Before → After display**: After each round of refinement, show the before and after versions side by side to make the improvement visible:
+**A4. Before → After display**: After each round of refinement, show the before and after versions side by side to make the improvement visible:
 
 > Before: "How does onboarding affect retention?"
 > After: "Among first-time mobile app users, how does completing the 3-step onboarding tutorial affect 30-day retention compared to users who skip it?"
 
-**A4. RQ type classification**: Classify the sharpened RQ into one of three types and confirm with the user:
+**A5. RQ type classification**: Classify the sharpened RQ into one of three types and confirm with the user:
 
 | Type        | What it asks                          | Answer form             |
 | ----------- | ------------------------------------- | ----------------------- |
@@ -158,19 +182,19 @@ Note: Refinement Dimensions are diagnostic questions Claude asks to **find probl
 - **Caution**: "How should we...?" or "What should be done?" type questions are future-oriented and tend to become policy recommendations, not researchable questions. If detected, prompt the user to reframe toward "why" or "what is" — RQs should target past or present phenomena.
 - Prompt: "This reads as a [type] question — it asks about [description]. Does that match what you want to find out?"
 
-**A5. PICO (conditional)**: For relational or causal RQs only, offer the [PICO framework](references/pico-framework.md) as a structuring tool. For descriptive RQs, skip this step — rely on the Refinement Dimensions from A2 instead.
+**A6. PICO (conditional)**: For relational or causal RQs only, offer the [PICO framework](references/pico-framework.md) as a structuring tool. For descriptive RQs, skip this step — rely on the Refinement Dimensions from A3 instead.
 
-**A6. FINER diagnostic (fallback)**: If the RQ resists sharpening after 2+ rounds of refinement with no meaningful improvement, apply [FINER criteria diagnostically](references/finer-criteria.md) to identify where the question is structurally weak. A failed criterion becomes an improvement direction.
+**A7. FINER diagnostic (fallback)**: If the RQ resists sharpening after 2+ rounds of refinement with no meaningful improvement, apply [FINER criteria diagnostically](references/finer-criteria.md) to identify where the question is structurally weak. A failed criterion becomes an improvement direction.
 
-**A7. Anti-pattern check**: When providing feedback on a draft RQ, reference common failure patterns from [rq-antipatterns.md](references/rq-antipatterns.md) to help the user recognize structural problems.
+**A8. Anti-pattern check**: When providing feedback on a draft RQ, reference common failure patterns from [rq-antipatterns.md](references/rq-antipatterns.md) to help the user recognize structural problems.
 
-**Lightweight path for descriptive RQs**: Steps A1-A4 → Phase B (skip A5 PICO; A6 FINER diagnostic only if needed).
+**Lightweight path for descriptive RQs**: Steps A1-A5 → Phase B (skip A6 PICO; A7 FINER diagnostic only if needed). A2 Altitude Check is never skipped — descriptive RQs are the ones most often trapped at the feature level.
 
 **→ "Does this expression of your RQ feel right? Let's run the quality check."**
 
 #### Phase B: Quality Gate
 
-Formally evaluate the sharpened RQ with [rq-quality-checklist.md](references/rq-quality-checklist.md):
+Formally evaluate the sharpened RQ with [rq-quality-checklist.md](references/rq-quality-checklist.md). The checklist applies to the **RQ only**. The framing question from A2 is exempt from item 5 (Specific), item 11 (Scope), and the Scope Explosion anti-pattern — it is judged solely by the Floor Test and the Ceiling Test. Applying specificity checks to it would collapse it back to the feature level.
 
 1. Stage 1a (Structural Soundness: items 1-3) → Stage 1b (Research Fitness: items 4-7)
 2. Stage 2 (Structural Check: items 8-13)
@@ -214,7 +238,28 @@ See [research-methods.md](references/research-methods.md) for method details.
 
 Claude research: Conduct web research on best practices during method selection.
 
-**→ User selects a method**
+**→ User selects a method or set of methods**
+
+#### Evidence Coverage Gate
+
+Qualitative research finds a group by combining **observing behavior**, **hearing the background of the act**, and **analyzing**. None of the three works alone, and a single method rarely supplies more than one. Check the selected set before moving on.
+
+Read the **Evidence source** tag of each selected method in [research-methods.md](references/research-methods.md) and fill in:
+
+| Evidence source | Covered by | Gap / accepted limitation |
+| --------------- | ---------- | ------------------------- |
+| Behavior observed | ... | ... |
+| Background heard | ... | ... |
+| Analysis | Step 4 (analysis approach) | ... |
+
+Rules for the gate:
+
+- A set that supplies only one source does not pass silently. The user chooses one of two exits: **add a method** that supplies the missing source, or **accept the gap explicitly** and record it as a limitation carried into the research plan.
+- Never treat self-report as observation. "They said they check the shift sheet" is Heard, not Observed.
+- Failing to see something is a defect in the research design, not evidence that participants have nothing to say. Do not conclude a question is unanswerable before the gate has been walked.
+- Budget, timeline, and access constraints are legitimate reasons to accept a gap. They are not reasons to skip recording it.
+
+**→ "Which exit do you take for each uncovered source — add a method, or accept it as a stated limitation?"**
 
 ### Step 3: Participant Definition
 
@@ -245,7 +290,8 @@ Output: Research plan document (a single document summarizing RQ, methods, parti
 
 | User's state      | Response                                                                      |
 | ----------------- | ----------------------------------------------------------------------------- |
-| Has RQ + plan     | Proceed directly → Step 1                                                     |
+| Has RQ + framing question + plan | Proceed directly → Step 1                                      |
+| Has RQ + plan     | Proceed directly → Step 1. Ask for the framing question if `/research rq` produced one |
 | Has RQ only       | Briefly confirm participants and time allocation → Step 1                     |
 | Vague explanation | Confirm purpose and participants in 1-2 exchanges → Step 1                    |
 | "I don't know"    | Suggest `/research rq` and recommend clarifying "what you want to know" first |
@@ -259,6 +305,8 @@ Core principle: **RQ ≠ Interview Question**
 For each RQ, design a set of questions that indirectly elicit answers.
 
 See [interview-design.md](references/interview-design.md) for RQ → IQ conversion principles and examples.
+
+**Framing question as input**: When a framing question from the Altitude Check is available, design IQs against it as well as against the RQ. It changes what you ask: "Why don't you use it?" demands self-analysis and returns rationalization, while the practice behind it surfaces only through recent, concrete episodes ("How much do you remember about the last worker who came?" "When there is someone you want back, what do you do?"). Include at least one question that works for participants who never touch the feature named in the RQ. See [altitude-ladder.md](references/altitude-ladder.md).
 
 Conversion checks:
 
@@ -427,8 +475,11 @@ When all applicable items pass, identify the weakest item and explicitly state t
 |                                  | rq  | plan | interview | survey |
 | -------------------------------- | --- | ---- | --------- | ------ |
 | Full RQ construction (4 steps)   | Yes | No   | No        | No     |
+| Altitude Check (produce framing question) | Yes | No | No     | No     |
+| Use framing question as input    | -   | Yes  | Yes       | -      |
 | Brief directional confirmation   | -   | Yes  | Yes       | Yes    |
 | Research method selection        | No  | Yes  | No        | No     |
+| Evidence Coverage Gate           | No  | Yes  | No        | No     |
 | Full participant definition      | No  | Yes  | No        | No     |
 | Brief participant confirmation   | No  | -    | Yes       | Yes    |
 | IQ design                        | No  | No   | Yes       | No     |
@@ -460,28 +511,32 @@ When an RQ is modified or before outputting an interview guide or survey questio
 
 1. Never skip checkpoints (→)
 2. Always distinguish RQ ≠ Interview Question
-3. Never present Claude's research as "answers" — weave them in as sparring material
-4. Proceed one question at a time — never ask multiple questions at once
-5. Do not force progress at the entry gate — if context is lacking, direct to the appropriate subcommand
-6. Do not perform full RQ construction (4 steps) within `/research plan` or `/research interview`
-7. When a quality check shows all items OK, identify the weakest item and explicitly state the rationale for marking it OK
-8. Conduct external research only within a range that does not disrupt the dialogue flow
-9. The SSOT for artifacts is agent-memory — the plan file is a working document during the session, not the final version
-10. When an RQ, hypothesis, or guide is modified, run a consistency check based on [artifact-consistency-checklist.md](references/artifact-consistency-checklist.md)
-11. Save constraints discovered during dialogue to constraints.md in agent-memory, and re-read them when updating artifacts
-12. Do not rank exploratory RQs and hypothesis-driven RQs — propose the appropriate type based on the user's knowledge state
-13. When adopting a validated scale (NPS, SUS, SERVQUAL, ACSI, CSAT, etc.) in `/research survey`, do not modify the original wording or use a partial subset of items — comparability and benchmarking depend on exact, full replication. If response burden is too high, drop the validated scale and design a custom multi-item scale instead, or move that construct to a separate study. Adaptations strictly necessary for translation must be documented with rationale
+3. Never skip the Altitude Check (A2) — raise the frame before sharpening. Never apply specificity or scope checks to the framing question; judge it only by the Floor Test and the Ceiling Test, and never let it replace the RQ
+4. Never conclude something cannot be learned before checking the research design — seeing only, hearing only, or reasoning alone finds no group. In `/research plan`, walk the Evidence Coverage Gate; never treat self-report as observed behavior
+5. Never present Claude's research as "answers" — weave them in as sparring material
+6. Proceed one question at a time — never ask multiple questions at once
+7. Do not force progress at the entry gate — if context is lacking, direct to the appropriate subcommand
+8. Do not perform full RQ construction (4 steps) within `/research plan` or `/research interview`
+9. When a quality check shows all items OK, identify the weakest item and explicitly state the rationale for marking it OK
+10. Conduct external research only within a range that does not disrupt the dialogue flow
+11. The SSOT for artifacts is agent-memory — the plan file is a working document during the session, not the final version
+12. When an RQ, hypothesis, or guide is modified, run a consistency check based on [artifact-consistency-checklist.md](references/artifact-consistency-checklist.md)
+13. Save constraints discovered during dialogue to constraints.md in agent-memory, and re-read them when updating artifacts
+14. Do not rank exploratory RQs and hypothesis-driven RQs — propose the appropriate type based on the user's knowledge state
+15. When adopting a validated scale (NPS, SUS, SERVQUAL, ACSI, CSAT, etc.) in `/research survey`, do not modify the original wording or use a partial subset of items — comparability and benchmarking depend on exact, full replication. If response burden is too high, drop the validated scale and design a custom multi-item scale instead, or move that construct to a separate study. Adaptations strictly necessary for translation must be documented with rationale
 
 ## Completion Criteria
 
 ### `/research rq`
 
 - At least one RQ has passed the quality checklist
+- A framing question from the Altitude Check is recorded alongside the RQ, and it passes both the Floor Test and the Ceiling Test
 - The user is satisfied with the RQ
 
 ### `/research plan`
 
 - A research plan document (RQ, methods, participants, analysis approach) is complete
+- The Evidence Coverage Gate has been walked: each evidence source is either covered by a selected method or recorded as an accepted limitation
 - The user has agreed to the plan
 
 ### `/research interview`

@@ -24,6 +24,7 @@ Run this checklist when an RQ is modified, before outputting an interview guide,
 ## 4. Cross-File Synchronization Check
 
 - [ ] Is the RQ text identical across all files (plan file, guide, agent-memory)?
+- [ ] Is the framing question from the Altitude Check recorded alongside the RQ, with identical text across all files?
 - [ ] Is the hypothesis chain diagram identical across all files?
 - [ ] Do the focus area names, counts, and contents match across all files?
 - [ ] Is the scope description consistent across all files?

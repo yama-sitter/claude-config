@@ -45,6 +45,12 @@ Can it actually be investigated using available research methods (interviews, su
 - Bad example: "What kind of services will users want in 5 years?" (impossible to predict)
 - Good example: "What unmet needs do current users feel?"
 
+**Name the evidence source.** "Answerable" is not settled until you can say *how* the answer would be obtained: by behavior **observed**, by background **heard**, or by both. A question that silently assumes self-report alone will do is the most common failure here — people can rarely narrate a practice they run without thinking about it.
+
+- Prompt: "If you only asked people, and never watched anyone do it, could this question be answered honestly?"
+- If the answer is no, record "needs observation" beside the RQ. `/research plan` picks it up at the Evidence Coverage Gate.
+- An unanswerable-looking question is usually a research-design problem, not proof that participants have nothing to say. Check the design before discarding the question.
+
 ### 5. Is it specific?
 
 Are the target audience, situation, and behavior clearly defined?
