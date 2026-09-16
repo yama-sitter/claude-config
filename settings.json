@@ -97,6 +97,10 @@
           {
             "type": "command",
             "command": "bash ~/.claude/hooks/block-git-stash-mutate.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/pr-template-guard.sh"
           }
         ]
       },
