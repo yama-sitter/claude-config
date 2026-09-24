@@ -1,4 +1,5 @@
 {
+  "syncClaudeAiSkills": false,
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
@@ -76,6 +77,10 @@
       "~/.analyze"
     ]
   },
+  "sandbox": {
+    "excludedCommands": ["git commit *"]
+  },
+  "model": "sonnet",
   "hooks": {
     "PreToolUse": [
       {
@@ -186,6 +191,7 @@
       }
     ]
   },
+  "enableArtifact": false,
   "statusLine": {
     "type": "command",
     "command": "ccstatusline",
@@ -201,6 +207,6 @@
     "figma@claude-plugins-official": true
   },
   "theme": "dark",
-  "skipAutoPermissionPrompt": true,
-  "editorMode": "vim"
+  "editorMode": "vim",
+  "skipAutoPermissionPrompt": true
 }
