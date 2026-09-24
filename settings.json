@@ -78,7 +78,10 @@
     ]
   },
   "sandbox": {
-    "excludedCommands": ["git commit *"]
+    "excludedCommands": ["git commit *"],
+    "filesystem": {
+      "allowRead": ["~/.config/gh/hosts.yml"]
+    }
   },
   "model": "sonnet",
   "hooks": {
