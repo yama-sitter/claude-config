@@ -11,11 +11,14 @@
 
 CMD=$(jq -r '.tool_input.command // empty')
 
-if ! echo "$CMD" | grep -qE '(^|[^[:alnum:]_])pnpm[[:space:]]+(run[[:space:]]+)?test:unit'; then
+# コマンド位置（先頭 or 演算子直後）の pnpm のみ対象。引数内の文字列（commit メッセージ等）は除外
+CMD_POS='(^|[;&|(`]|\$\()[[:space:]]*pnpm[[:space:]]+'
+
+if ! echo "$CMD" | grep -qE "${CMD_POS}(run[[:space:]]+)?test:unit"; then
   exit 0
 fi
 
-if echo "$CMD" | grep -qE '[|;&<>`]|\$\(' || echo "$CMD" | grep -qE '(^|[^[:alnum:]_])pnpm[[:space:]]+test:unit'; then
+if echo "$CMD" | grep -qE '[|;&<>`]|\$\(' || echo "$CMD" | grep -qE "${CMD_POS}test:unit"; then
   echo 'BLOCKED: test:unit はパイプ/リダイレクト/連結（| > 2>&1 && ; など）や run 省略があると sandbox.excludedCommands に一致せずサンドボックス内で実行され、.env.local を読めず [setupEnv] エラーで失敗します。演算子を付けずに pnpm run test:unit <path> 単体で再実行してください（cd も付けない）。出力が長くてもそのまま実行してください。.env.local の存在確認やユーザーへの手動実行依頼は不要です。' >&2
   exit 2
 fi
