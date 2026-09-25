@@ -27,18 +27,18 @@ Invoked when a failure is detected. A subagent performs analysis → idea genera
 - ALWAYS save improvement records to agent-memory after implementation
 - ALWAYS deduplicate: merge into existing rules instead of adding redundant new ones
 - NEVER propose improvement ideas with ICE score below 700 — they are noise, not signal
-- Use `dangerouslyDisableSandbox: true` on Bash calls that run `git add` or `git commit` in the commit subcommand — without it, sandbox blocks `.git/index.lock` creation and the commit fails
+- In the commit subcommand, use `git commit -m "<title>" -m "<body>"` or `git commit -F <file>` without `$()` / backticks — only then does it match `sandbox.excludedCommands` ("git commit *") and run outside the sandbox (`dangerouslyDisableSandbox` is ignored when unsandboxed commands are disallowed)
 
 ## Argument Routing
 
-| Args | Action |
-|------|--------|
-| (empty) | Full process: Phase 1 → Phase 2 → Confirmation Gate → Phase 3 → Record |
-| `diagnose` | Analysis only: Phase 1 → Phase 2 → Confirmation Gate (stop. Guide user to `/kaizen apply`) |
-| `plan` | Save plan: Phase 1 → Phase 2 → Confirmation Gate → Save Plan (stop. Guide user to `/kaizen apply <path>`) |
-| `apply` | Implementation only: Identify approved idea from conversation → Phase 3 → Record |
-| `apply <path>` | Implementation from plan: Read plan file → Phase 3 → Record |
-| `commit` | Commit to claude-config: Detect changes → Generate commit message → Commit (auto or manual fallback) |
+| Args           | Action                                                                                                    |
+| -------------- | --------------------------------------------------------------------------------------------------------- |
+| (empty)        | Full process: Phase 1 → Phase 2 → Confirmation Gate → Phase 3 → Record                                    |
+| `diagnose`     | Analysis only: Phase 1 → Phase 2 → Confirmation Gate (stop. Guide user to `/kaizen apply`)                |
+| `plan`         | Save plan: Phase 1 → Phase 2 → Confirmation Gate → Save Plan (stop. Guide user to `/kaizen apply <path>`) |
+| `apply`        | Implementation only: Identify approved idea from conversation → Phase 3 → Record                          |
+| `apply <path>` | Implementation from plan: Read plan file → Phase 3 → Record                                               |
+| `commit`       | Commit to claude-config: Detect changes → Generate commit message → Commit (auto or manual fallback)      |
 
 ## Workflow
 
@@ -145,6 +145,7 @@ Present the subagent's analysis results to the user and obtain approval.
 If the subagent reported "No actionable improvement found", display: **「有効な改善案が見つかりませんでした」** and stop (do not proceed to Phase 3).
 
 Options to present:
+
 - Implement the recommended idea as-is
 - Choose a different idea (specify by number)
 - Modify the approach
@@ -167,7 +168,7 @@ After the user approves an idea at the Confirmation Gate, save a self-contained 
 
 **Plan file format:**
 
-````markdown
+```markdown
 ---
 summary: "Kaizen plan: <one-line description>"
 created: <YYYY-MM-DD>
@@ -179,23 +180,28 @@ related:
 # Kaizen Plan: <Idea name>
 
 ## Failure Context
+
 <Phase 1 output>
 
 ## Root Cause
+
 <Phase 2 root cause, category, structural factor>
 
 ## Approved Improvement
+
 Idea: #N <name>
 Target: <hooks / rules / skills / CLAUDE.md / permissions>
 ICE Score: <score>
 Rationale: ...
 
 ## Implementation Plan
+
 <Concrete steps from Phase 2 recommendation>
 
 ## Side-effect Risk
+
 <Risk assessment>
-````
+```
 
 **Steps:**
 
@@ -300,17 +306,18 @@ Commit kaizen changes to the claude-config repository.
    - Untracked (new files): `cd <path> && git ls-files --others --exclude-standard`
 2. If no changes detected, display "コミット対象の変更がありません" and stop
 3. Generate commit message:
-   - Follow the Commit Messages format defined in `rules/git-guidelines.md`
+   - Follow the commit message format in `~/.claude/skills/git/SKILL.md` (`/git commit` → Step 5: `<type>: <summary>` + blank line + body, Japanese)
    - Source: Phase 3 improvement record if in conversation, otherwise diff output
    - NEVER invent a custom format (e.g., `kaizen(scope): ...` is prohibited)
-4. Commit — include `dangerouslyDisableSandbox: true` on each Bash call (sandbox blocks `.git/index.lock` creation when claude-config is not the primary working directory):
-   - `git add`: `Bash(command: "cd <path> && git add <files>", dangerouslyDisableSandbox: true)`
-   - `git commit`: `Bash(command: "cd <path> && git commit -m '<message>'", dangerouslyDisableSandbox: true)`
-5. If the commit fails, present the equivalent `!` command for the user to execute
+4. Commit — run `cd <path>` as a separate Bash call first (cwd persists), then keep the commit command starting with `git commit` and free of `$()` / backticks so it matches `sandbox.excludedCommands`:
+   - `git add`: `git add <files>`
+   - `git commit`: `git commit -m "<title>" -m "<body>"`, or Write the message to `/private/tmp/claude/commit-msg.txt` and run `git commit -F /private/tmp/claude/commit-msg.txt`
+5. If `git add` or `git commit` fails (e.g. sandbox blocks `.git/index.lock`), present the equivalent `!` command for the user to execute
 
 ## Completion
 
 ### default (full process)
+
 - Failure identified and root cause structurally analyzed
 - Improvement ideas presented (filtered by ICE ≥ 700)
 - User approved one idea
@@ -319,12 +326,14 @@ Commit kaizen changes to the claude-config repository.
 - `/kaizen commit` の案内を表示済み
 
 ### diagnose
+
 - Failure identified and root cause structurally analyzed
 - Improvement ideas presented (filtered by ICE ≥ 700)
 - `/kaizen apply` guidance displayed
 - （セッション跨ぎで実装したい場合は `/kaizen plan` の利用を案内済み）
 
 ### plan
+
 - Failure identified and root cause structurally analyzed
 - Improvement ideas presented (filtered by ICE ≥ 700)
 - User approved one idea
@@ -332,9 +341,11 @@ Commit kaizen changes to the claude-config repository.
 - `/kaizen apply <path>` guidance displayed
 
 ### apply
+
 - Approved improvement implemented (from plan file or conversation context)
 - Improvement record saved to agent-memory
 - `/kaizen commit` の案内を表示済み
 
 ### commit
+
 - Kaizen changes committed to claude-config

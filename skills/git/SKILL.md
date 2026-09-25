@@ -144,16 +144,13 @@ If the project has a `CLAUDE.md` or `AGENTS.md` with a **Verification** section,
   - Language: Japanese
   - Do **NOT** add `Co-Authored-By` footer
   - The message must reflect only the staged changes, not all changes in the working tree
-- Create the commit using a HEREDOC:
+- Write the message with the Write tool to `/private/tmp/claude/commit-msg.txt`, then commit with `-F`:
 
 ```bash
-git commit -m "$(cat <<'EOF'
-<type>: <summary>
-
-<detailed description>
-EOF
-)"
+git commit -F /private/tmp/claude/commit-msg.txt
 ```
+
+- NEVER use `$()` / backticks (e.g. HEREDOC) in `git commit` — the command misses `sandbox.excludedCommands`, SSH signing fails in the sandbox, and `hooks/block-git-commit-subst.sh` blocks it.
 
 ---
 
