@@ -122,7 +122,6 @@ LLM は plan / brainstorm 中、該当する層を参照して自己点検する
 
 このガイドは下記から参照される。
 
-- `rules/plan-template.md` の **Failure Pattern Self-Check**: plan 作成時に主要 6 パターンの自己点検を強制
 - `skills/brainstorm/SKILL.md` の **DQ Frame Check**: brainstorm 対話で DQ 4 観点（Frame / Alternatives / Information / Values）をカバー必須に
 
 詳細・原文は `~/.agent-memory/general/2026-05-07_decision-quality-design-failure-patterns/document.md`。
