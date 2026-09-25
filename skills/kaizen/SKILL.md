@@ -27,7 +27,7 @@ Invoked when a failure is detected. A subagent performs analysis → idea genera
 - ALWAYS save improvement records to agent-memory after implementation
 - ALWAYS deduplicate: merge into existing rules instead of adding redundant new ones
 - NEVER propose improvement ideas with ICE score below 700 — they are noise, not signal
-- In the commit subcommand, use `git commit -m "<title>" -m "<body>"` or `git commit -F <file>` without `$()` / backticks — only then does it match `sandbox.excludedCommands` ("git commit *") and run outside the sandbox (`dangerouslyDisableSandbox` is ignored when unsandboxed commands are disallowed)
+- In the commit subcommand, NEVER prefix git write commands with `cd <path> &&` or `git -C <path>` — they do not match `sandbox.excludedCommands` and fail in the sandbox. Instead `cd ~/.claude/skills` in a separate Bash call (an allowed directory inside claude-config, so cwd persists), then run commands starting with `git add` / `git commit`, using `git commit -m "<title>" -m "<body>"` or `git commit -F <file>` without `$()` / backticks (`dangerouslyDisableSandbox` is ignored when unsandboxed commands are disallowed)
 
 ## Argument Routing
 
@@ -309,10 +309,13 @@ Commit kaizen changes to the claude-config repository.
    - Follow the commit message format in `~/.claude/skills/git/SKILL.md` (`/git commit` → Step 5: `<type>: <summary>` + blank line + body, Japanese)
    - Source: Phase 3 improvement record if in conversation, otherwise diff output
    - NEVER invent a custom format (e.g., `kaizen(scope): ...` is prohibited)
-4. Commit — run `cd <path>` as a separate Bash call first (cwd persists), then keep the commit command starting with `git commit` and free of `$()` / backticks so it matches `sandbox.excludedCommands`:
-   - `git add`: `git add <files>`
+4. Enter claude-config with a persistent cwd:
+   - Run `cd ~/.claude/skills` as a standalone Bash call (`~/.claude` symlinks to claude-config and `~/.claude/skills` is in `additionalDirectories`, so cwd persists; `cd` into the claude-config root does NOT persist from other projects)
+   - In a separate Bash call run `git rev-parse --show-toplevel`. If the output is not the claude-config path, skip to Step 6 without attempting `git add` / `git commit`
+5. Commit — every command MUST start with `git add` / `git commit` (no `cd ... &&`, no `git -C`, no `$()` / backticks):
+   - `git add`: `git add :/<file> :/<file> ...` (`:/` = repo-root pathspec; Step 1 paths are root-relative)
    - `git commit`: `git commit -m "<title>" -m "<body>"`, or Write the message to `/private/tmp/claude/commit-msg.txt` and run `git commit -F /private/tmp/claude/commit-msg.txt`
-5. If `git add` or `git commit` fails (e.g. sandbox blocks `.git/index.lock`), present the equivalent `!` command for the user to execute
+6. If Step 4 verification fails, or `git add` / `git commit` fails, present one combined `!` command for the user (e.g. `! cd ~/Sources/github.com/yama-sitter/claude-config && git add <files> && git commit -F /private/tmp/claude/commit-msg.txt`). NEVER retry variants of the failed command
 
 ## Completion
 

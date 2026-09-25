@@ -211,7 +211,7 @@
     "filesystem": {
       "allowRead": ["~/.config/gh/hosts.yml"]
     },
-    "excludedCommands": ["git commit *"]
+    "excludedCommands": ["git commit *", "git add *"]
   },
   "theme": "dark",
   "editorMode": "vim",
