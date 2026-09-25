@@ -254,6 +254,7 @@ Use the Read tool to check each path. If found, read the template content and us
   - If no template → create a body with:
     - `## Summary` — 1-3 bullet points
     - `## Test plan` — checklist of verification steps
+  - Do **NOT** add a `Generated with Claude Code` attribution footer
 
 ### 7. Create PR
 

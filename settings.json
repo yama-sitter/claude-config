@@ -78,6 +78,10 @@
     ]
   },
   "model": "opus",
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "hooks": {
     "PreToolUse": [
       {
@@ -103,6 +107,14 @@
           {
             "type": "command",
             "command": "bash ~/.claude/hooks/block-git-commit-subst.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/block-commit-coauthor.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/block-pr-attribution.sh"
           },
           {
             "type": "command",
@@ -209,9 +221,14 @@
   },
   "sandbox": {
     "filesystem": {
-      "allowRead": ["~/.config/gh/hosts.yml"]
+      "allowRead": [
+        "~/.config/gh/hosts.yml"
+      ]
     },
-    "excludedCommands": ["git commit *", "git add *"]
+    "excludedCommands": [
+      "git commit *",
+      "git add *"
+    ]
   },
   "theme": "dark",
   "editorMode": "vim",
