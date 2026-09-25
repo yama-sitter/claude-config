@@ -77,13 +77,7 @@
       "~/.analyze"
     ]
   },
-  "sandbox": {
-    "excludedCommands": ["git commit *"],
-    "filesystem": {
-      "allowRead": ["~/.config/gh/hosts.yml"]
-    }
-  },
-  "model": "sonnet",
+  "model": "opus",
   "hooks": {
     "PreToolUse": [
       {
@@ -208,6 +202,12 @@
     "skill-creator@claude-plugins-official": true,
     "hookify@claude-plugins-official": true,
     "figma@claude-plugins-official": true
+  },
+  "sandbox": {
+    "filesystem": {
+      "allowRead": ["~/.config/gh/hosts.yml"]
+    },
+    "excludedCommands": ["git commit *"]
   },
   "theme": "dark",
   "editorMode": "vim",
