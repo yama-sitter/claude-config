@@ -106,7 +106,7 @@
           },
           {
             "type": "command",
-            "command": "bash ~/.claude/hooks/block-git-commit-subst.sh"
+            "command": "bash ~/.claude/hooks/block-excluded-cmd-mix.sh"
           },
           {
             "type": "command",
