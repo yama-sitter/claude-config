@@ -81,7 +81,12 @@
       "~/.analyze"
     ]
   },
-  "model": "opus",
+  "model": "sonnet",
+  "skillOverrides": {
+    "analyze": "off",
+    "tree": "off",
+    "brainstorm": "off"
+  },
   "hooks": {
     "PreToolUse": [
       {
@@ -232,10 +237,5 @@
   },
   "theme": "dark",
   "editorMode": "vim",
-  "skipAutoPermissionPrompt": true,
-  "skillOverrides": {
-    "analyze": "off",
-    "tree": "off",
-    "brainstorm": "off"
-  }
+  "skipAutoPermissionPrompt": true
 }
