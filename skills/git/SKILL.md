@@ -20,7 +20,7 @@ Git operations with automatic guideline enforcement.
 | --------------------------- | --------------------------------------- |
 | `/git branch [description]` | Create a new branch from a description  |
 | `/git commit`               | Stage changes and create a commit       |
-| `/git push`                 | Push the current branch to remote       |
+| `/git push [--no-verify]`   | Push the current branch to remote       |
 | `/git pr`                   | Create a pull request                   |
 | `/git prune`                | Remove local branches deleted on remote |
 | `/git` (no args)            | Show this subcommand list               |
@@ -154,9 +154,11 @@ git commit -F /private/tmp/claude/commit-msg.txt
 
 ---
 
-## Subcommand: `/git push`
+## Subcommand: `/git push [--no-verify]`
 
 Push the current branch to the remote repository.
+
+- `--no-verify`: Skip the pre-push hook by adding `--no-verify` to the push command. Use only when the user passes it explicitly.
 
 ### 1. Gather context
 
@@ -187,7 +189,7 @@ git rev-parse --abbrev-ref --symbolic-full-name @{u}
 
 ### 5. Push
 
-Execute the appropriate push command. Never use `--force` or `-f`.
+Execute the appropriate push command. If `--no-verify` was passed, append it (e.g. `git push --no-verify`, `git push -u origin <branch> --no-verify`). Never use `--force` or `-f`.
 
 ---
 
