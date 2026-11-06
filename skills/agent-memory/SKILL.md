@@ -113,7 +113,7 @@ Content composition and file writing are delegated to a subagent to keep Write t
 
 ### Post-search
 
-After the **Show detail** step, display the full path of the selected file. If `pbcopy` is available, also copy the path to the clipboard. If copying is not possible, display the path only.
+After the **Show detail** step, display the full path of the selected file.
 
 **Note:** Memory files are gitignored — always use `--no-ignore --hidden` flags with ripgrep.
 

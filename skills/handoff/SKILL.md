@@ -1,7 +1,7 @@
 ---
 name: handoff
 description: |
-  Write a self-contained prompt for handing a task to another Claude session, show it in chat, and copy it to the clipboard.
+  Write a self-contained prompt for handing a task to another Claude session, and show it in chat.
   Use when: the user types `/handoff [task]`, or asks for a prompt/instructions to give to another session.
   Do not use when: the user wants the task run now by a subagent (-> sub).
 user-invocable: true
@@ -37,6 +37,4 @@ Rules:
 
 ## Output
 
-1. Show the prompt in one fenced code block (use a longer fence if the prompt itself contains triple backticks).
-2. Copy the same text to the clipboard with Bash: `pbcopy <<'HANDOFF_EOF'` … `HANDOFF_EOF`.
-3. Add one line saying it was copied. If `pbcopy` fails, say so and leave the code block as the fallback.
+Show the prompt in one fenced code block (use a longer fence if the prompt itself contains triple backticks).
